@@ -1,0 +1,16 @@
+services:
+  node:
+    image: node:23 # Official Node.js image
+    container_name: Igokochi
+    working_dir: /app
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "200"
+      WATCHPACK_POLLING: "true"
+      WDS_SOCKET_PORT: "0"
+    volumes:
+      - .:/app
+    ports:
+      - "3000:5173" # React dev server port
+    stdin_open: true
+    tty: true

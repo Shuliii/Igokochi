@@ -1,0 +1,26 @@
+/* ===============================
+   Igokochi House – Color Variables
+   =============================== */
+
+:root {
+  /* 🌿 Brand / Primary */
+  --color-matcha: #7bae7f; /* Primary brand green */
+  --color-matcha-dark: #4f7f5a; /* Primary buttons, active states */
+
+  /* 🤎 Accent / Secondary */
+  --color-brown: #8b6b4f; /* Cards, accents */
+  --color-brown-dark: #5a3e2b; /* Footer, icons */
+
+  /* ⚪⚫ Neutrals */
+  --color-bg: #f7f5f2; /* App background */
+  --color-white: #ffffff; /* Card background */
+  --color-text: #1f1f1f; /* Primary text */
+  --color-border: #e5e2dd; /* Dividers, subtle borders */
+
+  /* 🟢 Soft accent (optional) */
+  --color-matcha-soft: #cfe3d4; /* Selected states, tags */
+}
+
+body {
+  background: var(--color-bg);
+}
