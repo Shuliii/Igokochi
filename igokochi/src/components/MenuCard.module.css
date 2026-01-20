@@ -1,0 +1,90 @@
+/* src/components/MenuCard.module.css */
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: var(--color-white);
+  border-radius: 16px;
+  padding: 12px;
+
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Food image */
+.image {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Right-side content */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Title */
+.title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* Description */
+.description {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #7a7a7a;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Bottom row: price + button */
+.bottomRow {
+  margin-top: auto;
+  padding-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Price */
+.price {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-matcha-dark);
+}
+
+/* Add button */
+.addButton {
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+  border: none;
+
+  background: var(--color-matcha-dark);
+  color: var(--color-white);
+
+  cursor: pointer;
+}
+
+.addButton:active {
+  transform: scale(0.96);
+}

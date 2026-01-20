@@ -1,0 +1,8 @@
+.main {
+  padding-block: 16px;
+  padding-inline: 16px;
+}
+
+.withCart {
+  padding-bottom: 80px; /* enough for sticky cart bar + breathing space */
+}
