@@ -88,3 +88,44 @@
 .addButton:active {
   transform: scale(0.96);
 }
+
+.qtyControl {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--color-matcha-soft);
+}
+
+/* Minus/Plus buttons inside qty control */
+.qtyButton {
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 999px;
+  background: var(--color-matcha-dark);
+  color: var(--color-white);
+
+  cursor: pointer;
+}
+
+.qtyButton:active {
+  transform: scale(0.96);
+}
+
+/* Quantity number */
+.qty {
+  min-width: 16px;
+  text-align: center;
+
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-matcha-dark);
+}

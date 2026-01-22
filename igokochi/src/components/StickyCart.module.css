@@ -1,0 +1,116 @@
+/* src/components/StickyCart.module.css */
+
+.wrapper {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  padding: 12px 16px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 50;
+}
+
+.bar {
+  max-width: 520px;
+  margin: 0 auto;
+
+  height: 72px;
+  padding: 12px 12px;
+
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  min-width: 0;
+}
+
+.cartIconWrap {
+  position: relative;
+  width: 36px;
+  height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+  background: var(--color-matcha-soft);
+}
+
+.cartIcon {
+  color: var(--color-matcha-dark);
+}
+
+.cartBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+  background: var(--color-matcha-dark);
+  color: var(--color-white);
+
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  min-width: 0;
+}
+
+.total {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.itemsText {
+  font-size: 12px;
+  color: #7a7a7a;
+}
+
+.cta {
+  height: 44px;
+  padding: 0 14px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: var(--color-matcha-dark);
+  color: var(--color-white);
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.cta:active {
+  transform: scale(0.98);
+}
