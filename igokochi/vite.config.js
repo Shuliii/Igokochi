@@ -3,10 +3,10 @@ import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/Igokochi/",
   server: {
     host: "0.0.0.0", // allow access from outside container
     port: 5173,
-    base: "/Igokochi/",
   },
   plugins: [react()],
 });
