@@ -9,14 +9,14 @@ export const cartReducer = (state, action) => {
         return {
           ...state,
           items: state.items.map((i) =>
-            i.id === item.id ? { ...i, qty: i.qty + 1 } : i,
+            i.id === item.id ? {...i, qty: i.qty + 1} : i,
           ),
         };
       }
 
       return {
         ...state,
-        items: [...state.items, { ...item, qty: 1 }],
+        items: [...state.items, {...item, qty: 1}],
       };
     }
     case "REMOVE_ITEM": {
@@ -37,10 +37,15 @@ export const cartReducer = (state, action) => {
       return {
         ...state,
         items: state.items.map((i) =>
-          i.id === id ? { ...i, qty: i.qty - 1 } : i,
+          i.id === id ? {...i, qty: i.qty - 1} : i,
         ),
       };
     }
+    case "CLEAR_CART":
+      return {...state, items: []};
+
+    default:
+      return state;
   }
 };
 

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { CartProvider } from "./cart/CartContext";
+import {useState} from "react";
+import {CartProvider} from "./cart/CartContext";
 
 import Header from "./components/Header";
 import Main from "./components/Main";
@@ -17,7 +17,7 @@ function App() {
   };
   return (
     <CartProvider>
-      <Header />
+      <Header onCheckout={onCheckout} />
       <Main />
       <StickyCart onCheckout={onCheckout} />
 

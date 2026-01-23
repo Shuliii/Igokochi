@@ -1,7 +1,7 @@
 services:
   node:
     image: node:23 # Official Node.js image
-    container_name: Igokochi
+    container_name: igokochi
     working_dir: /app
     environment:
       CHOKIDAR_USEPOLLING: "true"
@@ -9,8 +9,45 @@ services:
       WATCHPACK_POLLING: "true"
       WDS_SOCKET_PORT: "0"
     volumes:
-      - .:/app
+      - ./igokochi:/app
     ports:
       - "3000:5173" # React dev server port
     stdin_open: true
     tty: true
+  mysql:
+    image: mysql:8.0
+    container_name: igokochi-mysql
+    restart: unless-stopped
+
+    ports:
+      - "3306:3306"
+
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: igokochi
+      MYSQL_USER: igokochi_user
+      MYSQL_PASSWORD: igokochi_pass
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+  backend:
+    image: node:23
+    container_name: igokochi-backend
+    working_dir: /app
+    volumes:
+      - ./igokochi_backend:/app
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mysql
+    stdin_open: true
+    tty: true
+    command: sh -c "tail -f /dev/null"
+
+volumes:
+  mysql_data:

@@ -1,0 +1,63 @@
+/* src/components/checkout/PickupTimeSlots.module.css */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.subtitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #7a7a7a;
+}
+
+.helperText {
+  font-size: 13px;
+  color: #7a7a7a;
+  padding: 8px 0;
+}
+
+/* Make slots look like proper buttons */
+.list {
+  display: grid;
+  grid-template-columns: repeat(
+    3,
+    minmax(0, 1fr)
+  ); /* 👈 better on full width */
+  gap: 8px;
+}
+
+.slotBtn {
+  height: 40px;
+  padding: 0 10px;
+
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+
+  background: var(--color-white);
+  color: var(--color-text);
+
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+
+  cursor: pointer;
+}
+
+.slotBtn:active {
+  transform: scale(0.99);
+}
+
+.slotBtn:disabled {
+  background: #f0f0f0;
+  color: #9a9a9a;
+  cursor: default;
+}
+
+/* Selected slot */
+.slotBtnActive {
+  border: none;
+  background: var(--color-matcha-dark);
+  color: var(--color-white);
+}

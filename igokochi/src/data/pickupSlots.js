@@ -1,5 +1,5 @@
-export const PICKUP_SLOTS = [
-  { label: "3-4 pm", startHour: 15, endHour: 16 },
-  { label: "4-5 pm", startHour: 16, endHour: 17 },
-  { label: "5-6 pm", startHour: 17, endHour: 18 },
-];
+export const PICKUP_HOURS_BY_DAY = {
+  5: {startHour: 18, endHour: 21}, // Fri 6pm–9pm
+  6: {startHour: 11, endHour: 21}, // Sat 11am–9pm
+  0: {startHour: 11, endHour: 21}, // Sun 11am–9pm
+};
