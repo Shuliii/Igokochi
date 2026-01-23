@@ -2,7 +2,7 @@
 import {useMemo, useState} from "react";
 import styles from "./PickupCalendar.module.css";
 import {ChevronLeft, ChevronRight} from "lucide-react";
-import {getTodayMidnight, isPickupDay, toYmd} from "../utils/pickupTime";
+import {getTodayMidnight, isPickupDay, toYmd} from "../utils/pickup";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 

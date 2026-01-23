@@ -1,10 +1,6 @@
 // src/components/checkout/PickupTimeSlots.jsx
 import styles from "./PickupTimeSlots.module.css";
-import {
-  isSlotInPast,
-  makeHourlySlotsForDate,
-  parseYmd,
-} from "../utils/pickupTime";
+import {isSlotInPast, makeHourlySlotsForDate, parseYmd} from "../utils/pickup";
 
 const PickupTimeSlots = ({selectedDay, selectedSlot, onSelectSlot}) => {
   const selectedDateObj = selectedDay ? parseYmd(selectedDay) : null;

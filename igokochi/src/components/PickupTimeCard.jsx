@@ -5,7 +5,7 @@ import styles from "./PickupTimeCard.module.css";
 import PickupCalendar from "./PickupCalendar";
 import PickupTimeSlots from "./PickupTimeSlots";
 
-import {getTodayMidnight, toYmd} from "../utils/pickupTime";
+import {getTodayMidnight, toYmd} from "../utils/pickup";
 
 const PickupTimeCard = ({value, onChange}) => {
   const today = useMemo(() => getTodayMidnight(), []);
