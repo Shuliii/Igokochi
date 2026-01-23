@@ -1,5 +1,5 @@
 // src/utils/pickupTime.js
-import {PICKUP_HOURS_BY_DAY} from "../data/pickUpSlots";
+import {PICKUP_HOURS_BY_DAY} from "../data/pickupData";
 
 /** Convert Date -> "YYYY-MM-DD" */
 export function toYmd(date) {
