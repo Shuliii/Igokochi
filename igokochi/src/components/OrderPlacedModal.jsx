@@ -13,6 +13,9 @@ const OrderPlacedModal = ({open, onOpenChange, orderId}) => {
           </div>
 
           <Dialog.Title className={styles.title}>Order placed!</Dialog.Title>
+          <Dialog.Description className={styles.srOnly}>
+            Confirmation dialog showing that your order has been received.
+          </Dialog.Description>
           <p className={styles.text}>
             We've received your order.
             {orderId ? (

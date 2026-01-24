@@ -167,3 +167,19 @@
   font-size: 13px;
   line-height: 1;
 }
+
+.qtyBounce {
+  animation: qtyBounce 160ms ease-out;
+}
+
+@keyframes qtyBounce {
+  0% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

@@ -19,6 +19,15 @@ const MenuCard = ({item}) => {
   // keep stepper mounted briefly so exit animation can play
   const [showStepper, setShowStepper] = useState(qty > 0);
   const [animClass, setAnimClass] = useState(""); // styles.stepperIn / styles.stepperOut
+  const [qtyBounce, setQtyBounce] = useState(false);
+
+  useEffect(() => {
+    if (prevQtyRef.current !== qty) {
+      setQtyBounce(true);
+      const t = setTimeout(() => setQtyBounce(false), 160);
+      return () => clearTimeout(t);
+    }
+  }, [qty]);
 
   useEffect(() => {
     const prev = prevQtyRef.current;
@@ -102,7 +111,11 @@ const MenuCard = ({item}) => {
                   <Minus size={16} />
                 </button>
 
-                <span className={styles.qty}>{qty}</span>
+                <span
+                  className={`${styles.qty} ${qtyBounce ? styles.qtyBounce : ""}`}
+                >
+                  {qty}
+                </span>
 
                 <button
                   className={styles.stepBtn}

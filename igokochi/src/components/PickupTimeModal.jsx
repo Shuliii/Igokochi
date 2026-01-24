@@ -65,8 +65,6 @@ const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
         return;
       }
 
-      console.log("Order created:", data);
-
       // (optional) if you still want to store selection outside
       onConfirm?.(payload.pickup);
 
@@ -83,7 +81,6 @@ const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
       // open success modal
       onOrderPlaced?.(data.orderId);
     } catch (err) {
-      console.error("Network error:", err);
       alert("Network error: backend not reachable");
     }
   };
@@ -96,7 +93,10 @@ const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
         <Dialog.Content className={styles.content} aria-label="Checkout">
           <div className={styles.header}>
             <Dialog.Title className={styles.title}>Checkout</Dialog.Title>
-
+            <Dialog.Description className={styles.srOnly}>
+              Review your order, choose a pickup date and time slot, and enter
+              your contact details.
+            </Dialog.Description>
             <Dialog.Close asChild>
               <button className={styles.closeBtn} aria-label="Close">
                 <X size={20} />
