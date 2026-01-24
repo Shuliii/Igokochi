@@ -5,16 +5,27 @@ import Header from "./components/Header";
 import Main from "./components/Main";
 import StickyCart from "./components/StickyCart";
 import PickupTimeModal from "./components/PickupTimeModal";
+import OrderPlacedModal from "./components/OrderPlacedModal";
 
 import "./App.css";
 
 function App() {
   const [pickupOpen, setPickupOpen] = useState(false);
+
+  // optional: if you still want to keep pickup selection
   const [pickupSelection, setPickupSelection] = useState(null);
 
-  const onCheckout = () => {
-    setPickupOpen(true);
+  // success modal state
+  const [successOpen, setSuccessOpen] = useState(false);
+  // const [lastOrderId, setLastOrderId] = useState(null);
+
+  const onCheckout = () => setPickupOpen(true);
+
+  const handleOrderPlaced = (orderId) => {
+    // setLastOrderId(orderId);
+    setSuccessOpen(true);
   };
+
   return (
     <CartProvider>
       <Header onCheckout={onCheckout} />
@@ -28,6 +39,13 @@ function App() {
           setPickupSelection(selection);
           console.log("Pickup selected:", selection);
         }}
+        onOrderPlaced={handleOrderPlaced}
+      />
+
+      <OrderPlacedModal
+        open={successOpen}
+        onOpenChange={setSuccessOpen}
+        // orderId={lastOrderId}
       />
     </CartProvider>
   );

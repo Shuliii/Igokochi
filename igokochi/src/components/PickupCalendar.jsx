@@ -4,7 +4,11 @@ import styles from "./PickupCalendar.module.css";
 import {ChevronLeft, ChevronRight} from "lucide-react";
 import {getTodayMidnight, isPickupDay, toYmd} from "../utils/pickup";
 
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+const getMonFirstDayIndex = (date) => {
+  return (date.getDay() + 6) % 7;
+};
 
 const PickupCalendar = ({selectedDay, onSelectDay}) => {
   const today = useMemo(() => getTodayMidnight(), []);
@@ -25,7 +29,9 @@ const PickupCalendar = ({selectedDay, onSelectDay}) => {
 
     const arr = [];
 
-    for (let i = 0; i < firstDay.getDay(); i++) arr.push(null);
+    const firstDayIndex = getMonFirstDayIndex(firstDay);
+    for (let i = 0; i < firstDayIndex; i++) arr.push(null);
+
     for (let d = 1; d <= lastDay.getDate(); d++) {
       arr.push(new Date(view.year, view.month, d));
     }

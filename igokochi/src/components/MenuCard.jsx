@@ -1,20 +1,65 @@
-// src/components/MenuCard.jsx
+import {useEffect, useMemo, useRef, useState} from "react";
 import styles from "./MenuCard.module.css";
-import { Plus, Minus } from "lucide-react";
-import { useCart } from "../cart/CartContext";
+import {Plus, Minus} from "lucide-react";
+import {useCart} from "../cart/CartContext";
 
-const MenuCard = ({ item }) => {
-  const { state, dispatch } = useCart();
+const ANIM_MS = 220;
 
-  const cartItem = state.items.find((i) => i.id === item.id);
-  const qty = cartItem ? cartItem.qty : 0;
+const MenuCard = ({item}) => {
+  const {state, dispatch} = useCart();
 
-  const addToCart = () => {
-    dispatch({ type: "ADD_ITEM", payload: item });
+  // qty for THIS item
+  const qty = useMemo(() => {
+    const found = state.items.find((i) => i.id === item.id);
+    return found ? found.qty : 0;
+  }, [state.items, item.id]);
+
+  const prevQtyRef = useRef(qty);
+
+  // keep stepper mounted briefly so exit animation can play
+  const [showStepper, setShowStepper] = useState(qty > 0);
+  const [animClass, setAnimClass] = useState(""); // styles.stepperIn / styles.stepperOut
+
+  useEffect(() => {
+    const prev = prevQtyRef.current;
+
+    // + -> -1+
+    if (prev === 0 && qty === 1) {
+      setShowStepper(true);
+      setAnimClass(styles.stepperIn);
+
+      const t = setTimeout(() => setAnimClass(""), ANIM_MS);
+      prevQtyRef.current = qty;
+      return () => clearTimeout(t);
+    }
+
+    // -1+ -> +
+    if (prev === 1 && qty === 0) {
+      setAnimClass(styles.stepperOut);
+
+      const t = setTimeout(() => {
+        setShowStepper(false); // now switch to "+"
+        setAnimClass("");
+      }, ANIM_MS);
+
+      prevQtyRef.current = qty;
+      return () => clearTimeout(t);
+    }
+
+    // steady state
+    setShowStepper(qty > 0);
+    prevQtyRef.current = qty;
+  }, [qty]);
+
+  const addOne = () => {
+    dispatch({
+      type: "ADD_ITEM",
+      payload: {id: item.id, name: item.name, price: item.price},
+    });
   };
 
-  const removeFromCart = () => {
-    dispatch({ type: "REMOVE_ITEM", payload: { id: item.id } });
+  const removeOne = () => {
+    dispatch({type: "REMOVE_ITEM", payload: {id: item.id}});
   };
 
   return (
@@ -32,39 +77,44 @@ const MenuCard = ({ item }) => {
         <div className={styles.bottomRow}>
           <span className={styles.price}>${item.price.toFixed(2)}</span>
 
-          {/* Quantity control */}
-          {qty === 0 ? (
-            <button
-              type="button"
-              className={styles.addButton}
-              aria-label={`Add ${item.name} to cart`}
-              onClick={addToCart}
-            >
-              <Plus size={18} />
-            </button>
-          ) : (
-            <div className={styles.qtyControl} aria-label="Quantity controls">
+          {/* Reserve space so layout doesn't shift */}
+          <div className={styles.controlsWrap}>
+            {!showStepper ? (
               <button
+                className={styles.addButton}
+                onClick={addOne}
+                aria-label="Add to cart"
                 type="button"
-                className={styles.qtyButton}
-                aria-label={`Decrease ${item.name} quantity`}
-                onClick={removeFromCart}
               >
-                <Minus size={16} />
+                <Plus size={18} />
               </button>
-
-              <span className={styles.qty}>{qty}</span>
-
-              <button
-                type="button"
-                className={styles.qtyButton}
-                aria-label={`Increase ${item.name} quantity`}
-                onClick={addToCart}
+            ) : (
+              <div
+                className={`${styles.stepper} ${animClass}`}
+                aria-label="Quantity controls"
               >
-                <Plus size={16} />
-              </button>
-            </div>
-          )}
+                <button
+                  className={styles.stepBtn}
+                  onClick={removeOne}
+                  aria-label="Decrease"
+                  type="button"
+                >
+                  <Minus size={16} />
+                </button>
+
+                <span className={styles.qty}>{qty}</span>
+
+                <button
+                  className={styles.stepBtn}
+                  onClick={addOne}
+                  aria-label="Increase"
+                  type="button"
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

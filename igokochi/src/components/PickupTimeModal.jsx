@@ -8,7 +8,9 @@ import PickupTimeCard from "./PickupTimeCard";
 import CustomerFormCard from "./CustomerFormCard";
 import {useCart} from "../cart/CartContext";
 
-const PickupTimeModal = ({open, onOpenChange}) => {
+import {API_BASE_URL} from "../config";
+
+const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
   const {state, dispatch} = useCart();
 
   const [pickup, setPickup] = useState({date: "", slot: ""});
@@ -31,7 +33,7 @@ const PickupTimeModal = ({open, onOpenChange}) => {
     customer.name.trim() &&
     customer.phone.trim();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const payload = {
       customer: {
         name: customer.name.trim(),
@@ -41,20 +43,49 @@ const PickupTimeModal = ({open, onOpenChange}) => {
         date: pickup.date,
         slot: pickup.slot,
       },
-      items: state.items, // includes qty
+      items: state.items,
       total: Number(total.toFixed(2)),
       createdAt: new Date().toISOString(),
     };
 
-    console.log("MOCK SEND TO BACKEND:", payload);
+    console.log("SENDING TO BACKEND:", payload);
 
-    // Optional: clear cart after submit
-    dispatch({type: "CLEAR_CART"});
+    try {
+      const res = await fetch(`${API_BASE_URL}/orders`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload),
+      });
 
-    // Optional: reset form + close
-    setPickup({date: "", slot: ""});
-    setCustomer({name: "", phone: ""});
-    onOpenChange(false);
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Backend error:", data);
+        alert(data.message || "Failed to submit order");
+        return;
+      }
+
+      console.log("Order created:", data);
+
+      // (optional) if you still want to store selection outside
+      onConfirm?.(payload.pickup);
+
+      // clear cart AFTER success
+      dispatch({type: "CLEAR_CART"});
+
+      // reset modal local state (nice for next order)
+      setPickup({date: "", slot: ""});
+      setCustomer({name: "", phone: ""});
+
+      // close checkout modal
+      onOpenChange(false);
+
+      // open success modal
+      onOrderPlaced?.(data.orderId);
+    } catch (err) {
+      console.error("Network error:", err);
+      alert("Network error: backend not reachable");
+    }
   };
 
   return (

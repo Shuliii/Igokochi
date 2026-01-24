@@ -100,3 +100,73 @@
   opacity: 0.5;
   cursor: default;
 }
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.overlay[data-state="open"] {
+  animation: overlayIn 160ms ease-out;
+}
+
+.overlay[data-state="closed"] {
+  animation: overlayOut 160ms ease-in;
+}
+
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes overlayOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.content {
+  position: fixed;
+  inset: auto 0 0 0; /* bottom sheet style for mobile */
+  background: var(--color-bg);
+  border-radius: 18px 18px 0 0;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.content[data-state="open"] {
+  animation: sheetIn 200ms ease-out;
+}
+
+.content[data-state="closed"] {
+  animation: sheetOut 180ms ease-in;
+}
+
+@keyframes sheetIn {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes sheetOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+}
