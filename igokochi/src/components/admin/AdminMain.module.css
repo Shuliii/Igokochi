@@ -1,0 +1,6 @@
+/* src/components/admin/AdminMain.module.css */
+.main {
+  padding: 16px;
+  background: var(--color-bg);
+  min-height: calc(100vh - 56px); /* header height */
+}

@@ -1,0 +1,187 @@
+.card {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.leftTop {
+  min-width: 0;
+}
+
+.orderTitle {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.pickup {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #555;
+  font-weight: 600;
+}
+
+.status {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* status colors */
+.status_new {
+  background: #eee;
+  color: #555;
+}
+
+.status_ready {
+  background: var(--color-matcha-soft);
+  color: var(--color-matcha-dark);
+}
+
+.status_done {
+  background: #e9ecef;
+  color: #6b7280;
+}
+
+.customerRow {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.customerName {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.phoneBtn {
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.phoneBtn:active {
+  transform: scale(0.99);
+}
+
+.itemsBox {
+  margin-top: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  padding: 10px;
+}
+
+.itemRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.itemLeft {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.itemName {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemQty {
+  font-size: 12px;
+  font-weight: 800;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.itemPrice {
+  font-size: 13px;
+  font-weight: 800;
+  color: #444;
+  flex-shrink: 0;
+}
+
+.emptyItems {
+  font-size: 13px;
+  color: #777;
+  padding: 4px 0;
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 8px 0;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.totalValue {
+  color: var(--color-matcha-dark);
+}
+
+.actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+.actionBtn {
+  flex: 1;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.actionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.actionBtn:active {
+  transform: scale(0.99);
+}
+
+.doneBtn {
+  background: var(--color-matcha-dark);
+  color: var(--color-white);
+  border: none;
+}
