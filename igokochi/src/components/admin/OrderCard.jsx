@@ -34,6 +34,48 @@ function statusLabel(status) {
   return "NEW";
 }
 
+function toWhatsAppNumber(phone) {
+  if (!phone) return null;
+
+  // remove spaces, dashes, brackets
+  let digits = phone.replace(/\D/g, "");
+
+  // assume SG if 8 digits
+  if (digits.length === 8) {
+    digits = "65" + digits;
+  }
+
+  return digits;
+}
+
+function buildOrderItemsText(items) {
+  if (!Array.isArray(items)) return "";
+
+  return items.map((it) => `${it.qty}× ${it.name}`).join("\n");
+}
+
+function buildWhatsAppMessage(order) {
+  const itemsText = buildOrderItemsText(order.items);
+  const total = Number(order.total || 0).toFixed(2);
+
+  return `Hi ${order.customer_name}
+
+We've received your order at Igokochi House
+
+Order details:
+${itemsText}
+
+Total: $${total}
+
+Pickup time:
+${formatPickupDate(order.pickup_date)} • ${formatSlot(order.pickup_slot)}
+
+Please PayNow to this number.
+Once payment is done, just reply "Paid" here :)
+
+Thank you!`;
+}
+
 export default function OrderCard({ order, onSetStatus }) {
   const status = order.status || "new";
 
@@ -54,10 +96,15 @@ export default function OrderCard({ order, onSetStatus }) {
 
   const total = Number(order.total || 0);
 
-  const handleCopyPhone = async () => {
-    try {
-      await navigator.clipboard.writeText(order.customer_phone || "");
-    } catch {}
+  const handleOpenWhatsApp = () => {
+    const waNumber = toWhatsAppNumber(order.customer_phone);
+    if (!waNumber) return;
+
+    const message = buildWhatsAppMessage({ ...order, items });
+    const encodedMessage = encodeURIComponent(message);
+
+    const url = `https://wa.me/${waNumber}?text=${encodedMessage}`;
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -79,8 +126,8 @@ export default function OrderCard({ order, onSetStatus }) {
         <button
           type="button"
           className={styles.phoneBtn}
-          onClick={handleCopyPhone}
-          title="Copy phone"
+          onClick={handleOpenWhatsApp}
+          title="Open WhatsApp"
         >
           {order.customer_phone}
         </button>
