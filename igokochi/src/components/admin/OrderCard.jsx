@@ -28,9 +28,14 @@ function to12(hhmm) {
   return `${hour12}${suffix}`;
 }
 
-function statusLabel(status) {
-  if (status === "ready") return "READY";
-  if (status === "done") return "DONE";
+function normalizeStatus(s) {
+  return String(s || "new").toLowerCase();
+}
+
+function statusLabel(statusLower) {
+  if (statusLower === "paid") return "PAID";
+  if (statusLower === "ready") return "READY";
+  if (statusLower === "done") return "DONE";
   return "NEW";
 }
 
@@ -38,7 +43,7 @@ function toWhatsAppNumber(phone) {
   if (!phone) return null;
 
   // remove spaces, dashes, brackets
-  let digits = phone.replace(/\D/g, "");
+  let digits = String(phone).replace(/\D/g, "");
 
   // assume SG if 8 digits
   if (digits.length === 8) {
@@ -50,7 +55,6 @@ function toWhatsAppNumber(phone) {
 
 function buildOrderItemsText(items) {
   if (!Array.isArray(items)) return "";
-
   return items.map((it) => `${it.qty}× ${it.name}`).join("\n");
 }
 
@@ -76,10 +80,10 @@ Once payment is done, just reply "Paid" here :)
 Thank you!`;
 }
 
-export default function OrderCard({ order, onSetStatus }) {
-  const status = order.status || "new";
+export default function OrderCard({order, onSetStatus, tab}) {
+  const status = normalizeStatus(order.status);
 
-  // items might be already array OR JSON string (MySQL JSON sometimes returns object)
+  // items might be already array OR JSON string
   let items = order.items;
   if (typeof items === "string") {
     try {
@@ -100,7 +104,7 @@ export default function OrderCard({ order, onSetStatus }) {
     const waNumber = toWhatsAppNumber(order.customer_phone);
     if (!waNumber) return;
 
-    const message = buildWhatsAppMessage({ ...order, items });
+    const message = buildWhatsAppMessage({...order, items});
     const encodedMessage = encodeURIComponent(message);
 
     const url = `https://wa.me/${waNumber}?text=${encodedMessage}`;
@@ -108,7 +112,7 @@ export default function OrderCard({ order, onSetStatus }) {
   };
 
   return (
-    <article className={styles.card}>
+    <article className={`${styles.card} ${styles[`card_${status}`] || ""}`}>
       <div className={styles.topRow}>
         <div className={styles.leftTop}>
           <div className={styles.orderTitle}>Order #{order.id}</div>
@@ -138,7 +142,7 @@ export default function OrderCard({ order, onSetStatus }) {
           <div className={styles.emptyItems}>No items</div>
         ) : (
           items.map((it, idx) => (
-            <div key={`${it.id}-${idx}`} className={styles.itemRow}>
+            <div key={`${it.id ?? it.name}-${idx}`} className={styles.itemRow}>
               <div className={styles.itemLeft}>
                 <span className={styles.itemName}>{it.name}</span>
                 <span className={styles.itemQty}>×{it.qty}</span>
@@ -160,23 +164,40 @@ export default function OrderCard({ order, onSetStatus }) {
       </div>
 
       <div className={styles.actions}>
-        <button
-          type="button"
-          className={styles.actionBtn}
-          disabled={status === "ready" || status === "done"}
-          onClick={() => onSetStatus?.(order.id, "ready")}
-        >
-          Ready
-        </button>
+        {/* TODAY tab: 2 buttons always */}
+        {tab === "today" && (
+          <>
+            <button
+              type="button"
+              className={styles.actionBtn}
+              disabled={status !== "new"} // only new -> paid
+              onClick={() => onSetStatus?.(order.id, "paid")}
+            >
+              Paid
+            </button>
 
-        <button
-          type="button"
-          className={`${styles.actionBtn} ${styles.doneBtn}`}
-          disabled={status === "done"}
-          onClick={() => onSetStatus?.(order.id, "done")}
-        >
-          Done
-        </button>
+            <button
+              type="button"
+              className={`${styles.actionBtn} ${styles.primaryBtn}`}
+              disabled={status !== "paid"} // must be paid first
+              onClick={() => onSetStatus?.(order.id, "ready")}
+            >
+              Ready
+            </button>
+          </>
+        )}
+
+        {/* READY tab: 1 button */}
+        {tab === "ready" && (
+          <button
+            type="button"
+            className={`${styles.actionBtn} ${styles.primaryBtn}`}
+            disabled={status !== "ready"} // only ready -> done
+            onClick={() => onSetStatus?.(order.id, "done")}
+          >
+            Done
+          </button>
+        )}
       </div>
     </article>
   );

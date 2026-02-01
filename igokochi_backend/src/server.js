@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
-import { db } from "./db.js";
+import {db} from "./db.js";
 
 dotenv.config();
 
@@ -16,9 +16,9 @@ const PORT = process.env.PORT || 4000;
 app.get("/health", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT 1 AS ok");
-    res.json({ ok: true, db: rows[0].ok === 1 });
+    res.json({ok: true, db: rows[0].ok === 1});
   } catch (err) {
-    res.status(500).json({ ok: false, error: err.message });
+    res.status(500).json({ok: false, error: err.message});
   }
 });
 
@@ -128,11 +128,12 @@ app.post("/orders", async (req, res) => {
 app.patch("/orders/:id/status", async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const { status } = req.body;
+    const {status} = req.body;
 
-    const allowed = new Set(["new", "ready", "done"]);
+    const allowed = new Set(["new", "paid", "ready", "done"]);
+
     if (!allowed.has(status)) {
-      return res.status(400).json({ ok: false, message: "Invalid status" });
+      return res.status(400).json({ok: false, message: "Invalid status"});
     }
 
     const [result] = await db.execute(
@@ -140,10 +141,10 @@ app.patch("/orders/:id/status", async (req, res) => {
       [status, id],
     );
 
-    res.json({ ok: true, updated: result.affectedRows === 1 });
+    res.json({ok: true, updated: result.affectedRows === 1});
   } catch (err) {
     console.error("PATCH /orders/:id/status error:", err);
-    res.status(500).json({ ok: false, message: "Server error" });
+    res.status(500).json({ok: false, message: "Server error"});
   }
 });
 

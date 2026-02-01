@@ -1,8 +1,8 @@
 import styles from "./OrderTabs.module.css";
 
-const OrderTabs = ({ value, counts, onChange }) => {
+const OrderTabs = ({value, counts, onChange}) => {
   return (
-    <div className={styles.wrap} role="tablist" aria-label="Order date filter">
+    <div className={styles.wrap} role="tablist" aria-label="Order filter">
       <button
         type="button"
         role="tab"
@@ -16,11 +16,11 @@ const OrderTabs = ({ value, counts, onChange }) => {
       <button
         type="button"
         role="tab"
-        aria-selected={value === "tomorrow"}
-        className={`${styles.tab} ${value === "tomorrow" ? styles.active : ""}`}
-        onClick={() => onChange("tomorrow")}
+        aria-selected={value === "ready"}
+        className={`${styles.tab} ${value === "ready" ? styles.active : ""}`}
+        onClick={() => onChange("ready")}
       >
-        Tomorrow <span className={styles.count}>{counts.tomorrow}</span>
+        Ready <span className={styles.count}>{counts.ready}</span>
       </button>
 
       <button

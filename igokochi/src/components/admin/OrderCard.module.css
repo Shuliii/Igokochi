@@ -4,7 +4,39 @@
   border-radius: 14px;
   padding: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
 }
+
+.card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  background: transparent;
+}
+
+/* Status colors */
+.card_new::before {
+  background: #e5e7eb; /* neutral */
+}
+
+.card_paid::before {
+  background: var(--color-brown); /* calm confirmation */
+}
+
+.card_ready::before {
+  background: var(--color-matcha-dark); /* action / highlight */
+}
+
+.card_done::before {
+  background: #c7cbd1; /* finished */
+  opacity: 0.6;
+}
+
+/* ================= TOP ================= */
 
 .topRow {
   display: flex;
@@ -29,6 +61,8 @@
   font-weight: 600;
 }
 
+/* ================= STATUS ================= */
+
 .status {
   height: 26px;
   padding: 0 10px;
@@ -41,10 +75,14 @@
   flex-shrink: 0;
 }
 
-/* status colors */
 .status_new {
   background: #eee;
   color: #555;
+}
+
+.status_paid {
+  background: #f3ece6; /* soft brown tint */
+  color: var(--color-brown-dark);
 }
 
 .status_ready {
@@ -56,6 +94,8 @@
   background: #e9ecef;
   color: #6b7280;
 }
+
+/* ================= CUSTOMER ================= */
 
 .customerRow {
   margin-top: 10px;
@@ -81,9 +121,15 @@
   cursor: pointer;
 }
 
-.phoneBtn:active {
-  transform: scale(0.99);
+.phoneBtn:hover {
+  background: #f7f7f7;
 }
+
+.phoneBtn:active {
+  transform: scale(0.98);
+}
+
+/* ================= ITEMS ================= */
 
 .itemsBox {
   margin-top: 12px;
@@ -155,6 +201,8 @@
   color: var(--color-matcha-dark);
 }
 
+/* ================= ACTIONS ================= */
+
 .actions {
   margin-top: 12px;
   display: flex;
@@ -168,20 +216,33 @@
   border: 1px solid var(--color-border);
   background: var(--color-white);
   font-weight: 800;
+  font-size: 14px;
   cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
+}
+
+.actionBtn:hover:not(:disabled) {
+  background: #f8f8f8;
+}
+
+.actionBtn:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .actionBtn:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
-.actionBtn:active {
-  transform: scale(0.99);
-}
-
-.doneBtn {
+/* Primary action (Ready / Done) */
+.primaryBtn {
   background: var(--color-matcha-dark);
   color: var(--color-white);
   border: none;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  background: #2f6b57;
 }

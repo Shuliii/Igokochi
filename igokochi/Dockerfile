@@ -19,8 +19,10 @@ COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Entrypoint to write env.js at container start
 COPY nginx/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN sed -i '1s/^\xEF\xBB\xBF//' /entrypoint.sh \
+ && sed -i 's/\r$//' /entrypoint.sh \
+ && chmod +x /entrypoint.sh
 
 EXPOSE 80
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

@@ -1,7 +1,7 @@
 import styles from "./OrderList.module.css";
 import OrderCard from "./OrderCard";
 
-const OrderList = ({ orders, onSetStatus }) => {
+const OrderList = ({orders, tab, onSetStatus}) => {
   if (!orders || orders.length === 0) {
     return <div className={styles.empty}>No orders</div>;
   }
@@ -9,7 +9,12 @@ const OrderList = ({ orders, onSetStatus }) => {
   return (
     <section className={styles.list} aria-label="Orders">
       {orders.map((order) => (
-        <OrderCard key={order.id} order={order} onSetStatus={onSetStatus} />
+        <OrderCard
+          key={order.id}
+          order={order}
+          tab={tab}
+          onSetStatus={onSetStatus}
+        />
       ))}
     </section>
   );

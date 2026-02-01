@@ -14,12 +14,13 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: YOUR_DOCKERHUB/igokochi-frontend:latest
+          image: ricoharsono/igokochi-frontend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           env:
             - name: API_BASE_URL
-              value: "https://api.yourdomain.com" # later change
+              value: "http://143.198.198.140:30400" # later change
           readinessProbe:
             httpGet:
               path: /

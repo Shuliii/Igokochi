@@ -1,0 +1,30 @@
+# dependencies
+node_modules
+**/node_modules
+
+# build output
+dist
+**/dist
+
+# git
+.git
+**/.git
+
+# logs
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# docker / k8s junk
+mysql_data
+**/mysql_data
+
+# if you have backend in same repo and you're building frontend image
+igokochi_backend
+**/igokochi_backend
+
+# editor
+.vscode
+.idea

@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import {useEffect, useMemo, useState} from "react";
 import AdminHeader from "../components/admin/AdminHeader";
 import AdminMain from "../components/admin/AdminMain";
 import OrderList from "../components/admin/OrderList";
 import OrderTabs from "../components/admin/OrderTabs";
-import { API_BASE_URL } from "../config";
+import {API_BASE_URL} from "../config";
 
 // --- Helpers ---
 function toYmdLocal(date) {
@@ -19,32 +19,44 @@ function getTodayMidnight() {
   return d;
 }
 
-// pickup_date from MySQL often comes as ISO string. Normalize to local YMD.
+// mysql date may come as ISO string, normalize:
 function orderPickupYmd(order) {
-  // if backend sends "YYYY-MM-DD", new Date("YYYY-MM-DD") can become UTC-shifted.
-  // safest: take first 10 chars if it looks like ISO/DATE.
   const raw = String(order.pickup_date || "");
   if (raw.length >= 10) return raw.slice(0, 10);
-
-  // fallback
   const d = new Date(order.pickup_date);
   return toYmdLocal(d);
 }
 
-const AdminPage = () => {
+function normalizeStatus(s) {
+  return String(s || "new").toLowerCase();
+}
+
+function countByTab(list, todayYmd) {
+  let today = 0;
+  let ready = 0;
+  let upcoming = 0;
+
+  for (const o of list) {
+    const ymd = orderPickupYmd(o);
+    const status = normalizeStatus(o.status);
+
+    if (ymd === todayYmd && (status === "new" || status === "paid")) today++;
+    else if (ymd === todayYmd && (status === "ready" || status === "done"))
+      ready++;
+    else if (ymd > todayYmd) upcoming++;
+  }
+
+  return {today, ready, upcoming};
+}
+
+export default function AdminPage() {
   const [orders, setOrders] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const [tab, setTab] = useState("today"); // "today" | "tomorrow" | "upcoming"
+  const [tab, setTab] = useState("today"); // today | ready | upcoming
 
   const today = useMemo(() => getTodayMidnight(), []);
   const todayYmd = useMemo(() => toYmdLocal(today), [today]);
-
-  const tomorrowYmd = useMemo(() => {
-    const d = new Date(today);
-    d.setDate(d.getDate() + 1);
-    return toYmdLocal(d);
-  }, [today]);
 
   const fetchOrders = async () => {
     setRefreshing(true);
@@ -55,9 +67,9 @@ const AdminPage = () => {
       setOrders(list);
 
       // smart default tab
-      const counts = countByTab(list, todayYmd, tomorrowYmd);
-      if (counts.today > 0) setTab("today");
-      else if (counts.tomorrow > 0) setTab("tomorrow");
+      const c = countByTab(list, todayYmd);
+      if (c.today > 0) setTab("today");
+      else if (c.ready > 0) setTab("ready");
       else setTab("upcoming");
     } catch (err) {
       console.error("Failed to fetch orders", err);
@@ -73,64 +85,82 @@ const AdminPage = () => {
   }, []);
 
   const counts = useMemo(
-    () => countByTab(orders, todayYmd, tomorrowYmd),
-    [orders, todayYmd, tomorrowYmd],
+    () => countByTab(orders, todayYmd),
+    [orders, todayYmd],
   );
 
-  const filteredOrders = useMemo(() => {
-    return orders.filter((o) => {
-      const ymd = orderPickupYmd(o);
-
-      if (tab === "today") return ymd === todayYmd;
-      if (tab === "tomorrow") return ymd === tomorrowYmd;
-      // upcoming
-      return ymd > tomorrowYmd;
-    });
-  }, [orders, tab, todayYmd, tomorrowYmd]);
-
   const setOrderStatus = async (id, status) => {
+    const nextStatus = normalizeStatus(status);
+
+    // optimistic update first (instant move between tabs)
+    setOrders((prev) =>
+      prev.map((o) => (o.id === id ? {...o, status: nextStatus} : o)),
+    );
+
     try {
-      await fetch(`${API_BASE_URL}/orders/${id}/status`, {
+      const res = await fetch(`${API_BASE_URL}/orders/${id}/status`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({status: nextStatus}),
       });
 
-      // optimistic UI: update locally
-      setOrders((prev) =>
-        prev.map((o) => (o.id === id ? { ...o, status } : o)),
-      );
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.error("Status update failed:", data);
+
+        // rollback: refetch for correctness
+        fetchOrders();
+      }
     } catch (err) {
       console.error("Failed to set status", err);
+
+      // rollback: refetch for correctness
+      fetchOrders();
     }
   };
+
+  const filteredOrders = useMemo(() => {
+    const list = orders.filter((o) => {
+      const ymd = orderPickupYmd(o);
+      const status = normalizeStatus(o.status);
+
+      if (tab === "today")
+        return ymd === todayYmd && (status === "new" || status === "paid");
+      if (tab === "ready")
+        return ymd === todayYmd && (status === "ready" || status === "done");
+      // upcoming
+      return ymd > todayYmd;
+    });
+
+    // Sort inside READY tab: ready first then done
+    if (tab === "ready") {
+      const rank = {ready: 0, done: 1};
+      list.sort((a, b) => {
+        const as = normalizeStatus(a.status);
+        const bs = normalizeStatus(b.status);
+        return (rank[as] ?? 99) - (rank[bs] ?? 99);
+      });
+    }
+
+    // Upcoming: sort by pickup_date ascending
+    if (tab === "upcoming") {
+      list.sort((a, b) => orderPickupYmd(a).localeCompare(orderPickupYmd(b)));
+    }
+
+    return list;
+  }, [orders, tab, todayYmd]);
 
   return (
     <>
       <AdminHeader onRefresh={fetchOrders} refreshing={refreshing} />
-
       <AdminMain>
         <OrderTabs value={tab} counts={counts} onChange={setTab} />
-        <OrderList orders={filteredOrders} onSetStatus={setOrderStatus} />
+        <OrderList
+          orders={filteredOrders}
+          tab={tab}
+          onSetStatus={setOrderStatus}
+        />
       </AdminMain>
     </>
   );
-};
-
-export default AdminPage;
-
-// --- small helper for counts ---
-function countByTab(list, todayYmd, tomorrowYmd) {
-  let today = 0;
-  let tomorrow = 0;
-  let upcoming = 0;
-
-  for (const o of list) {
-    const ymd = orderPickupYmd(o);
-    if (ymd === todayYmd) today++;
-    else if (ymd === tomorrowYmd) tomorrow++;
-    else if (ymd > tomorrowYmd) upcoming++;
-  }
-
-  return { today, tomorrow, upcoming };
 }
