@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { db } from "./db.js";
+import * as auth from "./auth.js"; // ✅ add this
 
 dotenv.config();
 
@@ -23,6 +24,11 @@ router.get("/health", async (req, res) => {
     res.status(500).json({ ok: false, error: err.message });
   }
 });
+
+/* ---------------- AUTH routes ---------------- */
+router.post("/register", auth.register);
+router.post("/login", auth.login);
+router.post("/changepassword", auth.changepassword);
 
 /* ---------------- GET orders ---------------- */
 router.get("/orders", async (req, res) => {
