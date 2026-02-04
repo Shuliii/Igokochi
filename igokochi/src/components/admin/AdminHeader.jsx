@@ -1,23 +1,27 @@
-// src/components/admin/AdminHeader.jsx
 import styles from "./AdminHeader.module.css";
 import {RefreshCw} from "lucide-react";
 
 const AdminHeader = ({onRefresh, refreshing}) => {
   const today = new Date().toLocaleDateString(undefined, {
     weekday: "short",
-    day: "numeric",
     month: "short",
+    day: "numeric",
   });
 
-  console.log("refreshing:", refreshing);
+  const username = localStorage.getItem("igokochi_profile");
 
   return (
     <header className={styles.header}>
       <div className={styles.container}>
+        {/* LEFT */}
         <span className={styles.title}>Igokochi Admin</span>
 
+        {/* RIGHT */}
         <div className={styles.right}>
-          <span className={styles.date}>{today}</span>
+          <div className={styles.meta}>
+            <span className={styles.username}>{username}</span>
+            <span className={styles.date}>{today}</span>
+          </div>
 
           <button
             type="button"

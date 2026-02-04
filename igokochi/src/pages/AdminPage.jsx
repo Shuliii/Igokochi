@@ -3,7 +3,7 @@ import AdminHeader from "../components/admin/AdminHeader";
 import AdminMain from "../components/admin/AdminMain";
 import OrderList from "../components/admin/OrderList";
 import OrderTabs from "../components/admin/OrderTabs";
-import {API_BASE_URL} from "../config";
+import {apiGet, apiPatch} from "../admin/api";
 
 // --- Helpers ---
 function toYmdLocal(date) {
@@ -52,7 +52,6 @@ function countByTab(list, todayYmd) {
 export default function AdminPage() {
   const [orders, setOrders] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-
   const [tab, setTab] = useState("today"); // today | ready | upcoming
 
   const today = useMemo(() => getTodayMidnight(), []);
@@ -61,8 +60,7 @@ export default function AdminPage() {
   const fetchOrders = async () => {
     setRefreshing(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/orders`);
-      const data = await res.json();
+      const data = await apiGet("/api/orders");
       const list = data.orders || [];
       setOrders(list);
 
@@ -98,22 +96,9 @@ export default function AdminPage() {
     );
 
     try {
-      const res = await fetch(`${API_BASE_URL}/orders/${id}/status`, {
-        method: "PATCH",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({status: nextStatus}),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        console.error("Status update failed:", data);
-
-        // rollback: refetch for correctness
-        fetchOrders();
-      }
+      await apiPatch(`/orders/${id}/status`, {status: nextStatus});
     } catch (err) {
       console.error("Failed to set status", err);
-
       // rollback: refetch for correctness
       fetchOrders();
     }
