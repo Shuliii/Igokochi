@@ -1,0 +1,9 @@
+.netError {
+  background: rgba(255, 244, 229, 0.9);
+  border-bottom: 1px solid #ffd8a8;
+  color: #7a4a00;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 14px;
+  text-align: center;
+}

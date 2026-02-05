@@ -80,7 +80,7 @@ Once payment is done, just reply "Paid" here :)
 Thank you!`;
 }
 
-export default function OrderCard({order, onSetStatus, tab}) {
+export default function OrderCard({ order, onSetStatus, tab }) {
   const status = normalizeStatus(order.status);
 
   // items might be already array OR JSON string
@@ -104,7 +104,7 @@ export default function OrderCard({order, onSetStatus, tab}) {
     const waNumber = toWhatsAppNumber(order.customer_phone);
     if (!waNumber) return;
 
-    const message = buildWhatsAppMessage({...order, items});
+    const message = buildWhatsAppMessage({ ...order, items });
     const encodedMessage = encodeURIComponent(message);
 
     const url = `https://wa.me/${waNumber}?text=${encodedMessage}`;
@@ -197,6 +197,27 @@ export default function OrderCard({order, onSetStatus, tab}) {
           >
             Done
           </button>
+        )}
+        {tab === "upcoming" && (
+          <>
+            <button
+              type="button"
+              className={styles.actionBtn}
+              disabled={status !== "new"} // only new -> paid
+              onClick={() => onSetStatus?.(order.id, "paid")}
+            >
+              Paid
+            </button>
+
+            <button
+              type="button"
+              className={`${styles.actionBtn} ${styles.primaryBtn}`}
+              disabled={status !== "paid"} // must be paid first
+              onClick={() => onSetStatus?.(order.id, "ready")}
+            >
+              Ready
+            </button>
+          </>
         )}
       </div>
     </article>

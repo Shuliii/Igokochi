@@ -1,7 +1,7 @@
 import styles from "./AdminHeader.module.css";
-import {RefreshCw} from "lucide-react";
+import { RefreshCw, LogOut } from "lucide-react";
 
-const AdminHeader = ({onRefresh, refreshing}) => {
+const AdminHeader = ({ onRefresh, refreshing, onLogout }) => {
   const today = new Date().toLocaleDateString(undefined, {
     weekday: "short",
     month: "short",
@@ -23,16 +23,28 @@ const AdminHeader = ({onRefresh, refreshing}) => {
             <span className={styles.date}>{today}</span>
           </div>
 
-          <button
-            type="button"
-            className={styles.refreshBtn}
-            onClick={onRefresh}
-            disabled={refreshing}
-            aria-label="Refresh orders"
-            title="Refresh orders"
-          >
-            <RefreshCw size={18} className={refreshing ? styles.spin : ""} />
-          </button>
+          <div className={styles.actions}>
+            <button
+              type="button"
+              className={styles.refreshBtn}
+              onClick={onRefresh}
+              disabled={refreshing}
+              aria-label="Refresh orders"
+              title="Refresh orders"
+            >
+              <RefreshCw size={18} className={refreshing ? styles.spin : ""} />
+            </button>
+
+            <button
+              type="button"
+              className={styles.logoutBtn}
+              onClick={onLogout}
+              aria-label="Log out"
+              title="Log out"
+            >
+              <LogOut size={18} />
+            </button>
+          </div>
         </div>
       </div>
     </header>

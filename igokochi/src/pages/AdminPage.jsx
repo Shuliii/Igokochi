@@ -1,9 +1,11 @@
-import {useEffect, useMemo, useState} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AdminHeader from "../components/admin/AdminHeader";
 import AdminMain from "../components/admin/AdminMain";
 import OrderList from "../components/admin/OrderList";
 import OrderTabs from "../components/admin/OrderTabs";
-import {apiGet, apiPatch} from "../admin/api";
+import { apiGet, apiPatch, forceLogout } from "../admin/api";
+import styles from "./AdminPage.module.css"; // make sure this file exists
 
 // --- Helpers ---
 function toYmdLocal(date) {
@@ -46,41 +48,100 @@ function countByTab(list, todayYmd) {
     else if (ymd > todayYmd) upcoming++;
   }
 
-  return {today, ready, upcoming};
+  return { today, ready, upcoming };
 }
 
 export default function AdminPage() {
   const [orders, setOrders] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [tab, setTab] = useState("today"); // today | ready | upcoming
+  const [netError, setNetError] = useState(false);
+  const navigate = useNavigate();
 
   const today = useMemo(() => getTodayMidnight(), []);
   const todayYmd = useMemo(() => toYmdLocal(today), [today]);
 
-  const fetchOrders = async () => {
+  const onLogout = () => {
+    forceLogout();
+    navigate("/admin/login", {
+      replace: true,
+      state: { reason: "logged_out" },
+    });
+  };
+
+  // Initial fetch: also choose smart default tab (only once)
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      setRefreshing(true);
+      try {
+        const data = await apiGet("/api/orders");
+        const list = data.orders || [];
+        if (cancelled) return;
+
+        setOrders(list);
+        setNetError(false);
+
+        // smart default tab only on first load
+        const c = countByTab(list, todayYmd);
+        if (c.today > 0) setTab("today");
+        else if (c.ready > 0) setTab("ready");
+        else setTab("upcoming");
+      } catch (err) {
+        if (err?.code === "SESSION_EXPIRED") {
+          navigate("/admin/login", {
+            replace: true,
+            state: { reason: "expired" },
+          });
+          return;
+        }
+
+        console.error("Failed to fetch orders", err);
+        if (!cancelled) setNetError(true);
+      } finally {
+        if (!cancelled) setRefreshing(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate, todayYmd]);
+
+  // Normal refresh (manual + auto): do NOT auto-switch tabs
+  const fetchOrders = useCallback(async () => {
+    if (refreshing) return;
+
     setRefreshing(true);
     try {
       const data = await apiGet("/api/orders");
-      const list = data.orders || [];
-      setOrders(list);
-
-      // smart default tab
-      const c = countByTab(list, todayYmd);
-      if (c.today > 0) setTab("today");
-      else if (c.ready > 0) setTab("ready");
-      else setTab("upcoming");
+      setOrders(data.orders || []);
+      setNetError(false); // connection recovered
     } catch (err) {
+      if (err?.code === "SESSION_EXPIRED") {
+        navigate("/admin/login", {
+          replace: true,
+          state: { reason: "expired" },
+        });
+        return;
+      }
+
       console.error("Failed to fetch orders", err);
-      setOrders([]);
+      setNetError(true);
     } finally {
       setRefreshing(false);
     }
-  };
+  }, [refreshing, navigate]);
 
+  // Auto refresh every 10 seconds
   useEffect(() => {
-    fetchOrders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const id = setInterval(() => {
+      fetchOrders();
+    }, 10000);
+
+    return () => clearInterval(id);
+  }, [fetchOrders]);
 
   const counts = useMemo(
     () => countByTab(orders, todayYmd),
@@ -92,12 +153,21 @@ export default function AdminPage() {
 
     // optimistic update first (instant move between tabs)
     setOrders((prev) =>
-      prev.map((o) => (o.id === id ? {...o, status: nextStatus} : o)),
+      prev.map((o) => (o.id === id ? { ...o, status: nextStatus } : o)),
     );
 
     try {
-      await apiPatch(`/orders/${id}/status`, {status: nextStatus});
+      await apiPatch(`/api/orders/${id}/status`, { status: nextStatus });
+      setNetError(false);
     } catch (err) {
+      if (err?.code === "SESSION_EXPIRED") {
+        navigate("/admin/login", {
+          replace: true,
+          state: { reason: "expired" },
+        });
+        return;
+      }
+
       console.error("Failed to set status", err);
       // rollback: refetch for correctness
       fetchOrders();
@@ -119,7 +189,7 @@ export default function AdminPage() {
 
     // Sort inside READY tab: ready first then done
     if (tab === "ready") {
-      const rank = {ready: 0, done: 1};
+      const rank = { ready: 0, done: 1 };
       list.sort((a, b) => {
         const as = normalizeStatus(a.status);
         const bs = normalizeStatus(b.status);
@@ -137,7 +207,16 @@ export default function AdminPage() {
 
   return (
     <>
-      <AdminHeader onRefresh={fetchOrders} refreshing={refreshing} />
+      <AdminHeader
+        onRefresh={fetchOrders}
+        refreshing={refreshing}
+        onLogout={onLogout}
+      />
+
+      {netError && (
+        <div className={styles.netError}>Connection issue. Retrying…</div>
+      )}
+
       <AdminMain>
         <OrderTabs value={tab} counts={counts} onChange={setTab} />
         <OrderList

@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./AdminLogin.module.css";
 
 const AUTH_BASE_URL =
@@ -13,7 +13,7 @@ const LS_PROFILE = "igokochi_profile";
 export default function AdminLogin() {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const reason = location.state?.reason;
   const from = location.state?.from || "/admin";
 
   const [username, setUsername] = useState("");
@@ -25,7 +25,7 @@ export default function AdminLogin() {
   // If already logged in (token exists), skip login
   useEffect(() => {
     const token = localStorage.getItem(LS_TOKEN);
-    if (token) navigate("/admin", {replace: true});
+    if (token) navigate("/admin", { replace: true });
   }, [navigate]);
 
   const submit = async (e) => {
@@ -41,8 +41,8 @@ export default function AdminLogin() {
     try {
       const res = await fetch(`${AUTH_BASE_URL}/login`, {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({username, password}),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
       });
 
       const response = await res.json();
@@ -53,7 +53,7 @@ export default function AdminLogin() {
         localStorage.setItem(LS_IS_LOGGED_IN, "true");
         localStorage.setItem(LS_PROFILE, username);
 
-        navigate(from, {replace: true});
+        navigate(from, { replace: true });
       } else {
         setError(response.message || "Login failed");
       }
@@ -69,6 +69,16 @@ export default function AdminLogin() {
       <form className={styles.card} onSubmit={submit}>
         <h1 className={styles.title}>Igokochi Admin</h1>
         <p className={styles.sub}>Staff login</p>
+
+        {reason === "expired" && !error && (
+          <div className={styles.notice}>
+            Session expired. Please log in again.
+          </div>
+        )}
+
+        {reason === "logged_out" && !error && (
+          <div className={styles.notice}>You have logged out.</div>
+        )}
 
         {error && <div className={styles.error}>{error}</div>}
 

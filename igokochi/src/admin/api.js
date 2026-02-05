@@ -1,12 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
-function forceLogout() {
-  localStorage.removeItem("igokochi_token");
-  localStorage.removeItem("igokochi_isLoggedIn");
-  localStorage.removeItem("igokochi_profile");
-  window.location.href = "/admin/login";
-}
-
 function authHeaders() {
   const token = localStorage.getItem("igokochi_token");
   return {
@@ -23,7 +16,9 @@ export async function apiGet(path) {
 
   if (res.status === 401 || res.status === 403) {
     forceLogout();
-    throw new Error("Unauthorized");
+    const err = new Error("Session expired");
+    err.code = "SESSION_EXPIRED";
+    throw err;
   }
 
   if (!res.ok) {
@@ -43,7 +38,9 @@ export async function apiPatch(path, body) {
 
   if (res.status === 401 || res.status === 403) {
     forceLogout();
-    throw new Error("Unauthorized");
+    const err = new Error("Session expired");
+    err.code = "SESSION_EXPIRED";
+    throw err;
   }
 
   if (!res.ok) {
@@ -52,4 +49,10 @@ export async function apiPatch(path, body) {
   }
 
   return res.json().catch(() => ({}));
+}
+
+export function forceLogout() {
+  localStorage.removeItem("igokochi_token");
+  localStorage.removeItem("igokochi_isLoggedIn");
+  localStorage.removeItem("igokochi_profile");
 }
