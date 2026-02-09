@@ -26,7 +26,6 @@ export const login = async (req, res) => {
     return res.status(response.status).json({ message: "Login failed!" });
   } catch (error) {
     if (error.response) {
-      console.log("Login error:", username, error.response.data);
       return res.status(error.response.status).json({
         message: error.response.data?.message || "Login failed",
       });

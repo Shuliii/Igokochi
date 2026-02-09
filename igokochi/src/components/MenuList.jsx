@@ -1,4 +1,3 @@
-// src/components/MenuList.jsx
 import MenuCard from "./MenuCard";
 import menu from "../data/menu";
 import styles from "./MenuList.module.css";

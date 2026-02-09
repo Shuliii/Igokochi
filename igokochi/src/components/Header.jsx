@@ -1,13 +1,12 @@
-// src/components/Header.jsx
-import {useEffect, useMemo, useRef, useState} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./Header.module.css";
-import {ShoppingCart} from "lucide-react";
-import {useCart} from "../cart/CartContext";
+import { ShoppingCart } from "lucide-react";
+import { useCart } from "../cart/CartContext";
 
 const POP_MS = 180;
 
-const Header = ({onCheckout}) => {
-  const {state} = useCart();
+const Header = ({ onCheckout }) => {
+  const { state } = useCart();
 
   const itemCount = useMemo(
     () => state.items.reduce((sum, i) => sum + i.qty, 0),

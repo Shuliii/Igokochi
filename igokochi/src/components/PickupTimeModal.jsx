@@ -1,20 +1,20 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import {useMemo, useState} from "react";
+import { useMemo, useState } from "react";
 import styles from "./PickupTimeModal.module.css";
-import {X} from "lucide-react";
+import { X } from "lucide-react";
 
 import OrderSummaryCard from "./OrderSummaryCard";
 import PickupTimeCard from "./PickupTimeCard";
 import CustomerFormCard from "./CustomerFormCard";
-import {useCart} from "../cart/CartContext";
+import { useCart } from "../cart/CartContext";
 
-import {API_BASE_URL} from "../config";
+import { API_BASE_URL } from "../config";
 
-const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
-  const {state, dispatch} = useCart();
+const PickupTimeModal = ({ open, onOpenChange, onOrderPlaced, onConfirm }) => {
+  const { state, dispatch } = useCart();
 
-  const [pickup, setPickup] = useState({date: "", slot: ""});
-  const [customer, setCustomer] = useState({name: "", phone: ""});
+  const [pickup, setPickup] = useState({ date: "", slot: "" });
+  const [customer, setCustomer] = useState({ name: "", phone: "" });
 
   const itemCount = useMemo(
     () => state.items.reduce((sum, i) => sum + i.qty, 0),
@@ -48,12 +48,10 @@ const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
       createdAt: new Date().toISOString(),
     };
 
-    console.log("SENDING TO BACKEND:", payload);
-
     try {
       const res = await fetch(`${API_BASE_URL}/orders`, {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
@@ -67,19 +65,20 @@ const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
 
       // (optional) if you still want to store selection outside
       onConfirm?.(payload.pickup);
-
+      // open success modal (send snapshot)
+      onOrderPlaced?.({
+        items: state.items,
+        pickup: payload.pickup, // ✅ include pickup
+      });
       // clear cart AFTER success
-      dispatch({type: "CLEAR_CART"});
+      dispatch({ type: "CLEAR_CART" });
 
       // reset modal local state (nice for next order)
-      setPickup({date: "", slot: ""});
-      setCustomer({name: "", phone: ""});
+      setPickup({ date: "", slot: "" });
+      setCustomer({ name: "", phone: "" });
 
       // close checkout modal
       onOpenChange(false);
-
-      // open success modal
-      onOrderPlaced?.(data.orderId);
     } catch (err) {
       alert("Network error: backend not reachable");
     }

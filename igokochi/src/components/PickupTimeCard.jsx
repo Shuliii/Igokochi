@@ -1,13 +1,12 @@
-// src/components/checkout/PickupTimeCard.jsx
-import {useMemo, useState, useEffect} from "react";
+import { useMemo, useState, useEffect } from "react";
 import styles from "./PickupTimeCard.module.css";
 
 import PickupCalendar from "./PickupCalendar";
 import PickupTimeSlots from "./PickupTimeSlots";
 
-import {getTodayMidnight, toYmd} from "../utils/pickup";
+import { getTodayMidnight, toYmd } from "../utils/pickup";
 
-const PickupTimeCard = ({value, onChange}) => {
+const PickupTimeCard = ({ value, onChange }) => {
   const today = useMemo(() => getTodayMidnight(), []);
   const defaultDay = toYmd(today);
 
@@ -22,12 +21,12 @@ const PickupTimeCard = ({value, onChange}) => {
   const handleDaySelect = (ymd) => {
     setSelectedDay(ymd);
     setSelectedSlot(null);
-    onChange?.({date: ymd, slot: null});
+    onChange?.({ date: ymd, slot: null });
   };
 
   const handleSlotSelect = (slotValue) => {
     setSelectedSlot(slotValue);
-    onChange?.({date: selectedDay, slot: slotValue});
+    onChange?.({ date: selectedDay, slot: slotValue });
   };
 
   return (

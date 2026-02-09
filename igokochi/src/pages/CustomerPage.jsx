@@ -1,4 +1,4 @@
-import {useState} from "react";
+import { useState } from "react";
 
 import Header from "../components/Header";
 import Main from "../components/Main";
@@ -8,22 +8,21 @@ import OrderPlacedModal from "../components/OrderPlacedModal";
 
 const CustomerPage = () => {
   const [pickupOpen, setPickupOpen] = useState(false);
-
-  // optional: if you still want to keep pickup selection
   const [pickupSelection, setPickupSelection] = useState(null);
 
-  // success modal state
   const [successOpen, setSuccessOpen] = useState(false);
-  // const [lastOrderId, setLastOrderId] = useState(null);
+
+  //const [lastOrderId, setLastOrderId] = useState(null); // ✅ add this
+  const [orderSnapshot, setOrderSnapshot] = useState(null);
 
   const onCheckout = () => setPickupOpen(true);
 
-  const handleOrderPlaced = (orderId) => {
-    // setLastOrderId(orderId);
+  // ✅ now expects { orderId, items, total }
+  const handleOrderPlaced = ({ items, pickup }) => {
+    //setLastOrderId(orderId);
+    setOrderSnapshot({ items, pickup });
     setSuccessOpen(true);
   };
-
-  console.log("test");
 
   return (
     <>
@@ -34,17 +33,15 @@ const CustomerPage = () => {
       <PickupTimeModal
         open={pickupOpen}
         onOpenChange={setPickupOpen}
-        onConfirm={(selection) => {
-          setPickupSelection(selection);
-          console.log("Pickup selected:", selection);
-        }}
+        onConfirm={(selection) => setPickupSelection(selection)}
         onOrderPlaced={handleOrderPlaced}
       />
 
       <OrderPlacedModal
         open={successOpen}
         onOpenChange={setSuccessOpen}
-        // orderId={lastOrderId}
+        //orderId={lastOrderId}
+        summary={orderSnapshot}
       />
     </>
   );
