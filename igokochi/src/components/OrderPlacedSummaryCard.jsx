@@ -11,6 +11,12 @@ function formatPickup(pickup) {
   return `${date} • ${pickup.slot}`;
 }
 
+function formatOptions(item) {
+  if (!item.selectedOptions?.length) return "";
+
+  return item.selectedOptions.map((opt) => opt.optionName).join(" • ");
+}
+
 const OrderPlacedSummaryCard = ({ items = [], pickup }) => {
   return (
     <div className={styles.card}>
@@ -28,13 +34,25 @@ const OrderPlacedSummaryCard = ({ items = [], pickup }) => {
       <h4 className={styles.subtitle}>Items</h4>
 
       <ul className={styles.list}>
-        {items.map((item) => (
-          <li key={item.id} className={styles.row}>
-            <span className={styles.name}>
-              {item.name} × {item.qty}
-            </span>
-          </li>
-        ))}
+        {items.map((item) => {
+          const optionsText = formatOptions(item);
+
+          return (
+            <li key={item.cartKey || item.id} className={styles.itemBlock}>
+              <div className={styles.row}>
+                <span className={styles.name}>
+                  {item.name} × {item.qty}
+                </span>
+              </div>
+
+              {optionsText && <div className={styles.meta}>{optionsText}</div>}
+
+              {item.notes && (
+                <div className={styles.note}>Note: {item.notes}</div>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

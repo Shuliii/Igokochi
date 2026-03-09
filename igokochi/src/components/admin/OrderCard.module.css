@@ -20,19 +20,19 @@
 
 /* Status colors */
 .card_new::before {
-  background: #e5e7eb; /* neutral */
+  background: #e5e7eb;
 }
 
 .card_paid::before {
-  background: var(--color-brown); /* calm confirmation */
+  background: var(--color-brown);
 }
 
 .card_ready::before {
-  background: var(--color-matcha-dark); /* action / highlight */
+  background: var(--color-matcha-dark);
 }
 
 .card_done::before {
-  background: #c7cbd1; /* finished */
+  background: #c7cbd1;
   opacity: 0.6;
 }
 
@@ -81,7 +81,7 @@
 }
 
 .status_paid {
-  background: #f3ece6; /* soft brown tint */
+  background: #f3ece6;
   color: var(--color-brown-dark);
 }
 
@@ -139,12 +139,22 @@
   padding: 10px;
 }
 
+.itemBlock {
+  padding: 4px 0 8px;
+}
+
+.itemBlock + .itemBlock {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  margin-top: 6px;
+  padding-top: 10px;
+}
+
 .itemRow {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
-  padding: 6px 0;
+  padding: 2px 0;
 }
 
 .itemLeft {
@@ -175,6 +185,21 @@
   font-weight: 800;
   color: #444;
   flex-shrink: 0;
+}
+
+.itemMeta {
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: rgba(27, 27, 27, 0.58);
+}
+
+.itemNote {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.35;
+  font-style: italic;
+  color: rgba(27, 27, 27, 0.5);
 }
 
 .emptyItems {
@@ -236,7 +261,6 @@
   cursor: not-allowed;
 }
 
-/* Primary action (Ready / Done) */
 .primaryBtn {
   background: var(--color-matcha-dark);
   color: var(--color-white);

@@ -16,6 +16,29 @@ const menu = [
     description: "Matcha Latte.",
     price: 5.5,
     image: matchaLatte,
+    modifiers: [
+      {
+        id: "milk",
+        name: "Milk",
+        type: "single",
+        required: true,
+        options: [
+          { id: "normal", name: "Normal Milk", priceDelta: 0, default: true },
+          { id: "oat", name: "Oat Milk", priceDelta: 1.0 },
+        ],
+      },
+      {
+        id: "sugar",
+        name: "Sugar",
+        type: "single",
+        required: true,
+        options: [
+          { id: "less", name: "Less Sugar", priceDelta: 0 },
+          { id: "normal", name: "Normal Sugar", priceDelta: 0, default: true },
+          { id: "more", name: "More Sugar", priceDelta: 0 },
+        ],
+      },
+    ],
   },
   {
     id: "earl-grey-matcha-latte",
@@ -23,6 +46,29 @@ const menu = [
     description: "Earl Grey Matcha Latte.",
     price: 5.0,
     image: earlGreyMatchaLatte,
+    modifiers: [
+      {
+        id: "milk",
+        name: "Milk",
+        type: "single",
+        required: true,
+        options: [
+          { id: "normal", name: "Normal Milk", priceDelta: 0, default: true },
+          { id: "oat", name: "Oat Milk", priceDelta: 1.0 },
+        ],
+      },
+      {
+        id: "sugar",
+        name: "Sugar",
+        type: "single",
+        required: true,
+        options: [
+          { id: "less", name: "Less Sugar", priceDelta: 0 },
+          { id: "normal", name: "Normal Sugar", priceDelta: 0, default: true },
+          { id: "more", name: "More Sugar", priceDelta: 0 },
+        ],
+      },
+    ],
   },
   {
     id: "earl-grey-x-jasmine-matcha-latte",
@@ -30,6 +76,29 @@ const menu = [
     description: "Earl Grey Matcha Latte.",
     price: 5.0,
     image: earlGreyJasmineMatchaLatte,
+    modifiers: [
+      {
+        id: "milk",
+        name: "Milk",
+        type: "single",
+        required: true,
+        options: [
+          { id: "normal", name: "Normal Milk", priceDelta: 0, default: true },
+          { id: "oat", name: "Oat Milk", priceDelta: 1.0 },
+        ],
+      },
+      {
+        id: "sugar",
+        name: "Sugar",
+        type: "single",
+        required: true,
+        options: [
+          { id: "less", name: "Less Sugar", priceDelta: 0 },
+          { id: "normal", name: "Normal Sugar", priceDelta: 0, default: true },
+          { id: "more", name: "More Sugar", priceDelta: 0 },
+        ],
+      },
+    ],
   },
   {
     id: "matcha-coconut-cloud",
@@ -44,6 +113,29 @@ const menu = [
     description: "Soft bread with matcha cream filling.",
     price: 6.8,
     image: strawberryMatchaLatte,
+    modifiers: [
+      {
+        id: "milk",
+        name: "Milk",
+        type: "single",
+        required: true,
+        options: [
+          { id: "normal", name: "Normal Milk", priceDelta: 0, default: true },
+          { id: "oat", name: "Oat Milk", priceDelta: 1.0 },
+        ],
+      },
+      {
+        id: "sugar",
+        name: "Sugar",
+        type: "single",
+        required: true,
+        options: [
+          { id: "less", name: "Less Sugar", priceDelta: 0 },
+          { id: "normal", name: "Normal Sugar", priceDelta: 0, default: true },
+          { id: "more", name: "More Sugar", priceDelta: 0 },
+        ],
+      },
+    ],
   },
   {
     id: "mango-matcha-latte",
@@ -51,6 +143,29 @@ const menu = [
     description: "Japanese egg sandwich with creamy texture.",
     price: 4.8,
     image: mangoMatchaLatte,
+    modifiers: [
+      {
+        id: "milk",
+        name: "Milk",
+        type: "single",
+        required: true,
+        options: [
+          { id: "normal", name: "Normal Milk", priceDelta: 0, default: true },
+          { id: "oat", name: "Oat Milk", priceDelta: 1.0 },
+        ],
+      },
+      {
+        id: "sugar",
+        name: "Sugar",
+        type: "single",
+        required: true,
+        options: [
+          { id: "less", name: "Less Sugar", priceDelta: 0 },
+          { id: "normal", name: "Normal Sugar", priceDelta: 0, default: true },
+          { id: "more", name: "More Sugar", priceDelta: 0 },
+        ],
+      },
+    ],
   },
   {
     id: "kinako-cream-matcha-latte",
@@ -58,6 +173,29 @@ const menu = [
     description: "Japanese egg sandwich with creamy texture.",
     price: 4.8,
     image: kinakoCreamMatchaLatte,
+    modifiers: [
+      {
+        id: "milk",
+        name: "Milk",
+        type: "single",
+        required: true,
+        options: [
+          { id: "normal", name: "Normal Milk", priceDelta: 0, default: true },
+          { id: "oat", name: "Oat Milk", priceDelta: 1.0 },
+        ],
+      },
+      {
+        id: "sugar",
+        name: "Sugar",
+        type: "single",
+        required: true,
+        options: [
+          { id: "less", name: "Less Sugar", priceDelta: 0 },
+          { id: "normal", name: "Normal Sugar", priceDelta: 0, default: true },
+          { id: "more", name: "More Sugar", priceDelta: 0 },
+        ],
+      },
+    ],
   },
   {
     id: "dubai-chewy-chocholate",

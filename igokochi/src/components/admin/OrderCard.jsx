@@ -2,7 +2,7 @@ import styles from "./OrderCard.module.css";
 
 function formatPickupDate(ymdOrIso) {
   const raw = String(ymdOrIso || "");
-  const ymd = raw.length >= 10 ? raw.slice(0, 10) : raw; // "YYYY-MM-DD"
+  const ymd = raw.length >= 10 ? raw.slice(0, 10) : raw;
   const [y, m, d] = ymd.split("-").map(Number);
   const date = new Date(y, (m || 1) - 1, d || 1);
 
@@ -14,7 +14,6 @@ function formatPickupDate(ymdOrIso) {
 }
 
 function formatSlot(slot) {
-  // "16:00-17:00" => "4–5pm"
   if (!slot) return "";
   const [a, b] = slot.split("-");
   return `${to12(a)}–${to12(b)}`;
@@ -42,10 +41,8 @@ function statusLabel(statusLower) {
 function toWhatsAppNumber(phone) {
   if (!phone) return null;
 
-  // remove spaces, dashes, brackets
   let digits = String(phone).replace(/\D/g, "");
 
-  // assume SG if 8 digits
   if (digits.length === 8) {
     digits = "65" + digits;
   }
@@ -53,9 +50,28 @@ function toWhatsAppNumber(phone) {
   return digits;
 }
 
+function formatItemOptions(item) {
+  if (
+    !Array.isArray(item.selectedOptions) ||
+    item.selectedOptions.length === 0
+  ) {
+    return "";
+  }
+
+  return item.selectedOptions.map((opt) => opt.optionName).join(" • ");
+}
+
 function buildOrderItemsText(items) {
   if (!Array.isArray(items)) return "";
-  return items.map((it) => `${it.qty}× ${it.name}`).join("\n");
+
+  return items
+    .map((it) => {
+      const optionsText = formatItemOptions(it);
+      const noteText = it.notes ? `\n   Note: ${it.notes}` : "";
+
+      return `${it.qty}× ${it.name}${optionsText ? `\n   ${optionsText}` : ""}${noteText}`;
+    })
+    .join("\n");
 }
 
 function buildWhatsAppMessage(order) {
@@ -83,7 +99,6 @@ Thank you!`;
 export default function OrderCard({ order, onSetStatus, tab }) {
   const status = normalizeStatus(order.status);
 
-  // items might be already array OR JSON string
   let items = order.items;
   if (typeof items === "string") {
     try {
@@ -141,18 +156,35 @@ export default function OrderCard({ order, onSetStatus, tab }) {
         {items.length === 0 ? (
           <div className={styles.emptyItems}>No items</div>
         ) : (
-          items.map((it, idx) => (
-            <div key={`${it.id ?? it.name}-${idx}`} className={styles.itemRow}>
-              <div className={styles.itemLeft}>
-                <span className={styles.itemName}>{it.name}</span>
-                <span className={styles.itemQty}>×{it.qty}</span>
-              </div>
+          items.map((it, idx) => {
+            const optionsText = formatItemOptions(it);
 
-              <div className={styles.itemPrice}>
-                ${(Number(it.price || 0) * Number(it.qty || 0)).toFixed(2)}
+            return (
+              <div
+                key={it.cartKey || `${it.id ?? it.name}-${idx}`}
+                className={styles.itemBlock}
+              >
+                <div className={styles.itemRow}>
+                  <div className={styles.itemLeft}>
+                    <span className={styles.itemName}>{it.name}</span>
+                    <span className={styles.itemQty}>×{it.qty}</span>
+                  </div>
+
+                  <div className={styles.itemPrice}>
+                    ${(Number(it.price || 0) * Number(it.qty || 0)).toFixed(2)}
+                  </div>
+                </div>
+
+                {optionsText && (
+                  <div className={styles.itemMeta}>{optionsText}</div>
+                )}
+
+                {it.notes && (
+                  <div className={styles.itemNote}>Note: {it.notes}</div>
+                )}
               </div>
-            </div>
-          ))
+            );
+          })
         )}
 
         <div className={styles.divider} />
@@ -164,13 +196,12 @@ export default function OrderCard({ order, onSetStatus, tab }) {
       </div>
 
       <div className={styles.actions}>
-        {/* TODAY tab: 2 buttons always */}
         {tab === "today" && (
           <>
             <button
               type="button"
               className={styles.actionBtn}
-              disabled={status !== "new"} // only new -> paid
+              disabled={status !== "new"}
               onClick={() => onSetStatus?.(order.id, "paid")}
             >
               Paid
@@ -179,7 +210,7 @@ export default function OrderCard({ order, onSetStatus, tab }) {
             <button
               type="button"
               className={`${styles.actionBtn} ${styles.primaryBtn}`}
-              disabled={status !== "paid"} // must be paid first
+              disabled={status !== "paid"}
               onClick={() => onSetStatus?.(order.id, "ready")}
             >
               Ready
@@ -187,23 +218,23 @@ export default function OrderCard({ order, onSetStatus, tab }) {
           </>
         )}
 
-        {/* READY tab: 1 button */}
         {tab === "ready" && (
           <button
             type="button"
             className={`${styles.actionBtn} ${styles.primaryBtn}`}
-            disabled={status !== "ready"} // only ready -> done
+            disabled={status !== "ready"}
             onClick={() => onSetStatus?.(order.id, "done")}
           >
             Done
           </button>
         )}
+
         {tab === "upcoming" && (
           <>
             <button
               type="button"
               className={styles.actionBtn}
-              disabled={status !== "new"} // only new -> paid
+              disabled={status !== "new"}
               onClick={() => onSetStatus?.(order.id, "paid")}
             >
               Paid
@@ -212,7 +243,7 @@ export default function OrderCard({ order, onSetStatus, tab }) {
             <button
               type="button"
               className={`${styles.actionBtn} ${styles.primaryBtn}`}
-              disabled={status !== "paid"} // must be paid first
+              disabled={status !== "paid"}
               onClick={() => onSetStatus?.(order.id, "ready")}
             >
               Ready

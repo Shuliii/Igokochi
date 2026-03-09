@@ -9,6 +9,7 @@
   margin: 0 0 12px;
   font-size: 15px;
   font-weight: 600;
+  color: var(--color-text);
 }
 
 .list {
@@ -17,19 +18,117 @@
   margin: 0;
 }
 
-.row {
+.itemBlock {
+  padding: 10px 0 12px;
+}
+
+.itemBlock + .itemBlock {
+  border-top: 1px solid var(--color-border);
+}
+
+.rowTop {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
-  margin-bottom: 6px;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
 }
 
 .name {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--color-text);
+  line-height: 1.35;
+}
+
+.meta {
+  margin-top: 4px;
+}
+
+.metaLine {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--color-muted, #6b7280);
+}
+
+.note {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--color-muted, #6b7280);
+  font-style: italic;
 }
 
 .price {
-  font-weight: 500;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.rowBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stepBtn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-white);
+  color: var(--color-text);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.08s ease;
+}
+
+.stepBtn:hover {
+  background: #f8f8f8;
+}
+
+.stepBtn:active {
+  transform: scale(0.97);
+}
+
+.qty {
+  min-width: 18px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.removeBtn {
+  border: none;
+  background: transparent;
+  padding: 4px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #c2410c;
+  cursor: pointer;
+}
+
+.removeBtn:hover {
+  text-decoration: underline;
 }
 
 .divider {
@@ -41,8 +140,10 @@
 .totalRow {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 15px;
   font-weight: 600;
+  color: var(--color-text);
 }
 
 .total {

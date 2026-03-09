@@ -7,6 +7,8 @@ const STORAGE_KEY = "igokochi-cart";
 
 const getInitialState = () => {
   try {
+    if (typeof window === "undefined") return initialCartState;
+
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? JSON.parse(stored) : initialCartState;
   } catch {
