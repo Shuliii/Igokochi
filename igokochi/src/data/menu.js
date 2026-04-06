@@ -74,8 +74,10 @@ const menu = [
   },
   {
     id: "earl-grey-x-jasmine-matcha-latte",
-    name: "Matcha whisked with steeped Earl Grey tea, set over jasmine milk tea. A calm, layered tea experience.",
-    description: "Earl Grey Matcha Latte.",
+    name: "Earl Grey Matcha Latte.",
+    description:
+      "Matcha whisked with steeped Earl Grey tea, set over jasmine milk tea. A calm, layered tea experience.",
+
     price: 5.0,
     image: earlGreyJasmineMatchaLatte,
     modifiers: [
@@ -112,8 +114,9 @@ const menu = [
   },
   {
     id: "strawberry-matcha-latte",
-    name: "Real strawberry goodness meets earthy matcha. Fruity, tangy, and beautifully balanced.",
-    description: "Soft bread with matcha cream filling.",
+    name: "Strawberry Matcha Latte",
+    description:
+      "Real strawberry goodness meets earthy matcha. Fruity, tangy, and beautifully balanced.",
     price: 6.8,
     image: strawberryMatchaLatte,
     modifiers: [
