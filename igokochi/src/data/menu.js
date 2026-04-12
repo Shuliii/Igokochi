@@ -74,7 +74,7 @@ const menu = [
   },
   {
     id: "earl-grey-x-jasmine-matcha-latte",
-    name: "Earl Grey Matcha Latte.",
+    name: "Earl Grey x Jasmine Matcha Latte",
     description:
       "Matcha whisked with steeped Earl Grey tea, set over jasmine milk tea. A calm, layered tea experience.",
 
