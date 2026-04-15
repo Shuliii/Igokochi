@@ -209,7 +209,7 @@ const menu = [
     id: "dubai-chewy-chocholate",
     name: "Dubai Chewy Chocolate",
     description:
-      "Soft, chocolatey, and satisfyingly chewy. Handmade in-house for serious choc lovers.",
+      "Crunchy pistachio kunafa wrapped in soft chewy marshmellow. Rolled in 100% cocoa powder for that balance.",
     price: 4.8,
     image: dubaiMochi,
   },
