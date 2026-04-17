@@ -15,7 +15,7 @@ const menu = [
     name: "Matcha Latte",
     description:
       "Just matcha and milk, the way it should be. Smooth, earthy, and quietly comforting.",
-    price: 5.5,
+    price: 4.5,
     image: matchaLatte,
     modifiers: [
       {
@@ -34,7 +34,7 @@ const menu = [
         type: "single",
         required: true,
         options: [
-          {id: "less", name: "Less Sugar", priceDelta: 0},
+          {id: "No", name: "No Sugar", priceDelta: 0},
           {id: "normal", name: "Normal Sugar", priceDelta: 0, default: true},
           {id: "more", name: "More Sugar", priceDelta: 0},
         ],
@@ -65,7 +65,7 @@ const menu = [
         type: "single",
         required: true,
         options: [
-          {id: "less", name: "Less Sugar", priceDelta: 0},
+          {id: "No", name: "No Sugar", priceDelta: 0},
           {id: "normal", name: "Normal Sugar", priceDelta: 0, default: true},
           {id: "more", name: "More Sugar", priceDelta: 0},
         ],
@@ -78,38 +78,38 @@ const menu = [
     description:
       "Matcha whisked with steeped Earl Grey tea, set over jasmine milk tea. A calm, layered tea experience.",
 
-    price: 5.0,
+    price: 7.0,
     image: earlGreyJasmineMatchaLatte,
-    modifiers: [
-      {
-        id: "milk",
-        name: "Milk",
-        type: "single",
-        required: true,
-        options: [
-          {id: "normal", name: "Normal Milk", priceDelta: 0, default: true},
-          {id: "oat", name: "Oat Milk", priceDelta: 1.0},
-        ],
-      },
-      {
-        id: "sugar",
-        name: "Sugar",
-        type: "single",
-        required: true,
-        options: [
-          {id: "less", name: "Less Sugar", priceDelta: 0},
-          {id: "normal", name: "Normal Sugar", priceDelta: 0, default: true},
-          {id: "more", name: "More Sugar", priceDelta: 0},
-        ],
-      },
-    ],
+    // modifiers: [
+    //   {
+    //     id: "milk",
+    //     name: "Milk",
+    //     type: "single",
+    //     required: true,
+    //     options: [
+    //       {id: "normal", name: "Normal Milk", priceDelta: 0, default: true},
+    //       {id: "oat", name: "Oat Milk", priceDelta: 1.0},
+    //     ],
+    //   },
+    //   {
+    //     id: "sugar",
+    //     name: "Sugar",
+    //     type: "single",
+    //     required: true,
+    //     options: [
+    //       {id: "less", name: "Less Sugar", priceDelta: 0},
+    //       {id: "normal", name: "Normal Sugar", priceDelta: 0, default: true},
+    //       {id: "more", name: "More Sugar", priceDelta: 0},
+    //     ],
+    //   },
+    // ],
   },
   {
     id: "matcha-coconut-cloud",
     name: "Matcha Coconut Cloud",
     description:
       "Coconut water paired with our whisked matcha cream. A refreshing base with a soft, creamy finish.",
-    price: 4.5,
+    price: 6.5,
     image: matchaCoconutLatte,
   },
   {
@@ -117,7 +117,7 @@ const menu = [
     name: "Strawberry Matcha Latte",
     description:
       "Real strawberry goodness meets earthy matcha. Fruity, tangy, and beautifully balanced.",
-    price: 6.8,
+    price: 6.5,
     image: strawberryMatchaLatte,
     modifiers: [
       {
@@ -130,17 +130,6 @@ const menu = [
           {id: "oat", name: "Oat Milk", priceDelta: 1.0},
         ],
       },
-      {
-        id: "sugar",
-        name: "Sugar",
-        type: "single",
-        required: true,
-        options: [
-          {id: "less", name: "Less Sugar", priceDelta: 0},
-          {id: "normal", name: "Normal Sugar", priceDelta: 0, default: true},
-          {id: "more", name: "More Sugar", priceDelta: 0},
-        ],
-      },
     ],
   },
   {
@@ -148,7 +137,7 @@ const menu = [
     name: "Mango Matcha Latte",
     description:
       "Our house blend mango paired with smooth matcha for a sunny, mellow sip. Sweet, tropical, and refreshingly creamy.",
-    price: 4.8,
+    price: 6.5,
     image: mangoMatchaLatte,
     modifiers: [
       {
@@ -161,17 +150,6 @@ const menu = [
           {id: "oat", name: "Oat Milk", priceDelta: 1.0},
         ],
       },
-      {
-        id: "sugar",
-        name: "Sugar",
-        type: "single",
-        required: true,
-        options: [
-          {id: "less", name: "Less Sugar", priceDelta: 0},
-          {id: "normal", name: "Normal Sugar", priceDelta: 0, default: true},
-          {id: "more", name: "More Sugar", priceDelta: 0},
-        ],
-      },
     ],
   },
   {
@@ -179,7 +157,7 @@ const menu = [
     name: "Kinako Cream Matcha Latte",
     description:
       "A cloud of kinako cream layered over a matcha latte for a that dessert-like sip. Nutty, creamy, and deeply comforting.",
-    price: 4.8,
+    price: 6.5,
     image: kinakoCreamMatchaLatte,
     modifiers: [
       {
@@ -192,17 +170,6 @@ const menu = [
           {id: "oat", name: "Oat Milk", priceDelta: 1.0},
         ],
       },
-      {
-        id: "sugar",
-        name: "Sugar",
-        type: "single",
-        required: true,
-        options: [
-          {id: "less", name: "Less Sugar", priceDelta: 0},
-          {id: "normal", name: "Normal Sugar", priceDelta: 0, default: true},
-          {id: "more", name: "More Sugar", priceDelta: 0},
-        ],
-      },
     ],
   },
   {
@@ -210,7 +177,7 @@ const menu = [
     name: "Dubai Chewy Chocolate",
     description:
       "Crunchy pistachio kunafa wrapped in soft chewy marshmellow. Rolled in 100% cocoa powder for that balance.",
-    price: 4.8,
+    price: 5.0,
     image: dubaiMochi,
   },
 ];
