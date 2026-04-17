@@ -15,16 +15,20 @@ function formatPickupDate(ymdOrIso) {
 
 function formatSlot(slot) {
   if (!slot) return "";
-  const [a, b] = slot.split("-");
-  return `${to12(a)}–${to12(b)}`;
+  return to12WithMinutes(slot);
 }
 
-function to12(hhmm) {
-  const [hhStr] = hhmm.split(":");
+function to12WithMinutes(hhmm) {
+  const [hhStr, mmStr] = hhmm.split(":");
   const h = Number(hhStr);
+  const m = Number(mmStr);
+
   const suffix = h >= 12 ? "pm" : "am";
   const hour12 = ((h + 11) % 12) + 1;
-  return `${hour12}${suffix}`;
+
+  const minuteStr = String(m).padStart(2, "0");
+
+  return `${hour12}.${minuteStr}${suffix}`;
 }
 
 function normalizeStatus(s) {
@@ -96,7 +100,13 @@ Once payment is done, just reply "Paid" here :)
 Thank you!`;
 }
 
-export default function OrderCard({ order, onSetStatus, tab }) {
+function buildThankYouNote(order) {
+  return `Thank you ${order.customer_name}! We got your order — See you on ${formatPickupDate(order.pickup_date)} at ${formatSlot(order.pickup_slot)} :)
+
+-Igokochi House`;
+}
+
+export default function OrderCard({order, onSetStatus, tab}) {
   const status = normalizeStatus(order.status);
 
   let items = order.items;
@@ -119,12 +129,27 @@ export default function OrderCard({ order, onSetStatus, tab }) {
     const waNumber = toWhatsAppNumber(order.customer_phone);
     if (!waNumber) return;
 
-    const message = buildWhatsAppMessage({ ...order, items });
+    const message = buildWhatsAppMessage({...order, items});
     const encodedMessage = encodeURIComponent(message);
 
     const url = `https://wa.me/${waNumber}?text=${encodedMessage}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
+
+  function handleMarkPaid(order) {
+    // 1. Update status
+    onSetStatus?.(order.id, "paid");
+
+    // 2. Send WhatsApp thank-you
+    const waNumber = toWhatsAppNumber(order.customer_phone);
+    if (!waNumber) return;
+
+    const message = buildThankYouNote(order);
+    const encodedMessage = encodeURIComponent(message);
+
+    const url = `https://wa.me/${waNumber}?text=${encodedMessage}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
 
   return (
     <article className={`${styles.card} ${styles[`card_${status}`] || ""}`}>
@@ -202,7 +227,7 @@ export default function OrderCard({ order, onSetStatus, tab }) {
               type="button"
               className={styles.actionBtn}
               disabled={status !== "new"}
-              onClick={() => onSetStatus?.(order.id, "paid")}
+              onClick={() => handleMarkPaid(order)}
             >
               Paid
             </button>
@@ -235,7 +260,7 @@ export default function OrderCard({ order, onSetStatus, tab }) {
               type="button"
               className={styles.actionBtn}
               disabled={status !== "new"}
-              onClick={() => onSetStatus?.(order.id, "paid")}
+              onClick={() => handleMarkPaid(order)}
             >
               Paid
             </button>
