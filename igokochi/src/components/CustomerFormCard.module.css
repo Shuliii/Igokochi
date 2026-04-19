@@ -29,16 +29,18 @@
 .input {
   height: 44px;
   padding: 0 12px;
-
   border-radius: 12px;
   border: 1px solid var(--color-border);
-
-  font-size: 14px;
+  font-size: 16px;
+  line-height: 1.2;
   color: var(--color-text);
   background: var(--color-white);
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .input::placeholder {
+  font-size: 16px;
   color: #9a9a9a;
 }
 

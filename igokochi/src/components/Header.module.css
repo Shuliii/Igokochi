@@ -8,18 +8,14 @@
   z-index: 1000;
 
   background: var(--color-matcha-dark);
+  height: calc(56px + env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
 
-  /* keep your height, but allow safe-area on iPhones */
-  height: 56px;
-  padding-top: env(safe-area-inset-top, 0);
-
-  /* optional nice separation */
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* if you use safe-area padding, make container account for it */
 .container {
-  height: calc(100% - env(safe-area-inset-top, 0));
+  height: 56px;
   padding-inline: 16px;
 
   display: flex;

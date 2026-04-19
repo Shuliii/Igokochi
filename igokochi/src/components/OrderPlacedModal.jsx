@@ -1,9 +1,9 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import styles from "./OrderPlacedModal.module.css";
-import { CheckCircle2 } from "lucide-react";
+import {CheckCircle2} from "lucide-react";
 import OrderPlacedSummaryCard from "./OrderPlacedSummaryCard";
 
-const OrderPlacedModal = ({ open, onOpenChange, summary }) => {
+const OrderPlacedModal = ({open, onOpenChange, summary}) => {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -15,7 +15,9 @@ const OrderPlacedModal = ({ open, onOpenChange, summary }) => {
 
           <Dialog.Title className={styles.title}>Order placed!</Dialog.Title>
 
-          <p className={styles.text}>Thanks! We’ll have it ready for pickup.</p>
+          <p className={styles.text}>
+            Thanks! We will confirm your order through Whatsapp shortly.
+          </p>
 
           {summary?.items?.length ? (
             <div className={styles.summaryWrap}>

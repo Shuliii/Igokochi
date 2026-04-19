@@ -1,8 +1,10 @@
 .main {
   padding-block: 16px;
   padding-inline: 16px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  min-height: 100dvh;
 }
 
 .withCart {
-  padding-bottom: 96px; /* enough for sticky cart bar + breathing space */
+  padding-bottom: calc(88px + 24px + env(safe-area-inset-bottom));
 }
