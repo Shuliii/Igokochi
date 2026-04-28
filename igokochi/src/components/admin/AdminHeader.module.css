@@ -13,11 +13,44 @@
 }
 
 /* LEFT */
+.left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .title {
   font-size: 16px;
   font-weight: 900;
   letter-spacing: 0.2px;
   white-space: nowrap;
+}
+
+/* NAV (NEW) */
+.nav {
+  display: flex;
+  gap: 6px;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.75);
+  transition: background 0.15s ease;
+}
+
+.tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.active {
+  background: white;
+  color: var(--color-matcha-dark);
 }
 
 /* RIGHT */
@@ -46,7 +79,7 @@
   color: rgba(255, 255, 255, 0.75);
 }
 
-/* ACTIONS (refresh + logout) */
+/* ACTIONS */
 .actions {
   display: flex;
   align-items: center;
@@ -82,7 +115,7 @@
   cursor: not-allowed;
 }
 
-/* LOGOUT (match refresh style) */
+/* LOGOUT */
 .logoutBtn {
   width: 38px;
   height: 38px;
@@ -122,7 +155,7 @@
   }
 }
 
-/* OPTIONAL: small screen safety so header doesn't break */
+/* MOBILE */
 @media (max-width: 420px) {
   .container {
     padding: 10px 10px;
@@ -153,5 +186,10 @@
 
   .date {
     font-size: 11px;
+  }
+
+  .tab {
+    font-size: 12px;
+    padding: 5px 8px;
   }
 }

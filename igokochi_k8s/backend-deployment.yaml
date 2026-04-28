@@ -29,6 +29,8 @@ spec:
             # MySQL connection
             - name: DB_HOST
               value: "mysql-igokochi-service" # <-- change to your mysql Service name if needed
+            - name: DB_PORT
+              value: "3306" # <-- change to your mysql Service name if needed
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:

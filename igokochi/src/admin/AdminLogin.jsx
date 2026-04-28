@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+// import { apiPost } from "../admin/api";
+import { apiPost } from "./api";
 import styles from "./AdminLogin.module.css";
 
-const AUTH_BASE_URL =
-  import.meta.env.VITE_AUTH_BASE_URL || "https://igokochihouse.com/api";
-
-// LocalStorage keys (Igokochi-specific)
 const LS_TOKEN = "igokochi_token";
 const LS_IS_LOGGED_IN = "igokochi_isLoggedIn";
 const LS_PROFILE = "igokochi_profile";
@@ -13,16 +11,15 @@ const LS_PROFILE = "igokochi_profile";
 export default function AdminLogin() {
   const navigate = useNavigate();
   const location = useLocation();
+
   const reason = location.state?.reason;
   const from = location.state?.from || "/admin";
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // If already logged in (token exists), skip login
   useEffect(() => {
     const token = localStorage.getItem(LS_TOKEN);
     if (token) navigate("/admin", { replace: true });
@@ -32,33 +29,33 @@ export default function AdminLogin() {
     e.preventDefault();
     setError("");
 
-    if (!username.trim() || !password.trim()) {
+    const cleanUsername = username.trim();
+    const cleanPassword = password.trim();
+
+    if (!cleanUsername || !cleanPassword) {
       setError("Please enter username and password");
       return;
     }
 
     setLoading(true);
+
     try {
-      const res = await fetch(`${AUTH_BASE_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+      const response = await apiPost("/api/login", {
+        username: cleanUsername,
+        password: cleanPassword,
       });
 
-      const response = await res.json();
-
-      // ✅ your exact criteria style:
       if (response.token && Number(response.isActive) === 1) {
         localStorage.setItem(LS_TOKEN, response.token);
         localStorage.setItem(LS_IS_LOGGED_IN, "true");
-        localStorage.setItem(LS_PROFILE, username);
+        localStorage.setItem(LS_PROFILE, cleanUsername);
 
         navigate(from, { replace: true });
       } else {
         setError(response.message || "Login failed");
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      setError(err.message || "Network error. Please try again.");
     } finally {
       setLoading(false);
     }

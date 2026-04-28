@@ -3,6 +3,8 @@ import axios from "axios";
 const AUTH_BASE_URL =
   process.env.AUTH_BASE_URL || "http://igokochi-auth-service:8081";
 
+console.log("AUTH_BASE_URL:", AUTH_BASE_URL);
+
 export const login = async (req, res) => {
   const { username, password } = req.body;
 

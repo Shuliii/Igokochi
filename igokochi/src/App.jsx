@@ -1,8 +1,9 @@
-import {BrowserRouter, Routes, Route} from "react-router-dom";
-import {CartProvider} from "./cart/CartContext";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { CartProvider } from "./cart/CartContext";
 
 import CustomerPage from "./pages/CustomerPage";
 import AdminPage from "./pages/AdminPage";
+import AdminMenuPage from "./pages/AdminMenuPage";
 import AdminLogin from "./admin/AdminLogin";
 import RequireAuth from "./admin/RequireAuth";
 
@@ -22,6 +23,14 @@ function App() {
             element={
               <RequireAuth>
                 <AdminPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin/menu"
+            element={
+              <RequireAuth>
+                <AdminMenuPage />
               </RequireAuth>
             }
           />
