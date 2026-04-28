@@ -23,7 +23,7 @@ stringData:
   MYSQL_ROOT_PASSWORD: "change-me-root"
   MYSQL_DATABASE: "igokochi"
   MYSQL_USER: "igokochi_user"
-  MYSQL_PASSWORD: "igokochi_pass"
+  MYSQL_PASSWORD: "igokochi_pass1234"
 ---
 apiVersion: apps/v1
 kind: StatefulSet
