@@ -40,7 +40,7 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const response = await apiPost("/api/login", {
+      const response = await apiPost("/login", {
         username: cleanUsername,
         password: cleanPassword,
       });

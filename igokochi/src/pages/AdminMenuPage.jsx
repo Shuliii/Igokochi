@@ -25,7 +25,7 @@ export default function AdminMenuPage() {
 
     setRefreshing(true);
     try {
-      const data = await apiGet("/api/menu");
+      const data = await apiGet("/menu");
       setMenu(data.menu || []);
       setNetError(false);
     } catch (err) {
@@ -58,7 +58,7 @@ export default function AdminMenuPage() {
     );
 
     try {
-      await apiPatch(`/api/menu/${item.id}`, {
+      await apiPatch(`/menu/${item.id}`, {
         available: next,
       });
 

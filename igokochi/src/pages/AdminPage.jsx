@@ -76,7 +76,7 @@ export default function AdminPage() {
     (async () => {
       setRefreshing(true);
       try {
-        const data = await apiGet("/api/orders");
+        const data = await apiGet("/orders");
         const list = data.orders || [];
         if (cancelled) return;
 
@@ -115,7 +115,7 @@ export default function AdminPage() {
 
     setRefreshing(true);
     try {
-      const data = await apiGet("/api/orders");
+      const data = await apiGet("/orders");
       setOrders(data.orders || []);
       setNetError(false); // connection recovered
     } catch (err) {
@@ -157,7 +157,7 @@ export default function AdminPage() {
     );
 
     try {
-      await apiPatch(`/api/orders/${id}/status`, { status: nextStatus });
+      await apiPatch(`/orders/${id}/status`, { status: nextStatus });
       setNetError(false);
     } catch (err) {
       if (err?.code === "SESSION_EXPIRED") {
