@@ -101,9 +101,15 @@ Thank you!`;
 }
 
 function buildThankYouNote(order) {
-  return `Thank you ${order.customer_name}! We got your order — See you on ${formatPickupDate(order.pickup_date)} at ${formatSlot(order.pickup_slot)} :)
+  const itemsText = buildOrderItemsText(order.items);
+  return `Thank you ${order.customer_name}! We got your order!
 
--Igokochi House`;
+Order details:
+${itemsText}
+ 
+See you on ${formatPickupDate(order.pickup_date)} at ${formatSlot(order.pickup_slot)} :)
+
+-Igokochi House-`;
 }
 
 export default function OrderCard({order, onSetStatus, tab}) {
