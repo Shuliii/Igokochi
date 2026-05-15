@@ -111,6 +111,79 @@
   cursor: default;
 }
 
+.paymentBody {
+  padding: 20px;
+  text-align: center;
+}
+
+.amountBox {
+  background: #f4f7f2;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+
+.amountBox span {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.amountBox strong {
+  font-size: 28px;
+  color: #2f5f3d;
+}
+
+.qrCard {
+  background: white;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  margin-bottom: 18px;
+}
+
+.qrImage {
+  width: 260px;
+  max-width: 100%;
+  display: block;
+  margin: 0 auto 12px;
+}
+
+.saveQrBtn {
+  border: 1px solid #4f855e;
+  background: white;
+  color: #4f855e;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.paymentText {
+  margin: 10px 0 4px;
+  font-size: 15px;
+  color: #333;
+}
+
+.paymentNote {
+  margin: 0;
+  font-size: 13px;
+  color: #777;
+}
+
+.secondaryBtn {
+  width: 100%;
+  margin-top: 10px;
+  border: none;
+  background: #eeeeee;
+  color: #333;
+  border-radius: 14px;
+  padding: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 @keyframes overlayIn {
   from {
     opacity: 0;

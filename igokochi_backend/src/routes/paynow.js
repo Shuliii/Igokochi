@@ -1,0 +1,42 @@
+import express from "express";
+
+const router = express.Router();
+
+router.post("/paynow-qr", async (req, res) => {
+  try {
+    const {amount, editable = false} = req.body;
+
+    if (!amount) {
+      return res.status(400).json({
+        error: "amount is required",
+      });
+    }
+
+    const response = await fetch("http://paynow-service:3000/api/paynow-qr", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount,
+        editable,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json(data);
+    }
+
+    return res.json(data);
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      error: "failed to generate paynow qr",
+    });
+  }
+});
+
+export default router;

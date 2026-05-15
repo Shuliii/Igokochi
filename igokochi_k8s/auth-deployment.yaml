@@ -30,7 +30,7 @@ spec:
             - name: DB_USER
               value: "igokochi_user"
             - name: DB_PASSWORD
-              value: "igokochi_pass"
+              value: "igokochi_pass1234"
             - name: DB_NAME
               value: "igokochi"
 ---

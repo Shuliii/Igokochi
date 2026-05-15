@@ -8,6 +8,7 @@ services:
       CHOKIDAR_INTERVAL: "200"
       WATCHPACK_POLLING: "true"
       WDS_SOCKET_PORT: "0"
+      VITE_API_BASE_URL: https://igokochihouse.com/api
     volumes:
       - ./igokochi:/app
     ports:

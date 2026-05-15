@@ -50,16 +50,15 @@ spec:
               value: "Daveisthebest"
           readinessProbe:
             httpGet:
-              path: /health
+              path: /api/health
               port: 4000
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 6
-
           livenessProbe:
             httpGet:
-              path: /health
+              path: /api/health
               port: 4000
             initialDelaySeconds: 20
             periodSeconds: 20

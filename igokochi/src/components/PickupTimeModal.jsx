@@ -1,20 +1,24 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { useMemo, useState } from "react";
+import {useMemo, useState} from "react";
 import styles from "./PickupTimeModal.module.css";
-import { X } from "lucide-react";
+import {X} from "lucide-react";
 
 import OrderSummaryCard from "./OrderSummaryCard";
 import PickupTimeCard from "./PickupTimeCard";
 import CustomerFormCard from "./CustomerFormCard";
-import { useCart } from "../cart/CartContext";
+import {useCart} from "../cart/CartContext";
 
-import { API_BASE_URL } from "../config";
+import {API_BASE_URL} from "../config";
 
-const PickupTimeModal = ({ open, onOpenChange, onOrderPlaced, onConfirm }) => {
-  const { state, dispatch } = useCart();
+const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
+  const {state, dispatch} = useCart();
 
-  const [pickup, setPickup] = useState({ date: "", slot: "" });
-  const [customer, setCustomer] = useState({ name: "", phone: "" });
+  const [pickup, setPickup] = useState({date: "", slot: ""});
+  const [customer, setCustomer] = useState({name: "", phone: ""});
+
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [qrImage, setQrImage] = useState("");
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
   const itemCount = useMemo(
     () => state.items.reduce((sum, i) => sum + i.qty, 0),
@@ -33,6 +37,48 @@ const PickupTimeModal = ({ open, onOpenChange, onOrderPlaced, onConfirm }) => {
     customer.name.trim() &&
     customer.phone.trim();
 
+  const handleOpenPaymentDialog = async () => {
+    try {
+      setPaymentLoading(true);
+
+      const res = await fetch(`${API_BASE_URL}/paynow-qr`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: Number(total.toFixed(2)),
+          editable: false,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("PayNow QR error:", data);
+        alert(data.error || "Failed to generate PayNow QR");
+        return;
+      }
+
+      setQrImage(data.data.qrImage);
+      setShowPaymentDialog(true);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to connect to PayNow QR service");
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  const handleSaveQr = () => {
+    if (!qrImage) return;
+
+    const link = document.createElement("a");
+    link.href = qrImage;
+    link.download = `paynow-qr-${Date.now()}.png`;
+    link.click();
+  };
+
   const handleSubmit = async () => {
     const payload = {
       customer: {
@@ -45,13 +91,17 @@ const PickupTimeModal = ({ open, onOpenChange, onOrderPlaced, onConfirm }) => {
       },
       items: state.items,
       total: Number(total.toFixed(2)),
+      payment: {
+        method: "paynow",
+        status: "pending_verification",
+      },
       createdAt: new Date().toISOString(),
     };
 
     try {
       const res = await fetch(`${API_BASE_URL}/orders`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify(payload),
       });
 
@@ -63,73 +113,153 @@ const PickupTimeModal = ({ open, onOpenChange, onOrderPlaced, onConfirm }) => {
         return;
       }
 
-      // (optional) if you still want to store selection outside
       onConfirm?.(payload.pickup);
-      // open success modal (send snapshot)
+
       onOrderPlaced?.({
         items: state.items,
-        pickup: payload.pickup, // ✅ include pickup
+        pickup: payload.pickup,
       });
-      // clear cart AFTER success
-      dispatch({ type: "CLEAR_CART" });
 
-      // reset modal local state (nice for next order)
-      setPickup({ date: "", slot: "" });
-      setCustomer({ name: "", phone: "" });
+      dispatch({type: "CLEAR_CART"});
 
-      // close checkout modal
+      setPickup({date: "", slot: ""});
+      setCustomer({name: "", phone: ""});
+      setQrImage("");
+      setShowPaymentDialog(false);
+
       onOpenChange(false);
     } catch (err) {
+      console.error(err);
       alert("Network error: backend not reachable");
     }
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Portal>
-        <Dialog.Overlay className={styles.overlay} />
+    <>
+      <Dialog.Root open={open} onOpenChange={onOpenChange}>
+        <Dialog.Portal>
+          <Dialog.Overlay className={styles.overlay} />
 
-        <Dialog.Content className={styles.content} aria-label="Checkout">
-          <div className={styles.header}>
-            <Dialog.Title className={styles.title}>Checkout</Dialog.Title>
-            <Dialog.Description className={styles.srOnly}>
-              Review your order, choose a pickup date and time slot, and enter
-              your contact details.
-            </Dialog.Description>
-            <Dialog.Close asChild>
-              <button className={styles.closeBtn} aria-label="Close">
-                <X size={20} />
+          <Dialog.Content className={styles.content} aria-label="Checkout">
+            <div className={styles.header}>
+              <Dialog.Title className={styles.title}>Checkout</Dialog.Title>
+              <Dialog.Description className={styles.srOnly}>
+                Review your order, choose a pickup date and time slot, and enter
+                your contact details.
+              </Dialog.Description>
+
+              <Dialog.Close asChild>
+                <button className={styles.closeBtn} aria-label="Close">
+                  <X size={20} />
+                </button>
+              </Dialog.Close>
+            </div>
+
+            <div className={styles.body}>
+              <div className={styles.section}>
+                <OrderSummaryCard />
+              </div>
+
+              <div className={styles.section}>
+                <PickupTimeCard value={pickup} onChange={setPickup} />
+              </div>
+
+              <div className={styles.section}>
+                <CustomerFormCard value={customer} onChange={setCustomer} />
+              </div>
+            </div>
+
+            <div className={styles.footer}>
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                disabled={!canSubmit || paymentLoading}
+                onClick={handleOpenPaymentDialog}
+              >
+                {paymentLoading ? "Generating QR..." : "Proceed to Payment"}
               </button>
-            </Dialog.Close>
-          </div>
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
 
-          <div className={styles.body}>
-            <div className={styles.section}>
-              <OrderSummaryCard />
+      <Dialog.Root open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+        <Dialog.Portal>
+          <Dialog.Overlay className={styles.overlay} />
+
+          <Dialog.Content
+            className={styles.content}
+            aria-label="PayNow Payment"
+          >
+            <div className={styles.header}>
+              <Dialog.Title className={styles.title}>
+                PayNow Payment
+              </Dialog.Title>
+              <Dialog.Description className={styles.srOnly}>
+                Scan the PayNow QR code to complete payment.
+              </Dialog.Description>
+
+              <Dialog.Close asChild>
+                <button className={styles.closeBtn} aria-label="Close">
+                  <X size={20} />
+                </button>
+              </Dialog.Close>
             </div>
 
-            <div className={styles.section}>
-              <PickupTimeCard value={pickup} onChange={setPickup} />
+            <div className={styles.paymentBody}>
+              <div className={styles.amountBox}>
+                <span>Total Amount</span>
+                <strong>${total.toFixed(2)}</strong>
+              </div>
+
+              {qrImage && (
+                <div className={styles.qrCard}>
+                  <img
+                    src={qrImage}
+                    alt="PayNow QR Code"
+                    className={styles.qrImage}
+                  />
+
+                  <button
+                    type="button"
+                    className={styles.saveQrBtn}
+                    onClick={handleSaveQr}
+                  >
+                    Save QR Code
+                  </button>
+                </div>
+              )}
+
+              <p className={styles.paymentText}>
+                Scan this QR code with your banking app to pay.
+              </p>
+
+              <p className={styles.paymentNote}>
+                After payment, tap <b>I Have Paid</b> to submit your order.
+              </p>
             </div>
 
-            <div className={styles.section}>
-              <CustomerFormCard value={customer} onChange={setCustomer} />
-            </div>
-          </div>
+            <div className={styles.footer}>
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                onClick={handleSubmit}
+              >
+                I Have Paid
+              </button>
 
-          <div className={styles.footer}>
-            <button
-              type="button"
-              className={styles.primaryBtn}
-              disabled={!canSubmit}
-              onClick={handleSubmit}
-            >
-              Submit Order
-            </button>
-          </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+              <button
+                type="button"
+                className={styles.secondaryBtn}
+                onClick={() => setShowPaymentDialog(false)}
+              >
+                Back
+              </button>
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </>
   );
 };
 

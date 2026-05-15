@@ -1,9 +1,10 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { db } from "./db.js";
-import { requireAuth } from "./middleware/requireAuth.js";
+import {db} from "./db.js";
+import {requireAuth} from "./middleware/requireAuth.js";
 import * as auth from "./auth.js"; // ✅ add this
+import paynowRoutes from "./routes/paynow.js";
 
 // dotenv.config();
 
@@ -20,9 +21,9 @@ const router = express.Router();
 router.get("/health", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT 1 AS ok");
-    res.json({ ok: true, db: rows[0].ok === 1 });
+    res.json({ok: true, db: rows[0].ok === 1});
   } catch (err) {
-    res.status(500).json({ ok: false, error: err.message });
+    res.status(500).json({ok: false, error: err.message});
   }
 });
 
@@ -44,10 +45,10 @@ router.get("/menu", async (req, res) => {
           : item.modifiers,
     }));
 
-    res.json({ ok: true, menu });
+    res.json({ok: true, menu});
   } catch (err) {
     console.error("GET /menu error:", err);
-    res.status(500).json({ ok: false, message: "Failed to fetch menu" });
+    res.status(500).json({ok: false, message: "Failed to fetch menu"});
   }
 });
 
@@ -112,10 +113,10 @@ router.get("/orders", requireAuth, async (req, res) => {
       ORDER BY created_at DESC
     `);
 
-    res.json({ ok: true, orders: rows });
+    res.json({ok: true, orders: rows});
   } catch (err) {
     console.error("GET /orders error:", err);
-    res.status(500).json({ ok: false, message: "Failed to fetch orders" });
+    res.status(500).json({ok: false, message: "Failed to fetch orders"});
   }
 });
 
@@ -134,21 +135,19 @@ router.post("/orders", async (req, res) => {
     if (!customerName || !customerPhone) {
       return res
         .status(400)
-        .json({ ok: false, message: "Missing customer details" });
+        .json({ok: false, message: "Missing customer details"});
     }
 
     if (!pickupDate || !pickupSlot) {
-      return res
-        .status(400)
-        .json({ ok: false, message: "Missing pickup time" });
+      return res.status(400).json({ok: false, message: "Missing pickup time"});
     }
 
     if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ ok: false, message: "Cart is empty" });
+      return res.status(400).json({ok: false, message: "Cart is empty"});
     }
 
     if (typeof total !== "number" || total <= 0) {
-      return res.status(400).json({ ok: false, message: "Invalid total" });
+      return res.status(400).json({ok: false, message: "Invalid total"});
     }
 
     const sql = `
@@ -169,12 +168,12 @@ router.post("/orders", async (req, res) => {
 
     const [result] = await db.execute(sql, params);
 
-    res.status(201).json({ ok: true, orderId: result.insertId });
+    res.status(201).json({ok: true, orderId: result.insertId});
   } catch (err) {
     console.error("POST /orders error:", err);
     res
       .status(500)
-      .json({ ok: false, message: "Server error", error: err.message });
+      .json({ok: false, message: "Server error", error: err.message});
   }
 });
 
@@ -188,7 +187,7 @@ router.patch("/orders/:id/status", requireAuth, async (req, res) => {
 
     const allowed = new Set(["new", "paid", "ready", "done"]);
     if (!allowed.has(status)) {
-      return res.status(400).json({ ok: false, message: "Invalid status" });
+      return res.status(400).json({ok: false, message: "Invalid status"});
     }
 
     const [result] = await db.execute(
@@ -196,16 +195,16 @@ router.patch("/orders/:id/status", requireAuth, async (req, res) => {
       [status, id],
     );
 
-    res.json({ ok: true, updated: result.affectedRows === 1 });
+    res.json({ok: true, updated: result.affectedRows === 1});
   } catch (err) {
     console.error("PATCH /orders/:id/status error:", err);
-    res.status(500).json({ ok: false, message: "Server error" });
+    res.status(500).json({ok: false, message: "Server error"});
   }
 });
 
 // Mount routes at BOTH "/" and "/api"
-app.use(router);
 app.use("/api", router);
+app.use("/api", paynowRoutes);
 
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
