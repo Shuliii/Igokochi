@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import styles from "./PickupTimeModal.module.css";
 import {X} from "lucide-react";
 
@@ -30,6 +30,11 @@ const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
     [state.items],
   );
 
+  useEffect(() => {
+    setQrImage("");
+    setShowPaymentDialog(false);
+  }, [total, state.items]);
+
   const canSubmit =
     itemCount > 0 &&
     pickup.date &&
@@ -40,6 +45,9 @@ const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
   const handleOpenPaymentDialog = async () => {
     try {
       setPaymentLoading(true);
+      setQrImage(""); // force old QR to disappear
+
+      const amount = Number(total.toFixed(2));
 
       const res = await fetch(`${API_BASE_URL}/paynow-qr`, {
         method: "POST",
@@ -47,8 +55,9 @@ const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: Number(total.toFixed(2)),
+          amount,
           editable: false,
+          reference: `ORDER-${Date.now()}`, // optional if backend supports it
         }),
       });
 
@@ -251,7 +260,10 @@ const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
               <button
                 type="button"
                 className={styles.secondaryBtn}
-                onClick={() => setShowPaymentDialog(false)}
+                onClick={() => {
+                  setQrImage("");
+                  setShowPaymentDialog(false);
+                }}
               >
                 Back
               </button>
