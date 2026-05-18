@@ -2,6 +2,7 @@
 import {
   PICKUP_HOURS_BY_DAY,
   EXTRA_PICKUP_HOURS_BY_DATE,
+  CLOSED_PICKUP_DATES,
 } from "../data/pickupData";
 
 /** Convert Date -> "YYYY-MM-DD" */
@@ -41,6 +42,10 @@ export function getTodayMidnight() {
  */
 export function isPickupDay(date) {
   const ymd = toYmd(date);
+
+  if (CLOSED_PICKUP_DATES.includes(ymd)) {
+    return false;
+  }
 
   if (EXTRA_PICKUP_HOURS_BY_DATE[ymd]) {
     return true;

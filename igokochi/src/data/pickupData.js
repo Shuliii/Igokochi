@@ -8,3 +8,7 @@ export const EXTRA_PICKUP_HOURS_BY_DATE = {
   "2026-05-27": { startHour: 11, endHour: 17 }, // Wed only
   "2026-05-28": { startHour: 11, endHour: 17 }, // Thu only
 };
+
+export const CLOSED_PICKUP_DATES = [
+  "2026-05-29", // Fri closed
+];
