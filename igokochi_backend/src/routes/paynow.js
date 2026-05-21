@@ -12,6 +12,9 @@ router.post("/paynow-qr", async (req, res) => {
       });
     }
 
+    // NEW: Create expiry in backend
+    const expiry = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
+
     const response = await fetch("http://paynow-service:3000/api/paynow-qr", {
       method: "POST",
       headers: {
@@ -20,6 +23,9 @@ router.post("/paynow-qr", async (req, res) => {
       body: JSON.stringify({
         amount,
         editable,
+
+        // NEW: Send expiry to PayNow microservice
+        expiry,
       }),
     });
 
