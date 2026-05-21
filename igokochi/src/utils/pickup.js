@@ -58,7 +58,7 @@ export function isPickupDay(date) {
 export function isSlotInPast(selectedDateObj, slot) {
   const now = new Date();
   const slotStart = new Date(selectedDateObj);
-  slotStart.setHours(slot.startHour, 0, 0, 0);
+  slotStart.setHours(slot.hour, slot.minute, 0, 0);
   return slotStart <= now;
 }
 
@@ -74,7 +74,7 @@ export function makeHourlySlotsForDate(selectedDateObj) {
 
   const slots = [];
 
-  for (let h = hours.startHour; h < hours.endHour; h++) {
+  for (let h = hours.startHour; h <= hours.endHour; h++) {
     slots.push({
       hour: h,
       minute: 0,
@@ -82,12 +82,14 @@ export function makeHourlySlotsForDate(selectedDateObj) {
       value: formatTimeValue(h, 0),
     });
 
-    slots.push({
-      hour: h,
-      minute: 30,
-      label: formatTimeLabel(h, 30),
-      value: formatTimeValue(h, 30),
-    });
+    if (h !== hours.endHour) {
+      slots.push({
+        hour: h,
+        minute: 30,
+        label: formatTimeLabel(h, 30),
+        value: formatTimeValue(h, 30),
+      });
+    }
   }
 
   return slots;
