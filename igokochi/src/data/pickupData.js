@@ -11,6 +11,7 @@ export const EXTRA_PICKUP_HOURS_BY_DATE = {
 
 export const CLOSED_PICKUP_DATES = [
   "2026-05-22",
-  "2026-05-29", // Fri closed
+  "2026-05-29",
   "2026-05-30",
+  "2026-06-19",
 ];

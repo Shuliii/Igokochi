@@ -109,10 +109,14 @@ ${itemsText}
  
 See you on ${formatPickupDate(order.pickup_date)} at ${formatSlot(order.pickup_slot)} :)
 
+Pick-up location:
+262 Serangoon Central Drive, #04-89
+Singapore 550262
+
 -Igokochi House-`;
 }
 
-export default function OrderCard({order, onSetStatus, tab}) {
+export default function OrderCard({ order, onSetStatus, tab }) {
   const status = normalizeStatus(order.status);
 
   let items = order.items;
@@ -135,7 +139,7 @@ export default function OrderCard({order, onSetStatus, tab}) {
     const waNumber = toWhatsAppNumber(order.customer_phone);
     if (!waNumber) return;
 
-    const message = buildWhatsAppMessage({...order, items});
+    const message = buildWhatsAppMessage({ ...order, items });
     const encodedMessage = encodeURIComponent(message);
 
     const url = `https://wa.me/${waNumber}?text=${encodedMessage}`;
