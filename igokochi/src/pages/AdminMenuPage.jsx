@@ -4,11 +4,13 @@ import AdminHeader from "../components/admin/AdminHeader";
 import AdminMain from "../components/admin/AdminMain";
 import MenuList from "../components/admin/MenuList";
 import { apiGet, apiPatch, forceLogout } from "../admin/api";
+import styles from "./AdminPage.module.css";
 
 export default function AdminMenuPage() {
   const navigate = useNavigate();
 
   const [menu, setMenu] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [netError, setNetError] = useState(false);
 
@@ -41,6 +43,7 @@ export default function AdminMenuPage() {
       setNetError(true);
     } finally {
       setRefreshing(false);
+      setLoading(false);
     }
   };
 
@@ -95,7 +98,7 @@ export default function AdminMenuPage() {
       )}
 
       <AdminMain>
-        <MenuList menu={menu} onToggle={handleToggle} />
+        <MenuList menu={menu} onToggle={handleToggle} loading={loading} />
       </AdminMain>
     </>
   );

@@ -4,6 +4,12 @@
   margin-bottom: 12px;
 }
 
+@media (min-width: 768px) {
+  .wrap {
+    max-width: 480px;
+  }
+}
+
 .tab {
   flex: 1;
   height: 38px;

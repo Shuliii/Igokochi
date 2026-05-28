@@ -22,15 +22,32 @@
   align-items: center;
   justify-content: space-between;
 
-  max-width: 520px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
+@media (min-width: 640px) {
+  .container {
+    padding-inline: 24px;
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+}
+
 .title {
-  font-weight: 600;
-  font-size: 18px;
+  font-weight: 700;
+  font-size: 17px;
   color: var(--color-white);
-  margin: 0;
 }
 
 .cartBtn {

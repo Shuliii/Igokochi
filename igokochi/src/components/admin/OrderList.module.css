@@ -1,8 +1,22 @@
 /* src/components/admin/OrderList.module.css */
 .list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    align-items: start;
+  }
+}
+
+@media (min-width: 1200px) {
+  .list {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .empty {
@@ -12,4 +26,79 @@
   border: 1px solid var(--color-border);
   color: #666;
   font-size: 14px;
+}
+
+/* ========================
+   SKELETON
+======================== */
+
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+
+.skeletonCard {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.skeletonCard::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  background: var(--color-border);
+}
+
+.skeletonLine {
+  border-radius: 6px;
+  background: linear-gradient(90deg, #efefef 25%, #e2e2e2 50%, #efefef 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.skeletonTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeletonTitle  { height: 14px; width: 45%; }
+.skeletonBadge  { height: 22px; width: 56px; border-radius: 999px; }
+.skeletonCustomer { height: 12px; width: 38%; }
+
+.skeletonBox {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-bg);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeletonItem      { height: 12px; width: 80%; }
+.skeletonItemShort { width: 55%; }
+.skeletonDivider   { height: 1px; background: var(--color-border); animation: none; }
+.skeletonTotal     { height: 12px; width: 30%; }
+
+.skeletonActions {
+  display: flex;
+  gap: 10px;
+}
+
+.skeletonBtn {
+  flex: 1;
+  height: 40px;
+  border-radius: 12px;
 }

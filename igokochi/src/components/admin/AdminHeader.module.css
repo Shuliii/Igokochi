@@ -12,6 +12,15 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 8px 32px;
+  }
 }
 
 /* LEFT */

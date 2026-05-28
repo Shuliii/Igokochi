@@ -29,7 +29,6 @@ const PickupTimeSlots = ({selectedDay, selectedSlot, onSelectSlot}) => {
                 onClick={() => onSelectSlot(slot.value)}
               >
                 {slot.label}
-                {disabled ? " (unavailable)" : ""}
               </button>
             );
           })}

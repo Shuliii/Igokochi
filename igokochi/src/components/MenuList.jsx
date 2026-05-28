@@ -5,13 +5,27 @@ import styles from "./MenuList.module.css";
 import { useCart } from "../cart/CartContext";
 import CustomizationModal from "./CustomizationModal";
 
+const SkeletonCard = () => (
+  <div className={styles.skeletonCard}>
+    <div className={styles.skeletonImage} />
+    <div className={styles.skeletonContent}>
+      <div className={`${styles.skeletonLine} ${styles.skeletonLineTitle}`} />
+      <div className={`${styles.skeletonLine} ${styles.skeletonLineDesc}`} />
+      <div className={`${styles.skeletonLine} ${styles.skeletonLineDesc}`} />
+      <div className={`${styles.skeletonLine} ${styles.skeletonLinePrice}`} />
+    </div>
+  </div>
+);
+
 const MenuList = () => {
   const { dispatch } = useCart();
   const [menu, setMenu] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     let mounted = true;
+    let firstLoad = true;
 
     const load = async () => {
       try {
@@ -22,17 +36,21 @@ const MenuList = () => {
         setMenu((prev) => {
           const prevStr = JSON.stringify(prev);
           const nextStr = JSON.stringify(data);
-
           return prevStr !== nextStr ? data : prev;
         });
       } catch (err) {
         console.error("Menu fetch error:", err);
+      } finally {
+        if (mounted && firstLoad) {
+          firstLoad = false;
+          setLoading(false);
+        }
       }
     };
 
-    load(); // initial load
+    load();
 
-    const id = setInterval(load, 15000); // every 15s
+    const id = setInterval(load, 15000);
 
     return () => {
       mounted = false;
@@ -64,13 +82,15 @@ const MenuList = () => {
   return (
     <>
       <section className={styles.list}>
-        {menu.map((item) => (
-          <MenuCard
-            key={item.id}
-            item={item}
-            onAdd={() => handleAddClick(item)}
-          />
-        ))}
+        {loading
+          ? Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)
+          : menu.map((item) => (
+              <MenuCard
+                key={item.id}
+                item={item}
+                onAdd={() => handleAddClick(item)}
+              />
+            ))}
       </section>
 
       <CustomizationModal

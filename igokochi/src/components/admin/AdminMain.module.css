@@ -2,5 +2,14 @@
 .main {
   padding: 16px;
   background: var(--color-bg);
-  min-height: calc(100vh - 56px); /* header height */
+  min-height: calc(100vh - 56px);
+
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .main {
+    padding: 24px 32px;
+  }
 }

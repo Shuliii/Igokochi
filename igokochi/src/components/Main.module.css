@@ -3,8 +3,18 @@
   padding-inline: 16px;
   padding-bottom: calc(24px + env(safe-area-inset-bottom));
   min-height: 100dvh;
+
+  max-width: 900px;
+  margin-inline: auto;
 }
 
 .withCart {
   padding-bottom: calc(88px + 24px + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 640px) {
+  .main {
+    padding-inline: 24px;
+    padding-block: 24px;
+  }
 }

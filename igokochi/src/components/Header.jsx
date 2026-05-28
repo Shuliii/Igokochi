@@ -29,7 +29,14 @@ const Header = ({ onCheckout }) => {
   return (
     <header className={styles.header}>
       <div className={styles.container}>
-        <h1 className={styles.title}>Igokochi House</h1>
+        <div className={styles.brand}>
+          <img
+            src="/assets/Igokochi House Logo_White transparent.PNG"
+            alt="Igokochi House"
+            className={styles.logo}
+          />
+          <span className={styles.title}>Igokochi House</span>
+        </div>
 
         <button className={styles.cartBtn} type="button" onClick={onCheckout}>
           <ShoppingCart />

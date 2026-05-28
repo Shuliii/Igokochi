@@ -53,6 +53,7 @@ function countByTab(list, todayYmd) {
 
 export default function AdminPage() {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [tab, setTab] = useState("today"); // today | ready | upcoming
   const [netError, setNetError] = useState(false);
@@ -100,7 +101,10 @@ export default function AdminPage() {
         console.error("Failed to fetch orders", err);
         if (!cancelled) setNetError(true);
       } finally {
-        if (!cancelled) setRefreshing(false);
+        if (!cancelled) {
+          setRefreshing(false);
+          setLoading(false);
+        }
       }
     })();
 
@@ -223,6 +227,7 @@ export default function AdminPage() {
           orders={filteredOrders}
           tab={tab}
           onSetStatus={setOrderStatus}
+          loading={loading}
         />
       </AdminMain>
     </>

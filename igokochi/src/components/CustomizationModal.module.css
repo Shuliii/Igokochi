@@ -1,3 +1,7 @@
+/* ========================
+   OVERLAY
+======================== */
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -6,21 +10,44 @@
   z-index: 1000;
 }
 
+.overlay[data-state="open"] {
+  animation: overlayIn 160ms ease-out;
+}
+
+.overlay[data-state="closed"] {
+  animation: overlayOut 160ms ease-in;
+}
+
+/* ========================
+   SHEET / MODAL
+======================== */
+
 .content {
   position: fixed;
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
+
   width: 100%;
   max-width: 520px;
-  max-height: 90vh;
-  background: #fff;
+  max-height: 92dvh;
+
+  background: var(--color-white);
   border-radius: 20px 20px 0 0;
+
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
   z-index: 1001;
-  animation: sheetUp 0.22s ease;
+}
+
+.content[data-state="open"] {
+  animation: sheetUp 0.22s ease-out;
+}
+
+.content[data-state="closed"] {
+  animation: sheetDown 0.18s ease-in;
 }
 
 @media (min-width: 640px) {
@@ -29,27 +56,44 @@
     bottom: auto;
     transform: translate(-50%, -50%);
     border-radius: 18px;
-    max-height: 80vh;
-    animation: modalPop 0.18s ease;
+    max-height: 82vh;
+  }
+
+  .content[data-state="open"] {
+    animation: modalPop 0.18s ease-out;
   }
 }
 
+/* ========================
+   DRAG HANDLE
+======================== */
+
 .handle {
-  width: 40px;
+  width: 36px;
   height: 4px;
-  background: #d1d5db;
+  background: var(--color-border);
   border-radius: 999px;
-  margin: 10px auto 6px;
+  margin: 10px auto 0;
   flex-shrink: 0;
 }
+
+@media (min-width: 640px) {
+  .handle {
+    display: none;
+  }
+}
+
+/* ========================
+   HEADER
+======================== */
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-  padding: 14px 18px;
-  border-bottom: 1px solid #f1f1f1;
+  padding: 14px 18px 16px;
+  border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
 }
 
@@ -63,30 +107,32 @@
 .thumb {
   width: 80px;
   height: 80px;
-  border-radius: 14px;
+  border-radius: 12px;
   object-fit: cover;
   flex-shrink: 0;
-  display: block;
-  background: #f3f4f6;
+  background: var(--color-bg);
 }
 
 .headerText {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .title {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  line-height: 1.2;
-  color: #111827;
+  line-height: 1.25;
+  color: var(--color-text);
 }
 
 .description {
-  margin-top: 4px;
-  font-size: 0.92rem;
-  line-height: 1.35;
-  color: #6b7280;
+  margin-top: 5px;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: #7a7a7a;
 }
 
 .closeButton {
@@ -94,49 +140,62 @@
   background: transparent;
   cursor: pointer;
   padding: 6px;
-  border-radius: 8px;
+  border-radius: 10px;
   flex-shrink: 0;
-  color: #111827;
+  color: var(--color-text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.closeButton:hover {
-  background: #f3f4f6;
+@media (hover: hover) {
+  .closeButton:hover {
+    background: var(--color-bg);
+  }
 }
+
+/* ========================
+   BODY
+======================== */
 
 .body {
   flex: 1;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 16px 18px;
-  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .section {
-  margin-bottom: 20px;
-}
-
-.section:last-child {
-  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .sectionHeader {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  margin-bottom: 10px;
 }
 
 .sectionTitle {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-text);
 }
 
 .required {
-  font-size: 0.78rem;
-  color: #6b7280;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9a9a9a;
 }
+
+/* ========================
+   OPTION CARDS
+======================== */
 
 .options {
   display: flex;
@@ -150,24 +209,25 @@
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border: 1px solid #e5e7eb;
+  border: 1.5px solid var(--color-border);
   border-radius: 12px;
   cursor: pointer;
-  background: #fff;
+  background: var(--color-white);
   transition:
     border-color 0.12s ease,
-    background 0.12s ease,
-    box-shadow 0.12s ease;
+    background 0.12s ease;
 }
 
-.optionCard:hover {
-  border-color: #d1d5db;
-  background: #fafafa;
+@media (hover: hover) {
+  .optionCard:hover {
+    border-color: var(--color-matcha-soft);
+    background: #fafaf9;
+  }
 }
 
 .optionCardSelected {
-  border-color: #111827;
-  background: #f9fafb;
+  border-color: var(--color-matcha-dark);
+  background: var(--color-matcha-soft);
 }
 
 .optionLeft {
@@ -179,113 +239,174 @@
 
 .radio {
   margin: 0;
-  accent-color: #111827;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
+  accent-color: var(--color-matcha-dark);
 }
 
 .optionName {
-  font-size: 0.98rem;
-  color: #111827;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text);
   line-height: 1.3;
 }
 
 .optionPrice {
-  font-size: 0.92rem;
-  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-matcha-dark);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
+/* ========================
+   NOTES
+======================== */
+
 .notes {
   width: 100%;
-  min-height: 92px;
-  border: 1px solid #e5e7eb;
+  min-height: 88px;
+  border: 1.5px solid var(--color-border);
   border-radius: 12px;
   padding: 12px 14px;
   font-size: 0.95rem;
   font-family: inherit;
-  line-height: 1.4;
+  line-height: 1.5;
   resize: none;
-  color: #111827;
-  background: #fff;
+  color: var(--color-text);
+  background: var(--color-white);
 }
 
 .notes::placeholder {
-  color: #9ca3af;
+  color: #9a9a9a;
 }
 
 .notes:focus {
   outline: none;
-  border-color: #9ca3af;
+  border-color: var(--color-matcha-dark);
 }
+
+/* ========================
+   QUANTITY
+======================== */
 
 .qtyRow {
   display: inline-flex;
   align-items: center;
-  gap: 14px;
-  padding: 6px 0;
+  gap: 16px;
 }
 
 .qtyButton {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  border: 1px solid #d1d5db;
-  background: #fff;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-white);
   font-size: 20px;
   line-height: 1;
   cursor: pointer;
-  color: #111827;
+  color: var(--color-text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.08s ease;
 }
 
-.qtyButton:hover {
-  background: #f9fafb;
+.qtyButton:active {
+  transform: scale(0.94);
+}
+
+@media (hover: hover) {
+  .qtyButton:hover {
+    background: var(--color-bg);
+    border-color: var(--color-matcha-soft);
+  }
 }
 
 .qtyValue {
-  min-width: 20px;
+  min-width: 24px;
   text-align: center;
   font-size: 1rem;
-  font-weight: 600;
-  color: #111827;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
+/* ========================
+   FOOTER
+======================== */
+
 .footer {
-  padding: 14px 18px 18px;
-  border-top: 1px solid #f1f1f1;
-  background: #fff;
+  padding: 14px 18px;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--color-border);
+  background: var(--color-white);
   flex-shrink: 0;
 }
 
 .addToCartButton {
   width: 100%;
+  height: 52px;
   border: none;
   border-radius: 14px;
-  padding: 14px 16px;
+  background: var(--color-matcha-dark);
+  color: var(--color-white);
   font-size: 1rem;
   font-weight: 700;
-  background: #111827;
-  color: #fff;
   cursor: pointer;
-  transition: opacity 0.12s ease;
+  transition:
+    opacity 0.12s ease,
+    transform 0.08s ease;
 }
 
-.addToCartButton:hover {
-  opacity: 0.94;
+.addToCartButton:active {
+  transform: scale(0.99);
+}
+
+@media (hover: hover) {
+  .addToCartButton:hover {
+    opacity: 0.9;
+  }
+}
+
+/* ========================
+   ANIMATIONS
+======================== */
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes overlayOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 @keyframes sheetUp {
   from {
-    transform: translate(-50%, 100%);
+    transform: translateX(-50%) translateY(100%);
   }
   to {
-    transform: translate(-50%, 0);
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes sheetDown {
+  from {
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    transform: translateX(-50%) translateY(100%);
   }
 }
 
 @keyframes modalPop {
   from {
-    transform: translate(-50%, -46%) scale(0.97);
+    transform: translate(-50%, -48%) scale(0.97);
     opacity: 0;
   }
   to {
