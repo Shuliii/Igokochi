@@ -19,6 +19,11 @@ function fmtRange(start, end) {
   return `${fmtHour(start)}–${fmtHour(end)}`;
 }
 
+function todayYmd() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 function fmtDate(ymd) {
   const [y, m, d] = ymd.split("-").map(Number);
   return new Date(y, m - 1, d).toLocaleDateString(undefined, {
@@ -207,11 +212,11 @@ export default function AdminSchedulePage() {
 
           {loading ? (
             <p className={styles.empty}>Loading…</p>
-          ) : overrides.length === 0 ? (
-            <p className={styles.empty}>No overrides set.</p>
+          ) : overrides.filter((o) => o.date >= todayYmd()).length === 0 ? (
+            <p className={styles.empty}>No upcoming overrides.</p>
           ) : (
             <ul className={styles.overrideList}>
-              {overrides.map((o) => (
+              {overrides.filter((o) => o.date >= todayYmd()).map((o) => (
                 <li key={o.date} className={styles.overrideItem}>
                   <div className={styles.overrideLeft}>
                     <span className={styles.overrideDate}>{fmtDate(o.date)}</span>
