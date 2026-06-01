@@ -4,6 +4,7 @@ import { CartProvider } from "./cart/CartContext";
 import CustomerPage from "./pages/CustomerPage";
 import AdminPage from "./pages/AdminPage";
 import AdminMenuPage from "./pages/AdminMenuPage";
+import AdminSchedulePage from "./pages/AdminSchedulePage";
 import AdminLogin from "./admin/AdminLogin";
 import RequireAuth from "./admin/RequireAuth";
 
@@ -31,6 +32,14 @@ function App() {
             element={
               <RequireAuth>
                 <AdminMenuPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin/schedule"
+            element={
+              <RequireAuth>
+                <AdminSchedulePage />
               </RequireAuth>
             }
           />

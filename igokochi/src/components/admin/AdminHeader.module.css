@@ -5,8 +5,8 @@
 }
 
 .container {
-  min-height: 64px;
-  padding: 8px 12px;
+  min-height: 56px;
+  padding: 8px 16px;
 
   display: flex;
   align-items: center;
@@ -17,9 +17,9 @@
   margin-inline: auto;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
   .container {
-    padding: 8px 32px;
+    padding: 8px 24px;
   }
 }
 
@@ -31,6 +31,18 @@
   gap: 6px;
 
   min-width: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
 }
 
 .title {
@@ -81,30 +93,11 @@
   flex-shrink: 0;
 }
 
-.meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  line-height: 1.05;
-}
-
-.username {
-  max-width: 70px;
-
-  font-size: 11px;
-  font-weight: 800;
-
-  color: rgba(255, 255, 255, 0.95);
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .date {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
 }
 
 /* ACTIONS */
@@ -176,11 +169,6 @@
   .tab {
     font-size: 11px;
     padding: 5px 8px;
-  }
-
-  .username {
-    max-width: 52px;
-    font-size: 10px;
   }
 
   .date {

@@ -2,9 +2,9 @@
 import styles from "./PickupTimeSlots.module.css";
 import {isSlotInPast, makeHourlySlotsForDate, parseYmd} from "../utils/pickup";
 
-const PickupTimeSlots = ({selectedDay, selectedSlot, onSelectSlot}) => {
+const PickupTimeSlots = ({selectedDay, selectedSlot, onSelectSlot, schedule}) => {
   const selectedDateObj = selectedDay ? parseYmd(selectedDay) : null;
-  const slots = makeHourlySlotsForDate(selectedDateObj);
+  const slots = makeHourlySlotsForDate(selectedDateObj, schedule);
 
   return (
     <div className={styles.wrap}>

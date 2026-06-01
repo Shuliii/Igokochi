@@ -1,9 +1,4 @@
 // src/utils/pickupTime.js
-import {
-  PICKUP_HOURS_BY_DAY,
-  EXTRA_PICKUP_HOURS_BY_DATE,
-  CLOSED_PICKUP_DATES,
-} from "../data/pickupData";
 
 /** Convert Date -> "YYYY-MM-DD" */
 export function toYmd(date) {
@@ -37,22 +32,15 @@ export function getTodayMidnight() {
   return t;
 }
 
-/**
- * Allowed pickup days: Fri (5), Sat (6), Sun (0)
- */
-export function isPickupDay(date) {
+export function isPickupDay(date, schedule) {
+  const {PICKUP_HOURS_BY_DAY, EXTRA_PICKUP_HOURS_BY_DATE, CLOSED_PICKUP_DATES} = schedule;
   const ymd = toYmd(date);
 
-  if (CLOSED_PICKUP_DATES.includes(ymd)) {
-    return false;
-  }
-
-  if (EXTRA_PICKUP_HOURS_BY_DATE[ymd]) {
-    return true;
-  }
+  if (CLOSED_PICKUP_DATES.includes(ymd)) return false;
+  if (EXTRA_PICKUP_HOURS_BY_DATE[ymd]) return true;
 
   const day = date.getDay();
-  return day === 5 || day === 6 || day === 0;
+  return Boolean(PICKUP_HOURS_BY_DAY[day]);
 }
 
 export function isSlotInPast(selectedDateObj, slot) {
@@ -62,9 +50,10 @@ export function isSlotInPast(selectedDateObj, slot) {
   return slotStart <= now;
 }
 
-export function makeHourlySlotsForDate(selectedDateObj) {
+export function makeHourlySlotsForDate(selectedDateObj, schedule) {
   if (!selectedDateObj) return [];
 
+  const {PICKUP_HOURS_BY_DAY, EXTRA_PICKUP_HOURS_BY_DATE} = schedule;
   const ymd = toYmd(selectedDateObj);
   const day = selectedDateObj.getDay();
 

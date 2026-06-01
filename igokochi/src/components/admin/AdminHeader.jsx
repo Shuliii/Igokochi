@@ -12,17 +12,23 @@ const AdminHeader = ({ onRefresh, refreshing, onLogout }) => {
     day: "numeric",
   });
 
-  const username = localStorage.getItem("igokochi_profile");
-
   const isOrders = location.pathname === "/admin";
   const isMenu = location.pathname === "/admin/menu";
+  const isSchedule = location.pathname === "/admin/schedule";
 
   return (
     <header className={styles.header}>
       <div className={styles.container}>
         {/* LEFT */}
         <div className={styles.left}>
-          <span className={styles.title}>Igokochi Admin</span>
+          <div className={styles.brand}>
+            <img
+              src="/assets/Igokochi House Logo_White transparent.PNG"
+              alt="Igokochi"
+              className={styles.logo}
+            />
+            <span className={styles.title}>Admin</span>
+          </div>
 
           {/* NAV */}
           <div className={styles.nav}>
@@ -39,15 +45,19 @@ const AdminHeader = ({ onRefresh, refreshing, onLogout }) => {
             >
               Menu
             </button>
+
+            <button
+              className={`${styles.tab} ${isSchedule ? styles.active : ""}`}
+              onClick={() => navigate("/admin/schedule")}
+            >
+              Schedule
+            </button>
           </div>
         </div>
 
         {/* RIGHT */}
         <div className={styles.right}>
-          <div className={styles.meta}>
-            <span className={styles.username}>{username}</span>
-            <span className={styles.date}>{today}</span>
-          </div>
+          <span className={styles.date}>{today}</span>
 
           <div className={styles.actions}>
             {onRefresh && (

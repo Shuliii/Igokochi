@@ -10,7 +10,7 @@ const getMonFirstDayIndex = (date) => {
   return (date.getDay() + 6) % 7;
 };
 
-const PickupCalendar = ({selectedDay, onSelectDay}) => {
+const PickupCalendar = ({selectedDay, onSelectDay, schedule}) => {
   const today = useMemo(() => getTodayMidnight(), []);
 
   const [view, setView] = useState(() => ({
@@ -61,7 +61,7 @@ const PickupCalendar = ({selectedDay, onSelectDay}) => {
   const isAllowed = (date) => {
     if (!date) return false;
     const notPast = date >= today;
-    return notPast && isPickupDay(date);
+    return notPast && isPickupDay(date, schedule);
   };
 
   return (

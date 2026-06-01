@@ -5,8 +5,10 @@ import PickupCalendar from "./PickupCalendar";
 import PickupTimeSlots from "./PickupTimeSlots";
 
 import { getTodayMidnight, toYmd } from "../utils/pickup";
+import { useSchedule } from "../hooks/useSchedule";
 
 const PickupTimeCard = ({ value, onChange }) => {
+  const {schedule} = useSchedule();
   const today = useMemo(() => getTodayMidnight(), []);
   const defaultDay = toYmd(today);
 
@@ -37,6 +39,7 @@ const PickupTimeCard = ({ value, onChange }) => {
         <PickupCalendar
           selectedDay={selectedDay}
           onSelectDay={handleDaySelect}
+          schedule={schedule}
         />
       </div>
 
@@ -45,6 +48,7 @@ const PickupTimeCard = ({ value, onChange }) => {
           selectedDay={selectedDay}
           selectedSlot={selectedSlot}
           onSelectSlot={handleSlotSelect}
+          schedule={schedule}
         />
       </div>
     </div>
