@@ -11,7 +11,7 @@ router.get("/schedule", async (req, res) => {
       "SELECT day_of_week, start_hour, end_hour, enabled FROM pickup_weekly_hours ORDER BY day_of_week",
     );
     const [overrides] = await db.query(
-      "SELECT date, type, start_hour, end_hour FROM pickup_date_overrides ORDER BY date",
+      "SELECT DATE_FORMAT(date, '%Y-%m-%d') AS date, type, start_hour, end_hour FROM pickup_date_overrides ORDER BY date",
     );
 
     res.json({
