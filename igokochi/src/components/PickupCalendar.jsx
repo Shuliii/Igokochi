@@ -1,5 +1,5 @@
 // src/components/checkout/PickupCalendar.jsx
-import {useMemo, useState} from "react";
+import {useMemo, useState, useEffect} from "react";
 import styles from "./PickupCalendar.module.css";
 import {ChevronLeft, ChevronRight} from "lucide-react";
 import {getTodayMidnight, isPickupDay, toYmd} from "../utils/pickup";
@@ -11,7 +11,15 @@ const getMonFirstDayIndex = (date) => {
 };
 
 const PickupCalendar = ({selectedDay, onSelectDay, schedule}) => {
-  const today = useMemo(() => getTodayMidnight(), []);
+  const [now, setNow] = useState(() => getTodayMidnight());
+  const today = now;
+
+  // Refresh at midnight so past dates become unselectable without a page reload
+  useEffect(() => {
+    const ms = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - Date.now();
+    const id = setTimeout(() => setNow(getTodayMidnight()), ms);
+    return () => clearTimeout(id);
+  }, [now]);
 
   const [view, setView] = useState(() => ({
     year: today.getFullYear(),

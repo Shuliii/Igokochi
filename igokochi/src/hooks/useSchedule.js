@@ -10,6 +10,7 @@ const EMPTY_SCHEDULE = {
 export function useSchedule() {
   const [schedule, setSchedule] = useState(EMPTY_SCHEDULE);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -19,6 +20,7 @@ export function useSchedule() {
       try {
         const data = await fetchSchedule();
         if (!mounted) return;
+        setError(false);
         setSchedule((prev) => {
           const prevStr = JSON.stringify(prev);
           const nextStr = JSON.stringify(data);
@@ -26,6 +28,7 @@ export function useSchedule() {
         });
       } catch (err) {
         console.error("Schedule fetch error:", err);
+        if (mounted) setError(true);
       } finally {
         if (mounted && firstLoad) {
           firstLoad = false;
@@ -43,5 +46,5 @@ export function useSchedule() {
     };
   }, []);
 
-  return {schedule, loading};
+  return {schedule, loading, error};
 }

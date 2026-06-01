@@ -5,28 +5,15 @@ import AdminMain from "../components/admin/AdminMain";
 import OrderList from "../components/admin/OrderList";
 import OrderTabs from "../components/admin/OrderTabs";
 import { apiGet, apiPatch, forceLogout } from "../admin/api";
-import styles from "./AdminPage.module.css"; // make sure this file exists
-
-// --- Helpers ---
-function toYmdLocal(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-function getTodayMidnight() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
+import { toYmd, getTodayMidnight } from "../utils/pickup";
+import styles from "./AdminPage.module.css";
 
 // mysql date may come as ISO string, normalize:
 function orderPickupYmd(order) {
   const raw = String(order.pickup_date || "");
   if (raw.length >= 10) return raw.slice(0, 10);
   const d = new Date(order.pickup_date);
-  return toYmdLocal(d);
+  return toYmd(d);
 }
 
 function normalizeStatus(s) {
@@ -60,7 +47,7 @@ export default function AdminPage() {
   const navigate = useNavigate();
 
   const today = useMemo(() => getTodayMidnight(), []);
-  const todayYmd = useMemo(() => toYmdLocal(today), [today]);
+  const todayYmd = useMemo(() => toYmd(today), [today]);
 
   const onLogout = () => {
     forceLogout();

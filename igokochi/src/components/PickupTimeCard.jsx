@@ -8,7 +8,7 @@ import { getTodayMidnight, toYmd } from "../utils/pickup";
 import { useSchedule } from "../hooks/useSchedule";
 
 const PickupTimeCard = ({ value, onChange }) => {
-  const {schedule} = useSchedule();
+  const {schedule, loading, error} = useSchedule();
   const today = useMemo(() => getTodayMidnight(), []);
   const defaultDay = toYmd(today);
 
@@ -35,22 +35,30 @@ const PickupTimeCard = ({ value, onChange }) => {
     <div className={styles.card}>
       <h3 className={styles.title}>Pickup Time</h3>
 
-      <div className={styles.calendarWrap}>
-        <PickupCalendar
-          selectedDay={selectedDay}
-          onSelectDay={handleDaySelect}
-          schedule={schedule}
-        />
-      </div>
+      {error ? (
+        <p className={styles.statusMsg}>Could not load pickup times. Please refresh.</p>
+      ) : loading ? (
+        <p className={styles.statusMsg}>Loading availability…</p>
+      ) : (
+        <>
+          <div className={styles.calendarWrap}>
+            <PickupCalendar
+              selectedDay={selectedDay}
+              onSelectDay={handleDaySelect}
+              schedule={schedule}
+            />
+          </div>
 
-      <div className={styles.slotsWrap}>
-        <PickupTimeSlots
-          selectedDay={selectedDay}
-          selectedSlot={selectedSlot}
-          onSelectSlot={handleSlotSelect}
-          schedule={schedule}
-        />
-      </div>
+          <div className={styles.slotsWrap}>
+            <PickupTimeSlots
+              selectedDay={selectedDay}
+              selectedSlot={selectedSlot}
+              onSelectSlot={handleSlotSelect}
+              schedule={schedule}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

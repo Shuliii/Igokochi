@@ -84,6 +84,10 @@ export default function AdminSchedulePage() {
   const handleAdd = async (e) => {
     e.preventDefault();
     if (!date) return;
+    if (type === "open" && startHour >= endHour) {
+      alert("Start time must be before end time.");
+      return;
+    }
     setSaving(true);
     try {
       await apiPost("/schedule/overrides", {
@@ -115,6 +119,9 @@ export default function AdminSchedulePage() {
       console.error("Failed to delete override", err);
     }
   };
+
+  const today = todayYmd();
+  const upcomingOverrides = overrides.filter((o) => o.date >= today);
 
   return (
     <>
@@ -212,11 +219,11 @@ export default function AdminSchedulePage() {
 
           {loading ? (
             <p className={styles.empty}>Loading…</p>
-          ) : overrides.filter((o) => o.date >= todayYmd()).length === 0 ? (
+          ) : upcomingOverrides.length === 0 ? (
             <p className={styles.empty}>No upcoming overrides.</p>
           ) : (
             <ul className={styles.overrideList}>
-              {overrides.filter((o) => o.date >= todayYmd()).map((o) => (
+              {upcomingOverrides.map((o) => (
                 <li key={o.date} className={styles.overrideItem}>
                   <div className={styles.overrideLeft}>
                     <span className={styles.overrideDate}>{fmtDate(o.date)}</span>
