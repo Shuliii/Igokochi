@@ -84,6 +84,7 @@
   border: 1px solid rgba(229, 226, 221, 1);
   background: rgba(255, 255, 255, 0.95);
   color: var(--color-text);
+  font-size: 16px;
   outline: none;
   transition:
     box-shadow 0.15s ease,
