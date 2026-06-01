@@ -5,6 +5,7 @@ import {db} from "./db.js";
 import {requireAuth} from "./middleware/requireAuth.js";
 import * as auth from "./auth.js"; // ✅ add this
 import paynowRoutes from "./routes/paynow.js";
+import scheduleRoutes from "./routes/schedule.js";
 
 // dotenv.config();
 
@@ -205,6 +206,7 @@ router.patch("/orders/:id/status", requireAuth, async (req, res) => {
 // Mount routes at BOTH "/" and "/api"
 app.use("/api", router);
 app.use("/api", paynowRoutes);
+app.use("/api", scheduleRoutes);
 
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
