@@ -32,7 +32,7 @@ jobs:
         env:
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
         run: |
-          git clone https://x-access-token:${{ secrets.HELM_REPO_TOKEN }}@github.com/ricoharsono/helm-DO.git
+          git clone https://x-access-token:${{ secrets.HELM_REPO_TOKEN }}@github.com/Shuliii/helm-DO.git
           cd helm-DO
           yq e ".backend.image.tag = \"$IMAGE_TAG\"" -i igokochi/values.yaml
           git config user.email "github-actions@github.com"
