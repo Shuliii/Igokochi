@@ -43,7 +43,7 @@ const AdminHeader = ({ onRefresh, refreshing, onLogout }) => {
               className={`${styles.tab} ${isMenu ? styles.active : ""}`}
               onClick={() => navigate("/admin/menu")}
             >
-              Menus
+              Menu
             </button>
 
             <button
