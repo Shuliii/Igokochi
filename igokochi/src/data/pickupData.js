@@ -12,7 +12,9 @@
 
 // export const CLOSED_PICKUP_DATES = ["2026-06-06", "2026-06-19"];
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:4000").replace(/\/$/, "");
+const API_BASE = (
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000"
+).replace(/\/$/, "");
 
 export async function fetchSchedule() {
   const res = await fetch(`${API_BASE}/schedule`);
@@ -47,5 +49,9 @@ export async function fetchSchedule() {
     }
   }
 
-  return {PICKUP_HOURS_BY_DAY, EXTRA_PICKUP_HOURS_BY_DATE, CLOSED_PICKUP_DATES};
+  return {
+    PICKUP_HOURS_BY_DAY,
+    EXTRA_PICKUP_HOURS_BY_DATE,
+    CLOSED_PICKUP_DATES,
+  };
 }
