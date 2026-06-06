@@ -4,7 +4,7 @@ import styles from "./PickupTimeCard.module.css";
 import PickupCalendar from "./PickupCalendar";
 import PickupTimeSlots from "./PickupTimeSlots";
 
-import { getTodayMidnight, toYmd } from "../utils/pickup";
+import { getTodayMidnight, toYmd, isPickupDay, parseYmd } from "../utils/pickup";
 import { useSchedule } from "../hooks/useSchedule";
 
 const PickupTimeCard = ({ value, onChange }) => {
@@ -19,6 +19,17 @@ const PickupTimeCard = ({ value, onChange }) => {
     setSelectedDay(value?.date || defaultDay);
     setSelectedSlot(value?.slot || null);
   }, [value?.date, value?.slot, defaultDay]);
+
+  // Once schedule loads, clear the pre-selected day if it turned out to be closed
+  useEffect(() => {
+    if (loading) return;
+    if (!selectedDay) return;
+    const date = parseYmd(selectedDay);
+    if (!isPickupDay(date, schedule)) {
+      setSelectedDay(null);
+      setSelectedSlot(null);
+    }
+  }, [loading, schedule]);
 
   const handleDaySelect = (ymd) => {
     setSelectedDay(ymd);

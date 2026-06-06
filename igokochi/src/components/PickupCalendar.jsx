@@ -110,8 +110,8 @@ const PickupCalendar = ({selectedDay, onSelectDay, schedule}) => {
           if (!date) return <div key={`empty-${idx}`} />;
 
           const ymd = toYmd(date);
-          const active = ymd === selectedDay;
           const allowed = isAllowed(date);
+          const active = ymd === selectedDay && allowed;
 
           return (
             <button
