@@ -6,6 +6,7 @@ import PickupTimeSlots from "./PickupTimeSlots";
 
 import { getTodayMidnight, toYmd, isPickupDay, parseYmd } from "../utils/pickup";
 import { useSchedule } from "../hooks/useSchedule";
+import { useBookedSlots } from "../hooks/useBookedSlots";
 
 const PickupTimeCard = ({ value, onChange }) => {
   const {schedule, loading, error} = useSchedule();
@@ -14,6 +15,8 @@ const PickupTimeCard = ({ value, onChange }) => {
 
   const [selectedDay, setSelectedDay] = useState(value?.date || defaultDay);
   const [selectedSlot, setSelectedSlot] = useState(value?.slot || null);
+
+  const bookedCounts = useBookedSlots(selectedDay);
 
   useEffect(() => {
     setSelectedDay(value?.date || defaultDay);
@@ -66,6 +69,7 @@ const PickupTimeCard = ({ value, onChange }) => {
               selectedSlot={selectedSlot}
               onSelectSlot={handleSlotSelect}
               schedule={schedule}
+              bookedCounts={bookedCounts}
             />
           </div>
         </>

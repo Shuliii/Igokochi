@@ -2,7 +2,9 @@
 import styles from "./PickupTimeSlots.module.css";
 import {isSlotInPast, makeHourlySlotsForDate, parseYmd} from "../utils/pickup";
 
-const PickupTimeSlots = ({selectedDay, selectedSlot, onSelectSlot, schedule}) => {
+const SLOT_CAPACITY = 5;
+
+const PickupTimeSlots = ({selectedDay, selectedSlot, onSelectSlot, schedule, bookedCounts = {}}) => {
   const selectedDateObj = selectedDay ? parseYmd(selectedDay) : null;
   const slots = makeHourlySlotsForDate(selectedDateObj, schedule);
 
@@ -18,17 +20,18 @@ const PickupTimeSlots = ({selectedDay, selectedSlot, onSelectSlot, schedule}) =>
         <div className={styles.list}>
           {slots.map((slot) => {
             const active = slot.value === selectedSlot;
-            const disabled = isSlotInPast(selectedDateObj, slot);
+            const full = (bookedCounts[slot.value] ?? 0) >= SLOT_CAPACITY;
+            const disabled = isSlotInPast(selectedDateObj, slot) || full;
 
             return (
               <button
                 key={slot.value}
                 type="button"
                 disabled={disabled}
-                className={`${styles.slotBtn} ${active ? styles.slotBtnActive : ""}`}
+                className={`${styles.slotBtn} ${active ? styles.slotBtnActive : ""} ${full ? styles.slotBtnFull : ""}`}
                 onClick={() => onSelectSlot(slot.value)}
               >
-                {slot.label}
+                {slot.label}{full ? " · Full" : ""}
               </button>
             );
           })}

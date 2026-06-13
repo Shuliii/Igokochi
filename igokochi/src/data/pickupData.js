@@ -16,6 +16,15 @@ const API_BASE = (
   import.meta.env.VITE_API_BASE_URL || "http://localhost:4000"
 ).replace(/\/$/, "");
 
+export async function fetchBookedSlots(date) {
+  const res = await fetch(`${API_BASE}/slots/booked?date=${date}`);
+  const data = await res.json();
+  if (!res.ok || !data.ok) {
+    throw new Error(data.message || "Failed to fetch booked slots");
+  }
+  return data.counts;
+}
+
 export async function fetchSchedule() {
   const res = await fetch(`${API_BASE}/schedule`);
   const data = await res.json();

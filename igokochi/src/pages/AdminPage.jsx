@@ -178,19 +178,23 @@ export default function AdminPage() {
       return ymd > todayYmd;
     });
 
-    // Sort inside READY tab: ready first then done
+    const byDateTime = (a, b) => {
+      const dateCmp = orderPickupYmd(a).localeCompare(orderPickupYmd(b));
+      if (dateCmp !== 0) return dateCmp;
+      return String(a.pickup_slot || "").localeCompare(String(b.pickup_slot || ""));
+    };
+
+    if (tab === "today" || tab === "upcoming") {
+      list.sort(byDateTime);
+    }
+
     if (tab === "ready") {
       const rank = { ready: 0, done: 1 };
       list.sort((a, b) => {
-        const as = normalizeStatus(a.status);
-        const bs = normalizeStatus(b.status);
-        return (rank[as] ?? 99) - (rank[bs] ?? 99);
+        const dateCmp = byDateTime(a, b);
+        if (dateCmp !== 0) return dateCmp;
+        return (rank[normalizeStatus(a.status)] ?? 99) - (rank[normalizeStatus(b.status)] ?? 99);
       });
-    }
-
-    // Upcoming: sort by pickup_date ascending
-    if (tab === "upcoming") {
-      list.sort((a, b) => orderPickupYmd(a).localeCompare(orderPickupYmd(b)));
     }
 
     return list;
