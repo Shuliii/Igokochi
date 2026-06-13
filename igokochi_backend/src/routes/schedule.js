@@ -54,6 +54,31 @@ router.post("/schedule/overrides", requireAuth, async (req, res) => {
   }
 });
 
+/* GET /slots/booked?date=YYYY-MM-DD - public, returns order count per slot */
+router.get("/slots/booked", async (req, res) => {
+  try {
+    const {date} = req.query;
+    if (!date) {
+      return res.status(400).json({ok: false, message: "date required"});
+    }
+
+    const [rows] = await db.query(
+      "SELECT pickup_slot, COUNT(*) AS count FROM orders WHERE pickup_date = ? GROUP BY pickup_slot",
+      [date],
+    );
+
+    const counts = {};
+    for (const row of rows) {
+      counts[row.pickup_slot] = Number(row.count);
+    }
+
+    res.json({ok: true, counts});
+  } catch (err) {
+    console.error("GET /slots/booked error:", err);
+    res.status(500).json({ok: false, message: "Failed to fetch booked slots"});
+  }
+});
+
 /* DELETE /schedule/overrides/:date - admin: remove a date override */
 router.delete("/schedule/overrides/:date", requireAuth, async (req, res) => {
   try {
