@@ -3,6 +3,7 @@ import MenuCard from "./MenuCard";
 import { fetchMenu } from "../data/menu";
 import styles from "./MenuList.module.css";
 import { useCart } from "../cart/CartContext";
+import { buildCartKey } from "../cart/CartReducer";
 import CustomizationModal from "./CustomizationModal";
 
 const SkeletonCard = () => (
@@ -18,7 +19,7 @@ const SkeletonCard = () => (
 );
 
 const MenuList = () => {
-  const { dispatch } = useCart();
+  const { state, dispatch } = useCart();
   const [menu, setMenu] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -30,9 +31,7 @@ const MenuList = () => {
     const load = async () => {
       try {
         const data = await fetchMenu();
-
         if (!mounted) return;
-
         setMenu((prev) => {
           const prevStr = JSON.stringify(prev);
           const nextStr = JSON.stringify(data);
@@ -49,9 +48,7 @@ const MenuList = () => {
     };
 
     load();
-
     const id = setInterval(load, 15000);
-
     return () => {
       mounted = false;
       clearInterval(id);
@@ -64,19 +61,24 @@ const MenuList = () => {
     if (item.modifiers?.length) {
       setSelectedItem(item);
     } else {
+      const cartKey = buildCartKey({ id: item.id, selectedOptions: [], notes: "" });
       dispatch({
         type: "ADD_ITEM",
         payload: {
           id: item.id,
           name: item.name,
-          image: item.image,
           price: Number(item.price),
           qty: 1,
           notes: "",
           selectedOptions: [],
+          cartKey,
         },
       });
     }
+  };
+
+  const handleDecrement = (cartKey) => {
+    dispatch({ type: "REMOVE_ITEM", payload: { cartKey } });
   };
 
   return (
@@ -84,13 +86,40 @@ const MenuList = () => {
       <section className={styles.list}>
         {loading
           ? Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)
-          : menu.map((item) => (
-              <MenuCard
-                key={item.id}
-                item={item}
-                onAdd={() => handleAddClick(item)}
-              />
-            ))}
+          : menu.map((item) => {
+              const hasModifiers = Boolean(item.modifiers?.length);
+
+              if (hasModifiers) {
+                const cartEntries = state.items.filter((i) => i.id === item.id);
+                const totalQty = cartEntries.reduce((sum, i) => sum + i.qty, 0);
+                // decrement the most recently added variant
+                const lastEntry = cartEntries[cartEntries.length - 1];
+
+                return (
+                  <MenuCard
+                    key={item.id}
+                    item={item}
+                    onAdd={() => handleAddClick(item)}
+                    onDecrement={lastEntry ? () => handleDecrement(lastEntry.cartKey) : undefined}
+                    totalQty={totalQty}
+                  />
+                );
+              }
+
+              const cartKey = buildCartKey({ id: item.id, selectedOptions: [], notes: "" });
+              const cartItem = state.items.find((i) => i.cartKey === cartKey);
+              const totalQty = cartItem?.qty || 0;
+
+              return (
+                <MenuCard
+                  key={item.id}
+                  item={item}
+                  onAdd={() => handleAddClick(item)}
+                  onDecrement={totalQty > 0 ? () => handleDecrement(cartKey) : undefined}
+                  totalQty={totalQty}
+                />
+              );
+            })}
       </section>
 
       <CustomizationModal

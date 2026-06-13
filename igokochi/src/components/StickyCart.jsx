@@ -19,6 +19,20 @@ const StickyCart = ({onCheckout}) => {
     [state.items],
   );
 
+  // --- Badge pop on increment ---
+  const prevBadgeRef = useRef(itemCount);
+  const [badgePop, setBadgePop] = useState(false);
+
+  useEffect(() => {
+    const prev = prevBadgeRef.current;
+    prevBadgeRef.current = itemCount;
+    if (itemCount > prev) {
+      setBadgePop(true);
+      const t = setTimeout(() => setBadgePop(false), 180);
+      return () => clearTimeout(t);
+    }
+  }, [itemCount]);
+
   // --- Animation mount/unmount control ---
   const prevCountRef = useRef(itemCount);
   const [mounted, setMounted] = useState(itemCount > 0);
@@ -66,7 +80,9 @@ const StickyCart = ({onCheckout}) => {
         <div className={styles.left}>
           <span className={styles.cartIconWrap} aria-hidden="true">
             <ShoppingCart size={20} className={styles.cartIcon} />
-            <span className={styles.cartBadge}>{itemCount}</span>
+            <span className={`${styles.cartBadge} ${badgePop ? styles.cartBadgePop : ""}`}>
+              {itemCount}
+            </span>
           </span>
 
           <div className={styles.summary}>

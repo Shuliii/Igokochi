@@ -73,6 +73,38 @@
   flex-shrink: 0;
 }
 
+/* wrapper for + button so badge can be positioned relative to it */
+.addBtnWrap {
+  position: relative;
+  display: inline-flex;
+}
+
+/* cart count badge for modifier items */
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+
+  min-width: 17px;
+  height: 17px;
+  padding: 0 3px;
+
+  background: var(--color-matcha-dark);
+  color: var(--color-white);
+  border: 1.5px solid var(--color-bg);
+  border-radius: 999px;
+
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  pointer-events: none;
+}
+
 /* single + button */
 .addButton {
   width: 32px;

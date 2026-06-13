@@ -61,24 +61,19 @@ export function makeHourlySlotsForDate(selectedDateObj, schedule) {
 
   if (!hours) return [];
 
+  const startMin = Math.round(hours.startHour * 60);
+  const endMin = Math.round(hours.endHour * 60);
   const slots = [];
 
-  for (let h = hours.startHour; h <= hours.endHour; h++) {
+  for (let min = startMin; min <= endMin; min += 30) {
+    const h = Math.floor(min / 60);
+    const m = min % 60;
     slots.push({
       hour: h,
-      minute: 0,
-      label: formatTimeLabel(h, 0),
-      value: formatTimeValue(h, 0),
+      minute: m,
+      label: formatTimeLabel(h, m),
+      value: formatTimeValue(h, m),
     });
-
-    if (h !== hours.endHour) {
-      slots.push({
-        hour: h,
-        minute: 30,
-        label: formatTimeLabel(h, 30),
-        value: formatTimeValue(h, 30),
-      });
-    }
   }
 
   return slots;

@@ -10,9 +10,14 @@ const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function fmtHour(h) {
   if (h == null) return "";
-  if (h === 0) return "12am";
-  if (h === 12) return "12pm";
-  return h > 12 ? `${h - 12}pm` : `${h}am`;
+  const totalMin = Math.round(h * 60);
+  const hour = Math.floor(totalMin / 60);
+  const min = totalMin % 60;
+  const suffix = hour >= 12 ? "pm" : "am";
+  const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+  return min > 0
+    ? `${hour12}.${String(min).padStart(2, "0")}${suffix}`
+    : `${hour12}${suffix}`;
 }
 
 function fmtRange(start, end) {
@@ -33,7 +38,8 @@ function fmtDate(ymd) {
   });
 }
 
-const HOUR_OPTIONS = Array.from({length: 15}, (_, i) => i + 7); // 7am–9pm
+// 7:00am–9:00pm in 30-min steps → [7, 7.5, 8, 8.5, ..., 21]
+const HOUR_OPTIONS = Array.from({length: 29}, (_, i) => 7 + i * 0.5);
 
 export default function AdminSchedulePage() {
   const navigate = useNavigate();
