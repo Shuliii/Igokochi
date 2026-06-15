@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import {useEffect, useState} from "react";
+import {useLocation, useNavigate} from "react-router-dom";
 // import { apiPost } from "../admin/api";
-import { apiPost } from "./api";
+import {apiPost} from "./api";
 import styles from "./AdminLogin.module.css";
 
 const LS_TOKEN = "igokochi_token";
@@ -22,7 +22,7 @@ export default function AdminLogin() {
 
   useEffect(() => {
     const token = localStorage.getItem(LS_TOKEN);
-    if (token) navigate("/admin", { replace: true });
+    if (token) navigate("/admin", {replace: true});
   }, [navigate]);
 
   const submit = async (e) => {
@@ -50,7 +50,7 @@ export default function AdminLogin() {
         localStorage.setItem(LS_IS_LOGGED_IN, "true");
         localStorage.setItem(LS_PROFILE, cleanUsername);
 
-        navigate(from, { replace: true });
+        navigate(from, {replace: true});
       } else {
         setError(response.message || "Login failed");
       }
@@ -91,7 +91,7 @@ export default function AdminLogin() {
         </label>
 
         <label className={styles.label}>
-          Password
+          Password.
           <input
             className={styles.input}
             type="password"
