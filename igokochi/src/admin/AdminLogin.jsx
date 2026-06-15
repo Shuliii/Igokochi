@@ -91,7 +91,7 @@ export default function AdminLogin() {
         </label>
 
         <label className={styles.label}>
-          Password.
+          Password
           <input
             className={styles.input}
             type="password"
