@@ -44,8 +44,6 @@ services:
       - ./igokochi_backend:/app
     ports:
       - "4000:4000"
-    depends_on:
-      - mysql
     stdin_open: true
     tty: true
     command: sh -c "tail -f /dev/null"
