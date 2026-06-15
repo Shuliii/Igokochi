@@ -1,14 +1,16 @@
-import {useState} from "react";
+import {useState, forwardRef} from "react";
 import {useNavigate} from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import AdminHeader from "../components/admin/AdminHeader";
 import AdminMain from "../components/admin/AdminMain";
 import {apiGet, apiGetBlob, forceLogout} from "../admin/api";
 import styles from "./AdminReportsPage.module.css";
 import pageStyles from "./AdminPage.module.css";
 
-function todayYmd() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+function dateToYmd(date) {
+  if (!date) return "";
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
 function fmtDate(ymd) {
@@ -37,12 +39,21 @@ function parseItems(raw) {
   return Array.isArray(items) ? items : [];
 }
 
+
+const DateField = forwardRef(({value, onClick, label}, ref) => (
+  <button type="button" className={styles.dateField} onClick={onClick} ref={ref}>
+    <span className={styles.dateFieldLabel}>{label}</span>
+    <span className={styles.dateFieldValue}>{value || "—"}</span>
+  </button>
+));
+DateField.displayName = "DateField";
+
 export default function AdminReportsPage() {
   const navigate = useNavigate();
-  const today = todayYmd();
+  const today = new Date();
 
-  const [from, setFrom] = useState(today);
-  const [to, setTo] = useState(today);
+  const [fromDate, setFromDate] = useState(today);
+  const [toDate, setToDate] = useState(today);
   const [orders, setOrders] = useState(null);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -63,6 +74,8 @@ export default function AdminReportsPage() {
   };
 
   const handleSearch = async () => {
+    const from = dateToYmd(fromDate);
+    const to = dateToYmd(toDate);
     if (!from || !to) return;
     setLoading(true);
     setNetError(false);
@@ -79,6 +92,8 @@ export default function AdminReportsPage() {
   };
 
   const handleDownloadPDF = async () => {
+    const from = dateToYmd(fromDate);
+    const to = dateToYmd(toDate);
     setDownloading(true);
     try {
       const blob = await apiGetBlob(`/reports/orders/pdf?from=${from}&to=${to}`);
@@ -112,33 +127,31 @@ export default function AdminReportsPage() {
           <h2 className={styles.sectionTitle}>Order Report</h2>
 
           <div className={styles.rangePill}>
-            <div className={styles.rangeField}>
-              <span className={styles.rangeLabel}>From</span>
-              <input
-                type="date"
-                className={styles.dateInput}
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-              />
-            </div>
+            <DatePicker
+              selected={fromDate}
+              onChange={(date) => setFromDate(date)}
+              maxDate={toDate}
+              dateFormat="d MMM yyyy"
+              customInput={<DateField label="FROM" />}
+              withPortal
+            />
 
             <span className={styles.rangeSep}>→</span>
 
-            <div className={styles.rangeField}>
-              <span className={styles.rangeLabel}>To</span>
-              <input
-                type="date"
-                className={styles.dateInput}
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-              />
-            </div>
+            <DatePicker
+              selected={toDate}
+              onChange={(date) => setToDate(date)}
+              minDate={fromDate}
+              dateFormat="d MMM yyyy"
+              customInput={<DateField label="TO" />}
+              withPortal
+            />
           </div>
 
           <button
             type="button"
             className={styles.searchBtn}
-            disabled={!from || !to || loading}
+            disabled={!fromDate || !toDate || loading}
             onClick={handleSearch}
           >
             {loading ? "Loading…" : "Search"}
@@ -161,7 +174,6 @@ export default function AdminReportsPage() {
                         <th>Pickup</th>
                         <th>Items</th>
                         <th>Total</th>
-                        <th>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -183,11 +195,6 @@ export default function AdminReportsPage() {
                           </td>
                           <td className={styles.tdTotal}>
                             ${Number(o.total).toFixed(2)}
-                          </td>
-                          <td>
-                            <span className={`${styles.badge} ${styles[`badge_${o.status}`]}`}>
-                              {o.status}
-                            </span>
                           </td>
                         </tr>
                       ))}

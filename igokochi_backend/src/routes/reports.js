@@ -37,6 +37,11 @@ function parseItems(raw) {
   return items.map((i) => `${i.name} ×${i.qty}`).join(", ");
 }
 
+function truncate(str, max) {
+  if (!str) return "";
+  return str.length > max ? str.slice(0, max - 1) + "…" : str;
+}
+
 function fmtDatePDF(ymd) {
   if (!ymd) return "";
   const [, m, d] = ymd.split("-").map(Number);
@@ -64,8 +69,8 @@ function fmtRangeTitle(from, to) {
 function buildPDF(doc, orders, from, to) {
   const TABLE_W = 515;
   const MARGIN = 40;
-  const ROW_H = 18;
-  const HDR_H = 22;
+  const ROW_H = 22;
+  const HDR_H = 24;
   const PAGE_BOTTOM = doc.page.height - doc.page.margins.bottom - 20;
 
   // Title
@@ -94,7 +99,7 @@ function buildPDF(doc, orders, from, to) {
   doc.rect(MARGIN, y, TABLE_W, HDR_H).fill("#3a4a35");
   doc.fontSize(9).font("Helvetica-Bold").fillColor("#ffffff");
   COLS.forEach((col) => {
-    doc.text(col.label, col.x, y + 6, {width: col.w, lineBreak: false});
+    doc.text(col.label, col.x, y + 8, {width: col.w, lineBreak: false});
   });
   y += HDR_H;
 
@@ -111,16 +116,16 @@ function buildPDF(doc, orders, from, to) {
 
     const cells = {
       id:            String(order.id),
-      customer_name: order.customer_name || "",
+      customer_name: truncate(order.customer_name || "", 20),
       pickup_date:   fmtDatePDF(order.pickup_date),
       pickup_slot:   fmtSlotPDF(order.pickup_slot),
-      items_summary: parseItems(order.items),
+      items_summary: truncate(parseItems(order.items), 48),
       total:         `$${Number(order.total).toFixed(2)}`,
     };
 
     doc.fontSize(8).font("Helvetica").fillColor("#333333");
     COLS.forEach((col) => {
-      doc.text(cells[col.key], col.x, y + 5, {
+      doc.text(cells[col.key], col.x, y + 7, {
         width: col.w,
         lineBreak: false,
         ellipsis: true,

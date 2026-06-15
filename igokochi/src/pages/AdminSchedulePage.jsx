@@ -1,5 +1,7 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState, forwardRef} from "react";
 import {useNavigate} from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import AdminHeader from "../components/admin/AdminHeader";
 import AdminMain from "../components/admin/AdminMain";
 import {apiGet, apiPost, apiDelete, forceLogout} from "../admin/api";
@@ -29,6 +31,23 @@ function todayYmd() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+function dateToYmd(date) {
+  if (!date) return "";
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+const ScheduleDateField = forwardRef(({value, onClick}, ref) => (
+  <button
+    type="button"
+    className={`${styles.datePickerBtn} ${!value ? styles.datePickerBtnEmpty : ""}`}
+    onClick={onClick}
+    ref={ref}
+  >
+    {value || "Pick a date"}
+  </button>
+));
+ScheduleDateField.displayName = "ScheduleDateField";
+
 function fmtDate(ymd) {
   const [y, m, d] = ymd.split("-").map(Number);
   return new Date(y, m - 1, d).toLocaleDateString(undefined, {
@@ -49,7 +68,7 @@ export default function AdminSchedulePage() {
   const [netError, setNetError] = useState(false);
 
   // Add form state
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(null);
   const [type, setType] = useState("closed");
   const [startHour, setStartHour] = useState(11);
   const [endHour, setEndHour] = useState(17);
@@ -89,7 +108,8 @@ export default function AdminSchedulePage() {
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    if (!date) return;
+    const dateStr = dateToYmd(date);
+    if (!dateStr) return;
     if (type === "open" && startHour >= endHour) {
       alert("Start time must be before end time.");
       return;
@@ -97,12 +117,12 @@ export default function AdminSchedulePage() {
     setSaving(true);
     try {
       await apiPost("/schedule/overrides", {
-        date,
+        date: dateStr,
         type,
         start_hour: type === "open" ? startHour : null,
         end_hour: type === "open" ? endHour : null,
       });
-      setDate("");
+      setDate(null);
       setType("closed");
       setStartHour(11);
       setEndHour(17);
@@ -164,12 +184,12 @@ export default function AdminSchedulePage() {
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Add Date Override</h2>
           <form className={styles.form} onSubmit={handleAdd}>
-            <input
-              type="date"
-              className={styles.dateInput}
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              required
+            <DatePicker
+              selected={date}
+              onChange={(d) => setDate(d)}
+              dateFormat="EEE, d MMM yyyy"
+              customInput={<ScheduleDateField />}
+              withPortal
             />
 
             <div className={styles.typeToggle}>
