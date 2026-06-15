@@ -48,3 +48,17 @@
   outline: none;
   border-color: var(--color-matcha-dark);
 }
+
+.inputError {
+  border-color: #d94f4f;
+}
+
+.inputError:focus {
+  border-color: #d94f4f;
+}
+
+.errorMsg {
+  font-size: 12px;
+  color: #d94f4f;
+  font-weight: 500;
+}

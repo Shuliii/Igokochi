@@ -6,19 +6,17 @@ import {requireAuth} from "../middleware/requireAuth.js";
 const router = express.Router();
 
 const COLS = [
-  {label: "#", key: "id", x: 40, w: 30},
-  {label: "Customer", key: "customer_name", x: 70, w: 90},
-  {label: "Phone", key: "customer_phone", x: 160, w: 70},
-  {label: "Date", key: "pickup_date", x: 230, w: 60},
-  {label: "Time", key: "pickup_slot", x: 290, w: 40},
-  {label: "Items", key: "items_summary", x: 330, w: 115},
-  {label: "Total", key: "total", x: 445, w: 45},
-  {label: "Status", key: "status", x: 490, w: 65},
+  {label: "#",        key: "id",            x: 40,  w: 30},
+  {label: "Customer", key: "customer_name", x: 70,  w: 110},
+  {label: "Date",     key: "pickup_date",   x: 180, w: 68},
+  {label: "Time",     key: "pickup_slot",   x: 248, w: 42},
+  {label: "Items",    key: "items_summary", x: 290, w: 190},
+  {label: "Total",    key: "total",         x: 480, w: 75},
 ];
 
 async function fetchOrders(from, to) {
   const [rows] = await db.query(
-    `SELECT id, customer_name, customer_phone,
+    `SELECT id, customer_name,
             DATE_FORMAT(pickup_date, '%Y-%m-%d') AS pickup_date,
             pickup_slot, items, total, status
      FROM orders
@@ -33,14 +31,34 @@ async function fetchOrders(from, to) {
 function parseItems(raw) {
   let items = raw;
   if (typeof items === "string") {
-    try {
-      items = JSON.parse(items);
-    } catch {
-      items = [];
-    }
+    try { items = JSON.parse(items); } catch { items = []; }
   }
   if (!Array.isArray(items)) return "";
   return items.map((i) => `${i.name} ×${i.qty}`).join(", ");
+}
+
+function fmtDatePDF(ymd) {
+  if (!ymd) return "";
+  const [, m, d] = ymd.split("-").map(Number);
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${d} ${months[m - 1]}`;
+}
+
+function fmtSlotPDF(slot) {
+  if (!slot) return "";
+  const [hh, mm] = slot.split(":").map(Number);
+  const suffix = hh >= 12 ? "pm" : "am";
+  const h12 = ((hh + 11) % 12) + 1;
+  return mm > 0 ? `${h12}.${String(mm).padStart(2, "0")}${suffix}` : `${h12}${suffix}`;
+}
+
+function fmtRangeTitle(from, to) {
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const [fy, fm, fd] = from.split("-").map(Number);
+  const [ty, tm, td] = to.split("-").map(Number);
+  const fromStr = `${months[fm - 1]} ${fd}, ${fy}`;
+  const toStr = `${months[tm - 1]} ${td}, ${ty}`;
+  return `${fromStr}  –  ${toStr}`;
 }
 
 function buildPDF(doc, orders, from, to) {
@@ -50,7 +68,7 @@ function buildPDF(doc, orders, from, to) {
   const HDR_H = 22;
   const PAGE_BOTTOM = doc.page.height - doc.page.margins.bottom - 20;
 
-  // ── Title ──────────────────────────────────────────────
+  // Title
   doc
     .fontSize(18)
     .font("Helvetica-Bold")
@@ -61,7 +79,7 @@ function buildPDF(doc, orders, from, to) {
     .fontSize(11)
     .font("Helvetica")
     .fillColor("#555555")
-    .text(`Order Report: ${from}  →  ${to}`, {align: "center"});
+    .text(`Order Report: ${fmtRangeTitle(from, to)}`, {align: "center"});
 
   doc
     .fontSize(9)
@@ -70,17 +88,17 @@ function buildPDF(doc, orders, from, to) {
 
   doc.moveDown(1);
 
-  // ── Table header ───────────────────────────────────────
+  // Table header
   let y = doc.y;
 
-  doc.rect(MARGIN, y, TABLE_W, HDR_H).fill("#2f5f3d");
+  doc.rect(MARGIN, y, TABLE_W, HDR_H).fill("#3a4a35");
   doc.fontSize(9).font("Helvetica-Bold").fillColor("#ffffff");
   COLS.forEach((col) => {
     doc.text(col.label, col.x, y + 6, {width: col.w, lineBreak: false});
   });
   y += HDR_H;
 
-  // ── Rows ───────────────────────────────────────────────
+  // Rows
   orders.forEach((order, idx) => {
     if (y > PAGE_BOTTOM) {
       doc.addPage();
@@ -92,14 +110,12 @@ function buildPDF(doc, orders, from, to) {
     }
 
     const cells = {
-      id: String(order.id),
+      id:            String(order.id),
       customer_name: order.customer_name || "",
-      customer_phone: String(order.customer_phone || ""),
-      pickup_date: order.pickup_date || "",
-      pickup_slot: order.pickup_slot || "",
+      pickup_date:   fmtDatePDF(order.pickup_date),
+      pickup_slot:   fmtSlotPDF(order.pickup_slot),
       items_summary: parseItems(order.items),
-      total: `$${Number(order.total).toFixed(2)}`,
-      status: order.status || "",
+      total:         `$${Number(order.total).toFixed(2)}`,
     };
 
     doc.fontSize(8).font("Helvetica").fillColor("#333333");
@@ -114,7 +130,7 @@ function buildPDF(doc, orders, from, to) {
     y += ROW_H;
   });
 
-  // ── Divider ────────────────────────────────────────────
+  // Divider
   doc.text("", MARGIN, y + 8);
   doc
     .moveTo(MARGIN, doc.y)
@@ -122,7 +138,7 @@ function buildPDF(doc, orders, from, to) {
     .stroke("#cccccc");
   doc.moveDown(0.6);
 
-  // ── Summary ────────────────────────────────────────────
+  // Summary
   const totalRevenue = orders.reduce((sum, o) => sum + Number(o.total), 0);
 
   doc

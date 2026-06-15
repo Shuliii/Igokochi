@@ -1,0 +1,275 @@
+.section {
+  background: var(--color-white);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.sectionTitle {
+  margin: 0 0 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a7a7a;
+}
+
+/* ── Date range pill ─────────────────────────── */
+
+.rangePill {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #f2f5f1;
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 10px;
+}
+
+.rangeField {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  background: var(--color-white);
+  border-radius: 10px;
+}
+
+.rangeLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #7a7a7a;
+}
+
+.dateInput {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  padding: 0;
+  width: 100%;
+}
+
+.rangeSep {
+  padding: 0 8px;
+  font-size: 14px;
+  color: #aaa;
+  flex-shrink: 0;
+}
+
+.searchBtn {
+  width: 100%;
+  height: 46px;
+  border: none;
+  border-radius: 12px;
+  background: var(--color-matcha-dark);
+  color: var(--color-white);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: opacity 0.15s;
+}
+
+.searchBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ── Table ──────────────────────────────────── */
+
+.tableWrap {
+  overflow-x: auto;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  border: 1px solid #e8ece8;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table thead tr {
+  background: #3a4a35;
+}
+
+.table th {
+  padding: 11px 13px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+}
+
+.table th:first-child {
+  border-top-left-radius: 11px;
+}
+
+.table th:last-child {
+  border-top-right-radius: 11px;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #f0f3f0;
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table tbody tr:nth-child(even) {
+  background: #fafcfa;
+}
+
+.table tbody tr:hover {
+  background: #f2f7f2;
+}
+
+.table td {
+  padding: 12px 13px;
+  color: var(--color-text);
+  vertical-align: top;
+}
+
+.tdId {
+  color: #aaa;
+  font-size: 12px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.tdName {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.tdPickup {
+  white-space: nowrap;
+}
+
+.pickupDate {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pickupSlot {
+  display: block;
+  font-size: 11px;
+  color: #7a7a7a;
+  margin-top: 2px;
+}
+
+.tdItems {
+  min-width: 140px;
+}
+
+.itemLine {
+  font-size: 12px;
+  color: #444;
+  line-height: 1.7;
+}
+
+.itemQty {
+  color: #7a7a7a;
+  font-size: 11px;
+}
+
+.tdTotal {
+  font-weight: 700;
+  color: var(--color-matcha-dark);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Status badge ───────────────────────────── */
+
+.badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.badge_paid {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.badge_done {
+  background: #eeeeee;
+  color: #666666;
+}
+
+/* ── Summary + PDF button ───────────────────── */
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 2px 14px;
+  border-top: 1px solid #edf0ed;
+  margin-bottom: 14px;
+}
+
+.summaryCount {
+  font-size: 13px;
+  color: #7a7a7a;
+}
+
+.summaryRevenue {
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+.summaryRevenue strong {
+  color: var(--color-matcha-dark);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.pdfBtn {
+  width: 100%;
+  height: 46px;
+  border: 2px solid var(--color-matcha-dark);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-matcha-dark);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background 0.15s, color 0.15s;
+}
+
+.pdfBtn:hover:not(:disabled) {
+  background: var(--color-matcha-dark);
+  color: var(--color-white);
+}
+
+.pdfBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.empty {
+  font-size: 13px;
+  color: #7a7a7a;
+  text-align: center;
+  padding: 32px 0;
+}

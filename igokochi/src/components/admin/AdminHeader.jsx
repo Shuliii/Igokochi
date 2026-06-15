@@ -15,6 +15,7 @@ const AdminHeader = ({ onRefresh, refreshing, onLogout }) => {
   const isOrders = location.pathname === "/admin";
   const isMenu = location.pathname === "/admin/menu";
   const isSchedule = location.pathname === "/admin/schedule";
+  const isReports = location.pathname === "/admin/reports";
 
   return (
     <header className={styles.header}>
@@ -51,6 +52,13 @@ const AdminHeader = ({ onRefresh, refreshing, onLogout }) => {
               onClick={() => navigate("/admin/schedule")}
             >
               Schedule
+            </button>
+
+            <button
+              className={`${styles.tab} ${isReports ? styles.active : ""}`}
+              onClick={() => navigate("/admin/reports")}
+            >
+              Reports
             </button>
           </div>
         </div>

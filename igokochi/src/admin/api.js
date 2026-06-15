@@ -74,3 +74,19 @@ export function apiPatch(path, body) {
 export function apiDelete(path) {
   return request(path, {method: "DELETE"});
 }
+
+export async function apiGetBlob(path) {
+  const token = localStorage.getItem(LS_TOKEN);
+  const res = await fetch(apiUrl(path), {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (res.status === 401 || res.status === 403) {
+    forceLogout();
+    const err = new Error("Session expired");
+    err.code = "SESSION_EXPIRED";
+    throw err;
+  }
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+  return res.blob();
+}
