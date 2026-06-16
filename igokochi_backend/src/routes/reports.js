@@ -101,6 +101,7 @@ function buildPDF(doc, orders, from, to) {
   const MARGIN = 40;
   const ROW_H = 22;
   const HDR_H = 24;
+  const CELL_PAD = 6;
   const PAGE_BOTTOM = doc.page.height - doc.page.margins.bottom - 20;
 
   // Title
@@ -129,7 +130,7 @@ function buildPDF(doc, orders, from, to) {
   doc.rect(MARGIN, y, TABLE_W, HDR_H).fill("#3a4a35");
   doc.fontSize(9).font("Helvetica-Bold").fillColor("#ffffff");
   COLS.forEach((col) => {
-    doc.text(col.label, col.x, y + 8, {width: col.w, lineBreak: false});
+    doc.text(col.label, col.x + CELL_PAD, y + 8, {width: col.w - CELL_PAD, lineBreak: false});
   });
   y += HDR_H;
 
@@ -155,8 +156,8 @@ function buildPDF(doc, orders, from, to) {
 
     doc.fontSize(8).font("Helvetica").fillColor("#333333");
     COLS.forEach((col) => {
-      doc.text(cells[col.key], col.x, y + 7, {
-        width: col.w,
+      doc.text(cells[col.key], col.x + CELL_PAD, y + 7, {
+        width: col.w - CELL_PAD,
         lineBreak: false,
         ellipsis: true,
       });
@@ -211,7 +212,7 @@ function buildPDF(doc, orders, from, to) {
   doc.rect(MARGIN, y, TABLE_W, HDR_H).fill("#3a4a35");
   doc.fontSize(9).font("Helvetica-Bold").fillColor("#ffffff");
   ITEM_COLS.forEach((col) => {
-    doc.text(col.label, col.x, y + 8, {width: col.w, lineBreak: false});
+    doc.text(col.label, col.x + CELL_PAD, y + 8, {width: col.w - CELL_PAD, lineBreak: false});
   });
   y += HDR_H;
 
@@ -233,7 +234,7 @@ function buildPDF(doc, orders, from, to) {
 
     doc.fontSize(8).font("Helvetica").fillColor("#333333");
     ITEM_COLS.forEach((col) => {
-      doc.text(cells[col.key], col.x, y + 7, {width: col.w, lineBreak: false, ellipsis: true});
+      doc.text(cells[col.key], col.x + CELL_PAD, y + 7, {width: col.w - CELL_PAD, lineBreak: false, ellipsis: true});
     });
 
     y += ROW_H;
