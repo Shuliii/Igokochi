@@ -59,6 +59,9 @@ export default function AdminReportsPage() {
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [netError, setNetError] = useState(false);
+  const [page, setPage] = useState(1);
+
+  const PAGE_SIZE = 10;
 
   const onLogout = () => {
     forceLogout();
@@ -83,6 +86,7 @@ export default function AdminReportsPage() {
       const data = await apiGet(`/reports/orders?from=${from}&to=${to}`);
       setOrders(data.orders || []);
       setTotalRevenue(data.totalRevenue || 0);
+      setPage(1);
     } catch (err) {
       if (handleSessionExpired(err)) return;
       setNetError(true);
@@ -177,7 +181,7 @@ export default function AdminReportsPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {orders.map((o) => (
+                      {orders.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((o) => (
                         <tr key={o.id}>
                           <td className={styles.tdId}>{o.id}</td>
                           <td className={styles.tdName}>{o.customer_name}</td>
@@ -201,6 +205,30 @@ export default function AdminReportsPage() {
                     </tbody>
                   </table>
                 </div>
+
+                {Math.ceil(orders.length / PAGE_SIZE) > 1 && (
+                  <div className={styles.pagination}>
+                    <button
+                      type="button"
+                      className={styles.pageBtn}
+                      disabled={page === 1}
+                      onClick={() => setPage((p) => p - 1)}
+                    >
+                      ←
+                    </button>
+                    <span className={styles.pageInfo}>
+                      {page} / {Math.ceil(orders.length / PAGE_SIZE)}
+                    </span>
+                    <button
+                      type="button"
+                      className={styles.pageBtn}
+                      disabled={page === Math.ceil(orders.length / PAGE_SIZE)}
+                      onClick={() => setPage((p) => p + 1)}
+                    >
+                      →
+                    </button>
+                  </div>
+                )}
 
                 <div className={styles.summary}>
                   <span className={styles.summaryCount}>

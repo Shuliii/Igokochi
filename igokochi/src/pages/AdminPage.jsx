@@ -4,6 +4,7 @@ import AdminHeader from "../components/admin/AdminHeader";
 import AdminMain from "../components/admin/AdminMain";
 import OrderList from "../components/admin/OrderList";
 import OrderTabs from "../components/admin/OrderTabs";
+import WalkInModal from "../components/admin/WalkInModal";
 import { apiGet, apiPatch, forceLogout } from "../admin/api";
 import { toYmd, getTodayMidnight } from "../utils/pickup";
 import styles from "./AdminPage.module.css";
@@ -44,6 +45,7 @@ export default function AdminPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [tab, setTab] = useState("today"); // today | ready | upcoming
   const [netError, setNetError] = useState(false);
+  const [showWalkIn, setShowWalkIn] = useState(false);
   const navigate = useNavigate();
 
   const today = useMemo(() => getTodayMidnight(), []);
@@ -213,7 +215,18 @@ export default function AdminPage() {
       )}
 
       <AdminMain>
-        <OrderTabs value={tab} counts={counts} onChange={setTab} />
+        <div className={styles.tabsRow}>
+          <OrderTabs value={tab} counts={counts} onChange={setTab} />
+          <button
+            type="button"
+            className={styles.walkInBtn}
+            onClick={() => setShowWalkIn(true)}
+            aria-label="Add walk-in order"
+          >
+            <span className={styles.walkInFull}>+ Walk-in</span>
+            <span className={styles.walkInShort}>+</span>
+          </button>
+        </div>
         <OrderList
           orders={filteredOrders}
           tab={tab}
@@ -221,6 +234,13 @@ export default function AdminPage() {
           loading={loading}
         />
       </AdminMain>
+
+      {showWalkIn && (
+        <WalkInModal
+          onClose={() => setShowWalkIn(false)}
+          onSuccess={fetchOrders}
+        />
+      )}
     </>
   );
 }

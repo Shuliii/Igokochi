@@ -7,3 +7,58 @@
   padding: 8px 14px;
   text-align: center;
 }
+
+.tabsRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.walkInBtn {
+  flex-shrink: 0;
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+  border: 1.5px dashed var(--color-matcha-dark);
+  background: transparent;
+  color: var(--color-matcha-dark);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.walkInBtn:hover {
+  background: var(--color-matcha-soft);
+}
+
+.walkInFull {
+  display: none;
+}
+
+.walkInShort {
+  display: inline;
+  line-height: 1;
+}
+
+@media (min-width: 480px) {
+  .walkInBtn {
+    width: auto;
+    height: 34px;
+    border-radius: 999px;
+    font-size: 13px;
+    padding: 0 14px;
+  }
+
+  .walkInFull {
+    display: inline;
+  }
+
+  .walkInShort {
+    display: none;
+  }
+}

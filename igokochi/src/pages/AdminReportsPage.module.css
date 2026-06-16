@@ -358,3 +358,46 @@
   text-align: center;
   padding: 32px 0;
 }
+
+/* ── Pagination ─────────────────────────────── */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px 0 4px;
+}
+
+.pageBtn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #dde5da;
+  border-radius: 10px;
+  background: var(--color-white);
+  color: var(--color-matcha-dark);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background: #f0f4ef;
+  border-color: #b5c9af;
+}
+
+.pageBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pageInfo {
+  font-size: 13px;
+  font-weight: 600;
+  color: #7a7a7a;
+  min-width: 48px;
+  text-align: center;
+}
