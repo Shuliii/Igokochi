@@ -14,6 +14,12 @@ const COLS = [
   {label: "Total",    key: "total",         x: 480, w: 75},
 ];
 
+function isValidDate(str) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(str)) return false;
+  const d = new Date(str + "T00:00:00");
+  return !isNaN(d.getTime());
+}
+
 async function fetchOrders(from, to) {
   const [rows] = await db.query(
     `SELECT id, customer_name,
@@ -40,6 +46,30 @@ function parseItems(raw) {
 function truncate(str, max) {
   if (!str) return "";
   return str.length > max ? str.slice(0, max - 1) + "…" : str;
+}
+
+function aggregateItems(orders) {
+  const map = new Map();
+  for (const order of orders) {
+    let items = order.items;
+    if (typeof items === "string") {
+      try { items = JSON.parse(items); } catch { items = []; }
+    }
+    if (!Array.isArray(items)) continue;
+    for (const item of items) {
+      const name = item.name || "Unknown";
+      const qty = Number(item.qty) || 0;
+      const revenue = (Number(item.price) || 0) * qty;
+      const existing = map.get(name);
+      if (existing) {
+        existing.qty += qty;
+        existing.revenue += revenue;
+      } else {
+        map.set(name, {name, qty, revenue});
+      }
+    }
+  }
+  return Array.from(map.values()).sort((a, b) => b.revenue - a.revenue);
 }
 
 function fmtDatePDF(ymd) {
@@ -152,6 +182,62 @@ function buildPDF(doc, orders, from, to) {
     .fillColor("#333333")
     .text(`Total Orders: ${orders.length}`, MARGIN, doc.y, {continued: true})
     .text(`Total Revenue: $${totalRevenue.toFixed(2)}`, {align: "right"});
+
+  // Item breakdown table
+  const itemRows = aggregateItems(orders);
+  if (itemRows.length === 0) return;
+
+  const ITEM_COLS = [
+    {label: "Item",    key: "name",    x: 40,  w: 330},
+    {label: "Qty",     key: "qty",     x: 370, w: 70},
+    {label: "Revenue", key: "revenue", x: 440, w: 115},
+  ];
+
+  doc.moveDown(1.5);
+
+  if (doc.y > PAGE_BOTTOM - HDR_H) {
+    doc.addPage();
+  }
+
+  doc
+    .fontSize(11)
+    .font("Helvetica-Bold")
+    .fillColor("#2f5f3d")
+    .text("Item Breakdown", MARGIN, doc.y);
+
+  doc.moveDown(0.5);
+  y = doc.y;
+
+  doc.rect(MARGIN, y, TABLE_W, HDR_H).fill("#3a4a35");
+  doc.fontSize(9).font("Helvetica-Bold").fillColor("#ffffff");
+  ITEM_COLS.forEach((col) => {
+    doc.text(col.label, col.x, y + 8, {width: col.w, lineBreak: false});
+  });
+  y += HDR_H;
+
+  itemRows.forEach((row, idx) => {
+    if (y > PAGE_BOTTOM) {
+      doc.addPage();
+      y = doc.page.margins.top;
+    }
+
+    if (idx % 2 === 0) {
+      doc.rect(MARGIN, y, TABLE_W, ROW_H).fill("#f4f7f2");
+    }
+
+    const cells = {
+      name:    truncate(row.name, 50),
+      qty:     String(row.qty),
+      revenue: `$${row.revenue.toFixed(2)}`,
+    };
+
+    doc.fontSize(8).font("Helvetica").fillColor("#333333");
+    ITEM_COLS.forEach((col) => {
+      doc.text(cells[col.key], col.x, y + 7, {width: col.w, lineBreak: false, ellipsis: true});
+    });
+
+    y += ROW_H;
+  });
 }
 
 /* GET /reports/orders — JSON preview */
@@ -159,6 +245,12 @@ router.get("/reports/orders", requireAuth, async (req, res) => {
   const {from, to} = req.query;
   if (!from || !to) {
     return res.status(400).json({ok: false, message: "from and to required"});
+  }
+  if (!isValidDate(from) || !isValidDate(to)) {
+    return res.status(400).json({ok: false, message: "Invalid date format. Use YYYY-MM-DD"});
+  }
+  if (from > to) {
+    return res.status(400).json({ok: false, message: "from must not be after to"});
   }
   try {
     const orders = await fetchOrders(from, to);
@@ -175,6 +267,12 @@ router.get("/reports/orders/pdf", requireAuth, async (req, res) => {
   const {from, to} = req.query;
   if (!from || !to) {
     return res.status(400).json({ok: false, message: "from and to required"});
+  }
+  if (!isValidDate(from) || !isValidDate(to)) {
+    return res.status(400).json({ok: false, message: "Invalid date format. Use YYYY-MM-DD"});
+  }
+  if (from > to) {
+    return res.status(400).json({ok: false, message: "from must not be after to"});
   }
   try {
     const orders = await fetchOrders(from, to);
