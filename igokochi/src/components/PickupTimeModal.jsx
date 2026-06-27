@@ -19,6 +19,7 @@ const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [qrImage, setQrImage] = useState("");
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const itemCount = useMemo(
     () => state.items.reduce((sum, i) => sum + i.qty, 0),
@@ -89,6 +90,9 @@ const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
   };
 
   const handleSubmit = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+
     const payload = {
       customer: {
         name: customer.name.trim(),
@@ -140,6 +144,8 @@ const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
     } catch (err) {
       console.error(err);
       alert("Network error: backend not reachable");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -252,14 +258,16 @@ const PickupTimeModal = ({open, onOpenChange, onOrderPlaced, onConfirm}) => {
               <button
                 type="button"
                 className={styles.primaryBtn}
+                disabled={submitting}
                 onClick={handleSubmit}
               >
-                I Have Paid
+                {submitting ? "Submitting..." : "I Have Paid"}
               </button>
 
               <button
                 type="button"
                 className={styles.secondaryBtn}
+                disabled={submitting}
                 onClick={() => {
                   setQrImage("");
                   setShowPaymentDialog(false);

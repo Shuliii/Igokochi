@@ -2,7 +2,7 @@
 import styles from "./PickupTimeSlots.module.css";
 import {isSlotInPast, makeHourlySlotsForDate, parseYmd} from "../utils/pickup";
 
-const SLOT_CAPACITY = 5;
+const SLOT_CAPACITY = 2;
 
 const PickupTimeSlots = ({selectedDay, selectedSlot, onSelectSlot, schedule, bookedCounts = {}}) => {
   const selectedDateObj = selectedDay ? parseYmd(selectedDay) : null;
