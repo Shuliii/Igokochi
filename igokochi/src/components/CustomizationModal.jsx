@@ -33,7 +33,7 @@ const CustomizationModal = ({ item, isOpen, onClose }) => {
   const unitPrice = useMemo(() => {
     if (!item) return 0;
 
-    let total = item.price;
+    let total = Number(item.price) || 0;
 
     for (const modifier of item.modifiers || []) {
       const selectedOptionId = selectedOptions[modifier.id];
@@ -42,7 +42,7 @@ const CustomizationModal = ({ item, isOpen, onClose }) => {
       );
 
       if (selectedOption) {
-        total += selectedOption.priceDelta || 0;
+        total += Number(selectedOption.priceDelta) || 0;
       }
     }
 
