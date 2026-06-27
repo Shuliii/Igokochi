@@ -63,7 +63,7 @@ router.get("/slots/booked", async (req, res) => {
     }
 
     const [rows] = await db.query(
-      `SELECT pickup_slot, COUNT(*) AS count
+      `SELECT pickup_slot, COUNT(DISTINCT customer_phone) AS count
        FROM orders
        WHERE pickup_date = ?
        GROUP BY pickup_slot`,
