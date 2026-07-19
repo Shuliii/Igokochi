@@ -19,6 +19,12 @@
 
   /* 🟢 Soft accent (optional) */
   --color-matcha-soft: #cfe3d4; /* Selected states, tags */
+
+  /* ✏️ Typography */
+  --font-heading: "Newsreader", serif; /* Brand title, modal/section headings */
+
+  /* ⚪ Muted text */
+  --color-muted: #7a7a7a; /* Secondary/description text */
 }
 
 body {

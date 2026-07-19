@@ -18,7 +18,7 @@ const SkeletonCard = () => (
   </div>
 );
 
-const MenuList = () => {
+const MenuList = ({ activeCategory }) => {
   const { state, dispatch } = useCart();
   const [menu, setMenu] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -81,12 +81,19 @@ const MenuList = () => {
     dispatch({ type: "REMOVE_ITEM", payload: { cartKey } });
   };
 
+  const filteredMenu = activeCategory
+    ? menu.filter((item) => (item.category || "matcha") === activeCategory)
+    : menu;
+
   return (
     <>
       <section className={styles.list}>
-        {loading
-          ? Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)
-          : menu.map((item) => {
+        {loading ? (
+          Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)
+        ) : filteredMenu.length === 0 ? (
+          <p className={styles.emptyState}>No items in this category yet.</p>
+        ) : (
+          filteredMenu.map((item) => {
               const hasModifiers = Boolean(item.modifiers?.length);
 
               if (hasModifiers) {
@@ -119,7 +126,8 @@ const MenuList = () => {
                   totalQty={totalQty}
                 />
               );
-            })}
+            })
+        )}
       </section>
 
       <CustomizationModal

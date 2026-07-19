@@ -122,8 +122,9 @@
 
 .title {
   margin: 0;
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 600;
   line-height: 1.25;
   color: var(--color-text);
 }
@@ -132,7 +133,7 @@
   margin-top: 5px;
   font-size: 0.875rem;
   line-height: 1.4;
-  color: #7a7a7a;
+  color: var(--color-muted);
 }
 
 .closeButton {
@@ -190,7 +191,7 @@
 .required {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #9a9a9a;
+  color: var(--color-muted);
 }
 
 /* ========================
@@ -279,7 +280,7 @@
 }
 
 .notes::placeholder {
-  color: #9a9a9a;
+  color: var(--color-muted);
 }
 
 .notes:focus {

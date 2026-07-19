@@ -85,6 +85,39 @@ export default function AdminMenuPage() {
     }
   };
 
+  const handleCategoryChange = async (item, nextCategory) => {
+    const current = item.category || "matcha";
+
+    // optimistic UI
+    setMenu((prev) =>
+      prev.map((m) => (m.id === item.id ? { ...m, category: nextCategory } : m)),
+    );
+
+    try {
+      await apiPatch(`/menu/${item.id}`, {
+        category: nextCategory,
+      });
+
+      setNetError(false);
+    } catch (err) {
+      if (err?.code === "SESSION_EXPIRED") {
+        navigate("/admin/login", {
+          replace: true,
+          state: { reason: "expired" },
+        });
+        return;
+      }
+
+      console.error("Failed to update menu category", err);
+      setNetError(true);
+
+      // rollback if API fails
+      setMenu((prev) =>
+        prev.map((m) => (m.id === item.id ? { ...m, category: current } : m)),
+      );
+    }
+  };
+
   return (
     <>
       <AdminHeader
@@ -98,7 +131,12 @@ export default function AdminMenuPage() {
       )}
 
       <AdminMain>
-        <MenuList menu={menu} onToggle={handleToggle} loading={loading} />
+        <MenuList
+          menu={menu}
+          onToggle={handleToggle}
+          onCategoryChange={handleCategoryChange}
+          loading={loading}
+        />
       </AdminMain>
     </>
   );

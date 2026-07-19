@@ -2,6 +2,8 @@
 
 import styles from "./MenuList.module.css";
 
+const CATEGORIES = ["bundle", "matcha", "dessert"];
+
 const MenuSkeleton = () => (
   <div className={styles.skeletonCard}>
     <div className={styles.skeletonImage} />
@@ -14,7 +16,7 @@ const MenuSkeleton = () => (
   </div>
 );
 
-const MenuList = ({ menu, onToggle, loading }) => {
+const MenuList = ({ menu, onToggle, onCategoryChange, loading }) => {
   if (loading) {
     return (
       <section className={styles.list}>
@@ -42,6 +44,18 @@ const MenuList = ({ menu, onToggle, loading }) => {
                 {available ? "Available" : "Sold out"}
               </span>
             </div>
+
+            <select
+              className={styles.categorySelect}
+              value={item.category || "matcha"}
+              onChange={(e) => onCategoryChange(item, e.target.value)}
+            >
+              {CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat[0].toUpperCase() + cat.slice(1)}
+                </option>
+              ))}
+            </select>
 
             <label className={styles.switch}>
               <input

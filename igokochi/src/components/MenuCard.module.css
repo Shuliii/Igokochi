@@ -37,7 +37,7 @@
   margin: 4px 0 0;
   font-size: 13px;
   line-height: 1.4;
-  color: #7a7a7a;
+  color: var(--color-muted);
 
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -60,7 +60,7 @@
 }
 
 .soldOut {
-  color: #999;
+  color: var(--color-muted);
   font-size: 0.9rem;
   font-weight: 600;
 }

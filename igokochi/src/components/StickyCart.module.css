@@ -77,7 +77,7 @@
 
 .itemsText {
   font-size: 12px;
-  color: #7a7a7a;
+  color: var(--color-muted);
 }
 
 .cta {

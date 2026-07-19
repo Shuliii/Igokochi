@@ -45,8 +45,9 @@
 }
 
 .title {
-  font-weight: 700;
-  font-size: 17px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 19px;
   color: var(--color-white);
 }
 

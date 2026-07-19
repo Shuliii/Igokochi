@@ -1,16 +1,16 @@
 import express from "express";
+import {verifyOrderItems, OrderValidationError} from "../utils/verifyOrderItems.js";
+import {resolvePromo, applyPromoToItems} from "../utils/applyPromo.js";
 
 const router = express.Router();
 
 router.post("/paynow-qr", async (req, res) => {
   try {
-    const {amount, editable = false} = req.body;
+    const {items, editable = false, promoCode} = req.body;
 
-    if (!amount) {
-      return res.status(400).json({
-        error: "amount is required",
-      });
-    }
+    const {verifiedItems} = await verifyOrderItems(items);
+    const promo = await resolvePromo(promoCode);
+    const {total: amount} = applyPromoToItems(promo, verifiedItems);
 
     // Create current Singapore time (UTC+8)
     const singaporeNow = new Date(
@@ -45,8 +45,16 @@ router.post("/paynow-qr", async (req, res) => {
       return res.status(response.status).json(data);
     }
 
-    return res.json(data);
+    return res.json({...data, amount});
   } catch (err) {
+    if (err instanceof OrderValidationError) {
+      return res.status(400).json({
+        error: err.message,
+        itemId: err.itemId,
+        promoInvalid: err.promoInvalid,
+      });
+    }
+
     console.error(err);
 
     return res.status(500).json({
