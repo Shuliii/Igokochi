@@ -7,6 +7,9 @@ import * as auth from "./auth.js"; // ✅ add this
 import paynowRoutes from "./routes/paynow.js";
 import scheduleRoutes from "./routes/schedule.js";
 import reportsRoutes from "./routes/reports.js";
+import promoRoutes from "./routes/promo.js";
+import {verifyOrderItems, OrderValidationError} from "./utils/verifyOrderItems.js";
+import {resolvePromo, applyPromoToItems} from "./utils/applyPromo.js";
 
 // dotenv.config();
 
@@ -34,7 +37,8 @@ router.get("/menu", async (req, res) => {
   try {
     const [rows] = await db.query(`
       SELECT *
-      FROM menu_items
+      FROM menu_items_table
+      WHERE category <> 'bundle'
       ORDER BY sort_order ASC
     `);
 
@@ -54,22 +58,53 @@ router.get("/menu", async (req, res) => {
   }
 });
 
-/* ---------------- PATCH menu item availability ---------------- */
+/* ---------------- PATCH menu item (availability / category) ---------------- */
+const ALLOWED_CATEGORIES = new Set(["matcha", "dessert"]);
+
 router.patch("/menu/:id", requireAuth, async (req, res) => {
   try {
     const id = req.params.id;
-    const available = req.body?.available;
+    const {available, category} = req.body || {};
 
-    if (typeof available !== "boolean") {
+    if (available === undefined && category === undefined) {
+      return res.status(400).json({
+        ok: false,
+        message: "Nothing to update",
+      });
+    }
+
+    if (available !== undefined && typeof available !== "boolean") {
       return res.status(400).json({
         ok: false,
         message: "Invalid availability value",
       });
     }
 
+    if (category !== undefined && !ALLOWED_CATEGORIES.has(category)) {
+      return res.status(400).json({
+        ok: false,
+        message: "Invalid category value",
+      });
+    }
+
+    const sets = [];
+    const params = [];
+
+    if (available !== undefined) {
+      sets.push("available = ?");
+      params.push(available);
+    }
+
+    if (category !== undefined) {
+      sets.push("category = ?");
+      params.push(category);
+    }
+
+    params.push(id);
+
     const [result] = await db.execute(
-      "UPDATE menu_items SET available = ? WHERE id = ?",
-      [available, id],
+      `UPDATE menu_items_table SET ${sets.join(", ")} WHERE id = ?`,
+      params,
     );
 
     if (result.affectedRows === 0) {
@@ -131,8 +166,6 @@ router.post("/orders", async (req, res) => {
     const customerPhone = payload?.customer?.phone?.trim();
     const pickupDate = payload?.pickup?.date;
     const pickupSlot = payload?.pickup?.slot;
-    const items = payload?.items;
-    const total = payload?.total;
 
     if (!customerName || !customerPhone) {
       return res
@@ -144,13 +177,9 @@ router.post("/orders", async (req, res) => {
       return res.status(400).json({ok: false, message: "Missing pickup time"});
     }
 
-    if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ok: false, message: "Cart is empty"});
-    }
-
-    if (typeof total !== "number" || total <= 0) {
-      return res.status(400).json({ok: false, message: "Invalid total"});
-    }
+    const {verifiedItems} = await verifyOrderItems(payload?.items);
+    const promo = await resolvePromo(payload?.promoCode);
+    const {total: verifiedTotal} = applyPromoToItems(promo, verifiedItems);
 
     const sql = `
       INSERT INTO orders
@@ -164,14 +193,23 @@ router.post("/orders", async (req, res) => {
       customerPhone,
       pickupDate,
       pickupSlot,
-      JSON.stringify(items),
-      total,
+      JSON.stringify(verifiedItems),
+      verifiedTotal,
     ];
 
     const [result] = await db.execute(sql, params);
 
-    res.status(201).json({ok: true, orderId: result.insertId});
+    res.status(201).json({ok: true, orderId: result.insertId, total: verifiedTotal});
   } catch (err) {
+    if (err instanceof OrderValidationError) {
+      return res.status(400).json({
+        ok: false,
+        message: err.message,
+        itemId: err.itemId,
+        promoInvalid: err.promoInvalid,
+      });
+    }
+
     console.error("POST /orders error:", err);
     res
       .status(500)
@@ -209,6 +247,7 @@ app.use("/api", router);
 app.use("/api", paynowRoutes);
 app.use("/api", scheduleRoutes);
 app.use("/api", reportsRoutes);
+app.use("/api", promoRoutes);
 
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);

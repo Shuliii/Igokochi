@@ -66,14 +66,14 @@ export const cartReducer = (state, action) => {
       };
     }
 
-    // case "DELETE_ITEM": {
-    //   const cartKey = action.payload.cartKey;
+    case "REMOVE_ITEM_BY_ID": {
+      const id = action.payload.id;
 
-    //   return {
-    //     ...state,
-    //     items: state.items.filter((i) => i.cartKey !== cartKey),
-    //   };
-    // }
+      return {
+        ...state,
+        items: state.items.filter((i) => i.id !== id),
+      };
+    }
 
     case "CLEAR_CART":
       return { ...state, items: [] };

@@ -1,13 +1,26 @@
 import styles from "./OrderSummaryCard.module.css";
 import { useCart } from "../cart/CartContext";
 
-const OrderSummaryCard = ({ items: itemsProp, total: totalProp }) => {
+const OrderSummaryCard = ({
+  items: itemsProp,
+  total: totalProp,
+  promoCode,
+  onPromoCodeChange,
+  appliedPromo,
+  promoLoading,
+  promoError,
+  onApplyPromo,
+  onRemovePromo,
+}) => {
   const { state, dispatch } = useCart();
 
   const items = itemsProp ?? state.items;
 
-  const total =
+  const subtotal =
     totalProp ?? items.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+  const discountAmount = appliedPromo?.discountAmount ?? 0;
+  const total = appliedPromo?.total ?? subtotal;
 
   const handleDecrease = (item) => {
     dispatch({
@@ -103,6 +116,56 @@ const OrderSummaryCard = ({ items: itemsProp, total: totalProp }) => {
       </ul>
 
       <div className={styles.divider} />
+
+      {appliedPromo ? (
+        <div className={styles.appliedPromoRow}>
+          <span>
+            Promo <strong>{appliedPromo.code}</strong> applied (save $
+            {appliedPromo.discountAmount.toFixed(2)})
+          </span>
+          <button
+            type="button"
+            className={styles.promoRemoveBtn}
+            onClick={onRemovePromo}
+          >
+            Remove
+          </button>
+        </div>
+      ) : (
+        <div className={styles.promoRow}>
+          <input
+            type="text"
+            className={styles.promoInput}
+            placeholder="Promo code"
+            value={promoCode}
+            onChange={(e) => onPromoCodeChange(e.target.value)}
+          />
+          <button
+            type="button"
+            className={styles.promoApplyBtn}
+            onClick={onApplyPromo}
+            disabled={promoLoading || !promoCode?.trim()}
+          >
+            {promoLoading ? "Checking..." : "Apply"}
+          </button>
+        </div>
+      )}
+
+      {promoError && <div className={styles.promoError}>{promoError}</div>}
+
+      {appliedPromo && (
+        <div className={styles.subtotalRow}>
+          <span>Subtotal</span>
+          <span>${subtotal.toFixed(2)}</span>
+        </div>
+      )}
+
+      {appliedPromo && (
+        <div className={styles.discountRow}>
+          <span>Promo ({appliedPromo.code})</span>
+          <span>−${discountAmount.toFixed(2)}</span>
+        </div>
+      )}
 
       <div className={styles.totalRow}>
         <span>Total</span>
