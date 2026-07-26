@@ -73,6 +73,7 @@ export function useCheckout({onOrderPlaced, onConfirm, onClose} = {}) {
         type: data.type,
         discountAmount: data.discountAmount,
         total: data.total,
+        itemDiscounts: data.itemDiscounts,
       });
     } catch (err) {
       console.error(err);

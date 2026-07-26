@@ -35,20 +35,40 @@ export async function resolvePromo(code) {
   return promo;
 }
 
+const noDiscount = (verifiedItems) =>
+  verifiedItems.map((item) => ({
+    cartKey: item.cartKey,
+    originalPrice: item.price,
+    discountedPrice: item.price,
+    discounted: false,
+  }));
+
 export function applyPromoToItems(promo, verifiedItems) {
   const subtotal = verifiedItems.reduce((sum, i) => sum + i.price * i.qty, 0);
 
   if (!promo) {
-    return {total: Number(subtotal.toFixed(2)), discountAmount: 0};
+    return {
+      total: Number(subtotal.toFixed(2)),
+      discountAmount: 0,
+      itemDiscounts: noDiscount(verifiedItems),
+    };
   }
 
   if (promo.type === "percent_off") {
     const percent = Number(promo.rules.percent) || 0;
     const total = subtotal * (1 - percent / 100);
 
+    const itemDiscounts = verifiedItems.map((item) => ({
+      cartKey: item.cartKey,
+      originalPrice: item.price,
+      discountedPrice: Number((item.price * (1 - percent / 100)).toFixed(2)),
+      discounted: percent > 0,
+    }));
+
     return {
       total: Number(total.toFixed(2)),
       discountAmount: Number((subtotal - total).toFixed(2)),
+      itemDiscounts,
     };
   }
 
@@ -60,17 +80,31 @@ export function applyPromoToItems(promo, verifiedItems) {
     // Caps price at fixedPrice, never raises it — an item (with modifiers)
     // already priced below fixedPrice is left alone rather than bumped up.
     let total = 0;
+    const itemDiscounts = [];
+
     for (const item of verifiedItems) {
       const inCategory = !categories || categories.includes(item.category);
       const unitPrice = inCategory ? Math.min(fixedPrice, item.price) : item.price;
       total += unitPrice * item.qty;
+
+      itemDiscounts.push({
+        cartKey: item.cartKey,
+        originalPrice: item.price,
+        discountedPrice: unitPrice,
+        discounted: inCategory && unitPrice < item.price,
+      });
     }
 
     return {
       total: Number(total.toFixed(2)),
       discountAmount: Number((subtotal - total).toFixed(2)),
+      itemDiscounts,
     };
   }
 
-  return {total: Number(subtotal.toFixed(2)), discountAmount: 0};
+  return {
+    total: Number(subtotal.toFixed(2)),
+    discountAmount: 0,
+    itemDiscounts: noDiscount(verifiedItems),
+  };
 }

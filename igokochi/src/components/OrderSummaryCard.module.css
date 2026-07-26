@@ -71,6 +71,27 @@
   color: var(--color-text);
 }
 
+.priceCell {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.priceOriginal {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-muted, #6b7280);
+  text-decoration: line-through;
+}
+
+.priceDiscounted {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-matcha-dark);
+}
+
 .rowBottom {
   display: flex;
   justify-content: space-between;

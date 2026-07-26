@@ -22,6 +22,33 @@ const OrderSummaryCard = ({
   const discountAmount = appliedPromo?.discountAmount ?? 0;
   const total = appliedPromo?.total ?? subtotal;
 
+  const discountByCartKey = new Map(
+    (appliedPromo?.itemDiscounts || []).map((d) => [d.cartKey, d]),
+  );
+
+  const renderPrice = (item) => {
+    const discount = discountByCartKey.get(item.cartKey);
+
+    if (discount?.discounted) {
+      return (
+        <span className={styles.priceCell}>
+          <span className={styles.priceOriginal}>
+            ${(discount.originalPrice * item.qty).toFixed(2)}
+          </span>
+          <span className={styles.priceDiscounted}>
+            ${(discount.discountedPrice * item.qty).toFixed(2)}
+          </span>
+        </span>
+      );
+    }
+
+    return (
+      <span className={styles.price}>
+        ${(item.price * item.qty).toFixed(2)}
+      </span>
+    );
+  };
+
   const handleDecrease = (item) => {
     dispatch({
       type: "REMOVE_ITEM",
@@ -75,9 +102,7 @@ const OrderSummaryCard = ({
                 )}
               </div>
 
-              <span className={styles.price}>
-                ${(item.price * item.qty).toFixed(2)}
-              </span>
+              {renderPrice(item)}
             </div>
 
             <div className={styles.rowBottom}>

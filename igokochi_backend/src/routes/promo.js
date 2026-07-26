@@ -21,7 +21,7 @@ router.post("/promo/validate", async (req, res) => {
     // Preview only: don't reject for unrelated sold-out items here — that's
     // enforced for real at the payment/order-submission step.
     const {verifiedItems} = await verifyOrderItems(items, {skipAvailabilityCheck: true});
-    const {total, discountAmount} = applyPromoToItems(promo, verifiedItems);
+    const {total, discountAmount, itemDiscounts} = applyPromoToItems(promo, verifiedItems);
 
     res.json({
       ok: true,
@@ -29,6 +29,7 @@ router.post("/promo/validate", async (req, res) => {
       type: promo.type,
       discountAmount,
       total,
+      itemDiscounts,
     });
   } catch (err) {
     if (err instanceof OrderValidationError) {
