@@ -34,9 +34,23 @@ jobs:
         run: |
           git clone https://x-access-token:${{ secrets.HELM_REPO_TOKEN }}@github.com/Shuliii/helm-DO.git
           cd helm-DO
-          yq e ".frontend.image.tag = \"$IMAGE_TAG\"" -i igokochi/values.yaml
           git config user.email "github-actions@github.com"
           git config user.name "GitHub Actions"
-          git add igokochi/values.yaml
-          git commit -m "ci: update igokochi frontend image tag to $IMAGE_TAG"
-          git push
+
+          for i in 1 2 3 4 5; do
+            yq e ".frontend.image.tag = \"$IMAGE_TAG\"" -i igokochi/values.yaml
+            git add igokochi/values.yaml
+            git commit -m "ci: update igokochi frontend image tag to $IMAGE_TAG"
+
+            if git push; then
+              exit 0
+            fi
+
+            echo "Push rejected (attempt $i) — pulling latest and retrying"
+            git reset --hard HEAD~1
+            git pull --rebase
+            sleep $((RANDOM % 5 + 1))
+          done
+
+          echo "::error::Failed to push Helm chart update after 5 attempts"
+          exit 1
