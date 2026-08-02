@@ -166,7 +166,7 @@ export default function AdminReportsPage() {
         {orders !== null && (
           <section className={styles.section}>
             {orders.length === 0 ? (
-              <p className={styles.empty}>No paid or done orders for this period.</p>
+              <p className={styles.empty}>No completed orders for this period.</p>
             ) : (
               <>
                 <div className={styles.tableWrap}>

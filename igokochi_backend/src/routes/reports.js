@@ -27,7 +27,7 @@ async function fetchOrders(from, to) {
             pickup_slot, items, total, status
      FROM orders
      WHERE pickup_date BETWEEN ? AND ?
-       AND status IN ('paid', 'done')
+       AND status = 'done'
      ORDER BY pickup_date ASC, pickup_slot ASC`,
     [from, to],
   );
