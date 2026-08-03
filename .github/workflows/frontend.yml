@@ -10,6 +10,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    concurrency:
+      group: helm-do-values-update
+      cancel-in-progress: false
 
     steps:
       - name: Get the code

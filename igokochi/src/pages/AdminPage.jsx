@@ -7,6 +7,7 @@ import OrderTabs from "../components/admin/OrderTabs";
 import WalkInModal from "../components/admin/WalkInModal";
 import { apiGet, apiPatch, forceLogout } from "../admin/api";
 import { toYmd, getTodayMidnight } from "../utils/pickup";
+import { useOrdersSocket } from "../hooks/useOrdersSocket";
 import styles from "./AdminPage.module.css";
 
 // mysql date may come as ISO string, normalize:
@@ -127,14 +128,27 @@ export default function AdminPage() {
     }
   }, [refreshing, navigate]);
 
-  // Auto refresh every 10 seconds
+  // Fallback polling — the WS connection below is the primary path now,
+  // this just catches anything missed if it drops momentarily.
   useEffect(() => {
     const id = setInterval(() => {
       fetchOrders();
-    }, 10000);
+    }, 60000);
 
     return () => clearInterval(id);
   }, [fetchOrders]);
+
+  // Live updates: new orders appear immediately instead of waiting for the next poll.
+  const handleOrderEvent = useCallback((event) => {
+    if (event?.type !== "order:new" || !event.order) return;
+
+    setOrders((prev) => {
+      if (prev.some((o) => o.id === event.order.id)) return prev;
+      return [event.order, ...prev];
+    });
+  }, []);
+
+  useOrdersSocket(handleOrderEvent);
 
   const counts = useMemo(
     () => countByTab(orders, todayYmd),
