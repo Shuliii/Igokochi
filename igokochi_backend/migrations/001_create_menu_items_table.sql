@@ -13,7 +13,8 @@
 -- testing), since this is a one-time copy, not a live sync.
 --
 -- How to run against production (StatefulSet pod mysql-igokochi-0):
---   kubectl exec -i mysql-igokochi-0 -- mysql -uigokochi_user -pigokochi_pass1234 igokochi < igokochi_backend/migrations/001_create_menu_items_table.sql
+--   kubectl exec -it mysql-igokochi-0 -- mysql -uigokochi_user -p igokochi < igokochi_backend/migrations/001_create_menu_items_table.sql
+--   (enter the password interactively when prompted — never inline it here)
 
 CREATE TABLE menu_items_table LIKE menu_items;
 

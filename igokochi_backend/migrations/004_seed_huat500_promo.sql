@@ -11,7 +11,8 @@
 -- stored/compared in UTC.
 --
 -- How to run against production (StatefulSet pod mysql-igokochi-0):
---   kubectl exec -i mysql-igokochi-0 -- mysql -uigokochi_user -pigokochi_pass1234 igokochi < igokochi_backend/migrations/004_seed_huat500_promo.sql
+--   kubectl exec -it mysql-igokochi-0 -- mysql -uigokochi_user -p igokochi < igokochi_backend/migrations/004_seed_huat500_promo.sql
+--   (enter the password interactively when prompted — never inline it here)
 
 INSERT INTO promo_codes (code, type, rules, expires_at, active) VALUES
 ('HUAT500', 'fixed_price', '{"price": 5, "categories": ["matcha", "dessert"]}', '2026-08-02 16:00:00', 1);
