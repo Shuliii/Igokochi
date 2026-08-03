@@ -249,7 +249,7 @@ router.patch("/orders/:id/status", requireAuth, async (req, res) => {
     const raw = req.body?.status;
     const status = typeof raw === "string" ? raw.trim().toLowerCase() : "";
 
-    const allowed = new Set(["new", "paid", "ready", "done"]);
+    const allowed = new Set(["new", "paid", "ready", "done", "cancelled"]);
     if (!allowed.has(status)) {
       return res.status(400).json({ok: false, message: "Invalid status"});
     }
@@ -258,6 +258,10 @@ router.patch("/orders/:id/status", requireAuth, async (req, res) => {
       "UPDATE orders SET status = ? WHERE id = ?",
       [status, id],
     );
+
+    if (result.affectedRows === 1) {
+      await publishOrderEvent({type: "order:status", order: {id, status}});
+    }
 
     res.json({ok: true, updated: result.affectedRows === 1});
   } catch (err) {
