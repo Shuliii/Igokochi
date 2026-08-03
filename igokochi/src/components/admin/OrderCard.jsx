@@ -1,3 +1,6 @@
+import {useState} from "react";
+import {Trash2} from "lucide-react";
+import ConfirmDialog from "../ConfirmDialog";
 import styles from "./OrderCard.module.css";
 
 function formatPickupDate(ymdOrIso) {
@@ -39,6 +42,7 @@ function statusLabel(statusLower) {
   if (statusLower === "paid") return "PAID";
   if (statusLower === "ready") return "READY";
   if (statusLower === "done") return "DONE";
+  if (statusLower === "cancelled") return "CANCELLED";
   return "NEW";
 }
 
@@ -118,6 +122,7 @@ Singapore 550262
 
 export default function OrderCard({ order, onSetStatus, tab }) {
   const status = normalizeStatus(order.status);
+  const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
 
   let items = order.items;
   if (typeof items === "string") {
@@ -139,10 +144,15 @@ export default function OrderCard({ order, onSetStatus, tab }) {
     const waNumber = toWhatsAppNumber(order.customer_phone);
     if (!waNumber) return;
 
-    const message = buildWhatsAppMessage({ ...order, items });
-    const encodedMessage = encodeURIComponent(message);
+    // Only prefill the "order received" message on a fresh order — once it's
+    // moved past "new", this is just a quick way to open the chat with this
+    // customer without retyping their number, not another auto-message.
+    let url = `https://wa.me/${waNumber}`;
+    if (status === "new") {
+      const message = buildWhatsAppMessage({ ...order, items });
+      url += `?text=${encodeURIComponent(message)}`;
+    }
 
-    const url = `https://wa.me/${waNumber}?text=${encodedMessage}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -169,10 +179,35 @@ export default function OrderCard({ order, onSetStatus, tab }) {
           <div className={styles.pickup}>{pickupText}</div>
         </div>
 
-        <div className={`${styles.status} ${styles[`status_${status}`] || ""}`}>
-          {statusLabel(status)}
+        <div className={styles.topRowRight}>
+          <div className={`${styles.status} ${styles[`status_${status}`] || ""}`}>
+            {statusLabel(status)}
+          </div>
+
+          {status !== "done" && status !== "cancelled" && (
+            <button
+              type="button"
+              className={styles.deleteBtn}
+              onClick={() => setConfirmCancelOpen(true)}
+              aria-label="Cancel order"
+              title="Cancel order"
+            >
+              <Trash2 size={14} strokeWidth={2} />
+            </button>
+          )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmCancelOpen}
+        onOpenChange={setConfirmCancelOpen}
+        title="Cancel this order?"
+        description={`Order #${order.id} will be marked as cancelled. This can't be undone from here.`}
+        confirmLabel="Cancel Order"
+        cancelLabel="Keep Order"
+        destructive
+        onConfirm={() => onSetStatus?.(order.id, "cancelled")}
+      />
 
       <div className={styles.customerRow}>
         <div className={styles.customerName}>{order.customer_name}</div>

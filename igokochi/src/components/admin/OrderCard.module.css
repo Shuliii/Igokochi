@@ -36,12 +36,24 @@
   opacity: 0.6;
 }
 
+.card_cancelled::before {
+  background: #c0554f;
+  opacity: 0.5;
+}
+
 /* ================= TOP ================= */
 
 .topRow {
   display: flex;
   justify-content: space-between;
   gap: 12px;
+}
+
+.topRowRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .leftTop {
@@ -93,6 +105,39 @@
 .status_done {
   background: #e9ecef;
   color: #6b7280;
+}
+
+.status_cancelled {
+  background: #f5dedc;
+  color: #a13f39;
+}
+
+/* ================= DELETE ================= */
+
+.deleteBtn {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: #b8b2a0;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.deleteBtn:hover {
+  background: rgba(193, 68, 61, 0.1);
+  color: #c1443d;
+}
+
+.deleteBtn:active {
+  transform: scale(0.94);
 }
 
 /* ================= CUSTOMER ================= */

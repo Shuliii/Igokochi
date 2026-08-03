@@ -34,7 +34,7 @@ function countByTab(list, todayYmd) {
     if (ymd === todayYmd && (status === "new" || status === "paid")) today++;
     else if (ymd === todayYmd && (status === "ready" || status === "done"))
       ready++;
-    else if (ymd > todayYmd) upcoming++;
+    else if (ymd > todayYmd && status !== "cancelled") upcoming++;
   }
 
   return { today, ready, upcoming };
@@ -138,14 +138,23 @@ export default function AdminPage() {
     return () => clearInterval(id);
   }, [fetchOrders]);
 
-  // Live updates: new orders appear immediately instead of waiting for the next poll.
+  // Live updates: new orders and status changes appear immediately instead
+  // of waiting for the next poll — including changes made from another device.
   const handleOrderEvent = useCallback((event) => {
-    if (event?.type !== "order:new" || !event.order) return;
+    if (!event?.order) return;
 
-    setOrders((prev) => {
-      if (prev.some((o) => o.id === event.order.id)) return prev;
-      return [event.order, ...prev];
-    });
+    if (event.type === "order:new") {
+      setOrders((prev) => {
+        if (prev.some((o) => o.id === event.order.id)) return prev;
+        return [event.order, ...prev];
+      });
+    } else if (event.type === "order:status") {
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === event.order.id ? {...o, status: event.order.status} : o,
+        ),
+      );
+    }
   }, []);
 
   useOrdersSocket(handleOrderEvent);
@@ -191,7 +200,7 @@ export default function AdminPage() {
       if (tab === "ready")
         return ymd === todayYmd && (status === "ready" || status === "done");
       // upcoming
-      return ymd > todayYmd;
+      return ymd > todayYmd && status !== "cancelled";
     });
 
     const byDateTime = (a, b) => {

@@ -1,0 +1,117 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 999;
+}
+
+.overlay[data-state="open"] {
+  animation: overlayIn 160ms ease-out;
+}
+
+.overlay[data-state="closed"] {
+  animation: overlayOut 160ms ease-in;
+}
+
+.content {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  z-index: 1000;
+
+  background: var(--color-white);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 420px;
+  padding: 24px 20px calc(20px + env(safe-area-inset-bottom));
+  outline: none;
+}
+
+.content[data-state="open"] {
+  animation: sheetIn 200ms ease-out;
+}
+
+.content[data-state="closed"] {
+  animation: sheetOut 180ms ease-in;
+}
+
+.title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.description {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #6b6b6b;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.cancelBtn {
+  flex: 1;
+  height: 46px;
+  border-radius: 13px;
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--color-text);
+  transition: background 0.12s;
+}
+
+.cancelBtn:hover {
+  background: #f5f5f5;
+}
+
+.confirmBtn {
+  flex: 1;
+  height: 46px;
+  border-radius: 13px;
+  border: none;
+  background: var(--color-matcha-dark);
+  color: var(--color-white);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.confirmBtn:hover {
+  opacity: 0.88;
+}
+
+.destructiveBtn {
+  background: #c1443d;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes overlayOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes sheetIn {
+  from { transform: translateX(-50%) translateY(24px); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+@keyframes sheetOut {
+  from { transform: translateX(-50%) translateY(0); opacity: 1; }
+  to { transform: translateX(-50%) translateY(24px); opacity: 0; }
+}
