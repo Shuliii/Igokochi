@@ -40,6 +40,14 @@ services:
     image: node:23
     container_name: igokochi-backend
     working_dir: /app
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_USER: igokochi_user
+      DB_PASSWORD: igokochi_pass
+      DB_NAME: igokochi
+      JWT_SECRET: local-dev-secret-change-me
+      REDIS_URL: redis://redis:6379
     volumes:
       - ./igokochi_backend:/app
     ports:
@@ -47,6 +55,12 @@ services:
     stdin_open: true
     tty: true
     command: sh -c "tail -f /dev/null"
+  redis:
+    image: redis:7-alpine
+    container_name: igokochi-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
 
 volumes:
   mysql_data:

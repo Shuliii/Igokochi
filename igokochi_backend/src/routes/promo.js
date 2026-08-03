@@ -1,10 +1,17 @@
 import express from "express";
 import {getActivePromo, applyPromoToItems} from "../utils/applyPromo.js";
 import {verifyOrderItems, OrderValidationError} from "../utils/verifyOrderItems.js";
+import {createRateLimiter} from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
-router.post("/promo/validate", async (req, res) => {
+const promoRateLimit = createRateLimiter({
+  windowMs: 10 * 60 * 1000,
+  limit: 20,
+  message: "Too many attempts. Please try again later.",
+});
+
+router.post("/promo/validate", promoRateLimit, async (req, res) => {
   try {
     const {code, items} = req.body;
 

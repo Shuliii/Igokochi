@@ -1,8 +1,10 @@
 import "dotenv/config";
+import http from "http";
 import express from "express";
 import cors from "cors";
 import {db} from "./db.js";
 import {requireAuth} from "./middleware/requireAuth.js";
+import {createRateLimiter} from "./middleware/rateLimit.js";
 import * as auth from "./auth.js"; // ✅ add this
 import paynowRoutes from "./routes/paynow.js";
 import scheduleRoutes from "./routes/schedule.js";
@@ -10,14 +12,23 @@ import reportsRoutes from "./routes/reports.js";
 import promoRoutes from "./routes/promo.js";
 import {verifyOrderItems, OrderValidationError} from "./utils/verifyOrderItems.js";
 import {resolvePromo, applyPromoToItems} from "./utils/applyPromo.js";
+import {attachWebSocketServer} from "./realtime/wsServer.js";
+import {publishOrderEvent} from "./realtime/pubsub.js";
 
 // dotenv.config();
 
 const app = express();
+app.set("trust proxy", 1); // one reverse-proxy hop (k8s ingress) in front of this app
 app.use(express.json());
 app.use(cors());
 
 const PORT = process.env.PORT || 4000;
+
+const loginRateLimit = createRateLimiter({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  message: "Too many login attempts. Please try again later.",
+});
 
 // Put your routes in one router so we can mount it twice
 const router = express.Router();
@@ -128,8 +139,7 @@ router.patch("/menu/:id", requireAuth, async (req, res) => {
 });
 
 /* ---------------- AUTH routes ---------------- */
-router.post("/register", auth.register);
-router.post("/login", auth.login);
+router.post("/login", loginRateLimit, auth.login);
 router.post("/changepassword", auth.changepassword);
 
 /* ---------------- GET orders ---------------- */
@@ -199,6 +209,20 @@ router.post("/orders", async (req, res) => {
 
     const [result] = await db.execute(sql, params);
 
+    await publishOrderEvent({
+      type: "order:new",
+      order: {
+        id: result.insertId,
+        customer_name: customerName,
+        customer_phone: customerPhone,
+        pickup_date: pickupDate,
+        pickup_slot: pickupSlot,
+        items: verifiedItems,
+        total: verifiedTotal,
+        status: "new",
+      },
+    });
+
     res.status(201).json({ok: true, orderId: result.insertId, total: verifiedTotal});
   } catch (err) {
     if (err instanceof OrderValidationError) {
@@ -249,6 +273,9 @@ app.use("/api", scheduleRoutes);
 app.use("/api", reportsRoutes);
 app.use("/api", promoRoutes);
 
-app.listen(PORT, () => {
+const httpServer = http.createServer(app);
+attachWebSocketServer(httpServer);
+
+httpServer.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
 });

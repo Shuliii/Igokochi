@@ -38,28 +38,6 @@ export const login = async (req, res) => {
   }
 };
 
-export const register = async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    const response = await axios.post(`${AUTH_BASE_URL}/register`, {
-      username,
-      password,
-    });
-
-    if (response.status === 201) {
-      return res.status(201).json({ message: "successful" });
-    }
-
-    return res.status(response.status).json({ message: "Register failed!" });
-  } catch (error) {
-    console.log("Register error:", username, error.response?.data);
-    return res
-      .status(error.response?.status || 500)
-      .json({ message: error.response?.data?.message || "Register failed" });
-  }
-};
-
 export const changepassword = async (req, res) => {
   const { username, password } = req.body;
 
