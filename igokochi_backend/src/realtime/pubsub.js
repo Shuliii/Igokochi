@@ -1,14 +1,17 @@
 import Redis from "ioredis";
 
-const REDIS_URL = process.env.REDIS_URL;
+const REDIS_HOST = process.env.REDIS_HOST;
+const REDIS_PORT = Number(process.env.REDIS_PORT) || 6379;
+const REDIS_PASSWORD = process.env.REDIS_PASSWORD || undefined;
 const CHANNEL = "orders";
 
 const localHandlers = [];
 let publisher = null;
 
-if (REDIS_URL) {
-  publisher = new Redis(REDIS_URL);
-  const subscriber = new Redis(REDIS_URL);
+if (REDIS_HOST) {
+  const redisConfig = {host: REDIS_HOST, port: REDIS_PORT, password: REDIS_PASSWORD};
+  publisher = new Redis(redisConfig);
+  const subscriber = new Redis(redisConfig);
 
   subscriber.subscribe(CHANNEL, (err, count) => {
     if (err) {
@@ -29,7 +32,7 @@ if (REDIS_URL) {
     }
   });
 } else {
-  console.log("REDIS_URL not set — running in single-instance mode (no cross-pod broadcast).");
+  console.log("REDIS_HOST not set — running in single-instance mode (no cross-pod broadcast).");
 }
 
 // Called by wsServer.js to get notified whenever an order event arrives,

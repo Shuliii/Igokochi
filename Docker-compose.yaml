@@ -47,7 +47,8 @@ services:
       DB_PASSWORD: igokochi_pass
       DB_NAME: igokochi
       JWT_SECRET: local-dev-secret-change-me
-      REDIS_URL: redis://redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
     volumes:
       - ./igokochi_backend:/app
     ports:
