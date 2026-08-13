@@ -10,6 +10,7 @@ import paynowRoutes from "./routes/paynow.js";
 import scheduleRoutes from "./routes/schedule.js";
 import reportsRoutes from "./routes/reports.js";
 import promoRoutes from "./routes/promo.js";
+import adminChatRoutes from "./routes/adminChat.js";
 import {verifyOrderItems, OrderValidationError} from "./utils/verifyOrderItems.js";
 import {resolvePromo, applyPromoToItems} from "./utils/applyPromo.js";
 import {attachWebSocketServer} from "./realtime/wsServer.js";
@@ -276,6 +277,7 @@ app.use("/api", paynowRoutes);
 app.use("/api", scheduleRoutes);
 app.use("/api", reportsRoutes);
 app.use("/api", promoRoutes);
+app.use("/api", adminChatRoutes);
 
 const httpServer = http.createServer(app);
 attachWebSocketServer(httpServer);

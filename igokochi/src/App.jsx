@@ -8,6 +8,7 @@ import AdminSchedulePage from "./pages/AdminSchedulePage";
 import AdminReportsPage from "./pages/AdminReportsPage";
 import AdminLogin from "./admin/AdminLogin";
 import RequireAuth from "./admin/RequireAuth";
+import ChatWidget from "./components/admin/ChatWidget";
 
 import "./App.css";
 
@@ -53,6 +54,7 @@ function App() {
             }
           />
         </Routes>
+        <ChatWidget />
       </BrowserRouter>
     </CartProvider>
   );

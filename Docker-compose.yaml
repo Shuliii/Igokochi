@@ -49,6 +49,7 @@ services:
       JWT_SECRET: local-dev-secret-change-me
       REDIS_HOST: redis
       REDIS_PORT: "6379"
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     volumes:
       - ./igokochi_backend:/app
     ports:
