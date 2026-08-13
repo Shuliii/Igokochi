@@ -12,7 +12,20 @@ const client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
 
 const MODEL = "claude-sonnet-5";
 
-const SYSTEM_PROMPT = `You are an assistant for Igokochi House admin staff, a small matcha/dessert shop's order system.
+function todayYmd() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function buildSystemPrompt() {
+  return `You are an assistant for Igokochi House admin staff, a small matcha/dessert shop's order system.
+Today's date is ${todayYmd()} (YYYY-MM-DD). Use it to resolve relative dates ("today", "this week", "last month")
+and partial dates the admin gives without a year (e.g. "15 Aug" means the closest ${todayYmd().slice(0, 4)} occurrence
+unless context says otherwise) — never fall back on a guessed or remembered year.
+
 You have read-only access to order and sales data via the tools provided. Only answer using tool results — never
 guess or fabricate numbers. get_order_summary and search_orders both work with or without a date range and can be
 filtered by status, and get_order_summary is for counts/revenue rollups while search_orders is for looking up
@@ -30,6 +43,7 @@ admin gives you an order ID and a new date, a new time, or both. That tool only 
 the change — it never applies it. The admin still has to confirm the change themselves in the UI before anything
 is written. After calling it, just briefly acknowledge what you're proposing; don't claim the change has already
 been made.`;
+}
 
 const chatRateLimit = createRateLimiter({
   windowMs: 15 * 60 * 1000,
@@ -147,28 +161,43 @@ const searchOrders = betaTool({
   },
 });
 
-const getTopSellingItems = betaTool({
-  name: "get_top_selling_items",
+const getItemSales = betaTool({
+  name: "get_item_sales",
   description:
-    "Get the best-selling menu items by quantity and revenue for a date range, for completed (done) orders only.",
+    "Get quantity and revenue sold for menu items — either the top sellers overall, or a specific item by name. " +
+    "Use this for questions like 'what sold best this week' or 'how many strawberry matcha for Aug 15'. " +
+    "from/to and status are all optional. By default it includes every order except cancelled ones (so future " +
+    "orders that haven't been picked up yet are counted too) — pass status:'done' if you specifically want " +
+    "completed/picked-up figures only. Pass itemName to filter to items matching that name instead of a top-N list.",
   inputSchema: {
     type: "object",
     properties: {
-      from: {type: "string", description: "Start date, YYYY-MM-DD, inclusive"},
-      to: {type: "string", description: "End date, YYYY-MM-DD, inclusive"},
-      limit: {type: "integer", description: "Max items to return, default 10"},
+      from: {type: "string", description: "Start date, YYYY-MM-DD, inclusive. Omit for no lower bound."},
+      to: {type: "string", description: "End date, YYYY-MM-DD, inclusive. Omit for no upper bound."},
+      status: {
+        type: "string",
+        enum: ORDER_STATUSES,
+        description: "Optional: restrict to orders with this status. Defaults to all except cancelled.",
+      },
+      itemName: {type: "string", description: "Optional: only include menu items whose name contains this text"},
+      limit: {type: "integer", description: "Max items to return when itemName is omitted, default 10"},
     },
-    required: ["from", "to"],
   },
-  run: async ({from, to, limit}) => {
-    if (!isValidDate(from) || !isValidDate(to) || from > to) {
-      return "Invalid date range. Dates must be YYYY-MM-DD and from must not be after to.";
-    }
+  run: async ({from, to, status, itemName, limit}) => {
+    if (from && !isValidDate(from)) return "Invalid 'from' date. Must be YYYY-MM-DD.";
+    if (to && !isValidDate(to)) return "Invalid 'to' date. Must be YYYY-MM-DD.";
+    if (from && to && from > to) return "'from' must not be after 'to'.";
+    if (status && !ORDER_STATUSES.includes(status)) return `Invalid status. Must be one of: ${ORDER_STATUSES.join(", ")}.`;
 
-    const [rows] = await db.query(
-      `SELECT items FROM orders WHERE pickup_date BETWEEN ? AND ? AND status = 'done'`,
-      [from, to],
-    );
+    const conditions = [];
+    const params = [];
+    if (from) { conditions.push("pickup_date >= ?"); params.push(from); }
+    if (to) { conditions.push("pickup_date <= ?"); params.push(to); }
+    conditions.push(status ? "status = ?" : "status != 'cancelled'");
+    if (status) params.push(status);
+    const where = `WHERE ${conditions.join(" AND ")}`;
+
+    const [rows] = await db.query(`SELECT items FROM orders ${where}`, params);
 
     const totals = new Map();
     for (const row of rows) {
@@ -192,8 +221,17 @@ const getTopSellingItems = betaTool({
       }
     }
 
-    const sorted = Array.from(totals.values()).sort((a, b) => b.revenue - a.revenue);
-    return JSON.stringify(sorted.slice(0, limit || 10));
+    let results = Array.from(totals.values());
+    if (itemName) {
+      const needle = itemName.toLowerCase();
+      results = results.filter((r) => r.name.toLowerCase().includes(needle));
+    }
+    results.sort((a, b) => b.revenue - a.revenue);
+    if (!itemName) results = results.slice(0, limit || 10);
+
+    return JSON.stringify(
+      results.map((r) => ({name: r.name, qty: r.qty, revenue: r.revenue.toFixed(2)})),
+    );
   },
 });
 
@@ -270,8 +308,8 @@ router.post("/admin/chat", requireAuth, chatRateLimit, async (req, res) => {
     const finalMessage = await client.beta.messages.toolRunner({
       model: MODEL,
       max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      tools: [getOrderSummary, getTopSellingItems, searchOrders, proposePickupChange],
+      system: buildSystemPrompt(),
+      tools: [getOrderSummary, getItemSales, searchOrders, proposePickupChange],
       messages,
     });
 
