@@ -4,6 +4,7 @@ import {betaTool} from "@anthropic-ai/sdk/helpers/beta/json-schema";
 import {db} from "../db.js";
 import {requireAuth} from "../middleware/requireAuth.js";
 import {createRateLimiter} from "../middleware/rateLimit.js";
+import {isValidDate} from "../utils/isValidDate.js";
 
 const router = express.Router();
 const client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
@@ -13,19 +14,18 @@ const MODEL = "claude-sonnet-5";
 const SYSTEM_PROMPT = `You are an assistant for Igokochi House admin staff, a small matcha/dessert shop's order system.
 You have read-only access to order and sales data via the tools provided. Only answer using tool results — never
 guess or fabricate numbers. If a question needs a date range and none is given, ask for one rather than assuming.
-Keep answers concise and business-focused.`;
+Keep answers concise and business-focused.
+
+You can also propose changing an order's pickup date via the propose_pickup_date_change tool, when the admin gives
+you an order ID and a new date. That tool only looks up the order and stages the change — it never applies it.
+The admin still has to confirm the change themselves in the UI before anything is written. After calling it, just
+briefly acknowledge what you're proposing; don't claim the change has already been made.`;
 
 const chatRateLimit = createRateLimiter({
   windowMs: 15 * 60 * 1000,
   limit: 30,
   message: "Too many chat requests. Please try again later.",
 });
-
-function isValidDate(str) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(str)) return false;
-  const d = new Date(str + "T00:00:00");
-  return !isNaN(d.getTime());
-}
 
 const getOrderSummary = betaTool({
   name: "get_order_summary",
@@ -121,11 +121,61 @@ router.post("/admin/chat", requireAuth, chatRateLimit, async (req, res) => {
       return res.status(400).json({ok: false, message: "messages array is required"});
     }
 
+    // Set by proposePickupDateChange below if Claude calls it this turn. The tool
+    // only looks up the order — the actual write happens via a separate, directly
+    // confirmed PATCH call, never inside this chat request.
+    let pendingAction = null;
+
+    const proposePickupDateChange = betaTool({
+      name: "propose_pickup_date_change",
+      description:
+        "Stage a pickup date change for an order so the admin can review and confirm it. " +
+        "Does NOT apply the change — only looks up the order and returns the proposed change.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          orderId: {type: "integer", description: "The order's numeric ID"},
+          newDate: {type: "string", description: "New pickup date, YYYY-MM-DD"},
+        },
+        required: ["orderId", "newDate"],
+      },
+      run: async ({orderId, newDate}) => {
+        if (!isValidDate(newDate)) {
+          return "Invalid date. Must be YYYY-MM-DD.";
+        }
+
+        const [rows] = await db.query(
+          "SELECT id, customer_name, pickup_date FROM orders WHERE id = ?",
+          [orderId],
+        );
+        if (rows.length === 0) {
+          return `Order #${orderId} not found.`;
+        }
+
+        const order = rows[0];
+        pendingAction = {
+          type: "update_pickup_date",
+          orderId: order.id,
+          customerName: order.customer_name,
+          oldDate: order.pickup_date,
+          newDate,
+        };
+
+        return JSON.stringify({
+          orderId: order.id,
+          customerName: order.customer_name,
+          oldDate: order.pickup_date,
+          newDate,
+          status: "staged — awaiting admin confirmation in the UI, not yet applied",
+        });
+      },
+    });
+
     const finalMessage = await client.beta.messages.toolRunner({
       model: MODEL,
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
-      tools: [getOrderSummary, getTopSellingItems],
+      tools: [getOrderSummary, getTopSellingItems, proposePickupDateChange],
       messages,
     });
 
@@ -138,6 +188,7 @@ router.post("/admin/chat", requireAuth, chatRateLimit, async (req, res) => {
       ok: true,
       reply,
       assistantMessage: {role: "assistant", content: finalMessage.content},
+      pendingAction,
     });
   } catch (err) {
     console.error("POST /admin/chat error:", err);

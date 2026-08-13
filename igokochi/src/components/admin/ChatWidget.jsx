@@ -1,11 +1,16 @@
 import {useEffect, useRef, useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {MessageCircle, X, Send} from "lucide-react";
-import {apiPost} from "../../admin/api";
+import {apiPost, apiPatch} from "../../admin/api";
 import ErrorBanner from "../ErrorBanner";
+import ConfirmDialog from "../ConfirmDialog";
 import styles from "./ChatWidget.module.css";
 
 const SUGGESTIONS = ["How many orders today?", "What sold best this week?"];
+
+function toYmd(raw) {
+  return String(raw || "").slice(0, 10);
+}
 
 function getDisplayText(message) {
   if (typeof message.content === "string") return message.content;
@@ -27,6 +32,8 @@ export default function ChatWidget() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [pendingAction, setPendingAction] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const listRef = useRef(null);
   const inputRef = useRef(null);
@@ -62,6 +69,10 @@ export default function ChatWidget() {
     try {
       const data = await apiPost("/admin/chat", {messages: nextMessages});
       setMessages([...nextMessages, data.assistantMessage]);
+      if (data.pendingAction) {
+        setPendingAction(data.pendingAction);
+        setConfirmOpen(true);
+      }
     } catch (err) {
       if (err?.code === "SESSION_EXPIRED") {
         navigate("/admin/login", {replace: true, state: {reason: "expired"}});
@@ -78,6 +89,35 @@ export default function ChatWidget() {
       setError(message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleConfirmPickupDateChange = async () => {
+    if (!pendingAction) return;
+    const {orderId, newDate} = pendingAction;
+
+    try {
+      await apiPatch(`/orders/${orderId}/pickup-date`, {pickupDate: newDate});
+      setMessages((prev) => [
+        ...prev,
+        {role: "assistant", content: `Order #${orderId} pickup date updated to ${toYmd(newDate)}.`},
+      ]);
+    } catch (err) {
+      if (err?.code === "SESSION_EXPIRED") {
+        navigate("/admin/login", {replace: true, state: {reason: "expired"}});
+        return;
+      }
+
+      let message = err.message || "Failed to update pickup date";
+      try {
+        const parsed = JSON.parse(message);
+        if (parsed?.message) message = parsed.message;
+      } catch {
+        // not JSON — use the raw message as-is
+      }
+      setError(message);
+    } finally {
+      setPendingAction(null);
     }
   };
 
@@ -171,6 +211,19 @@ export default function ChatWidget() {
       >
         {open ? <X size={24} /> : <MessageCircle size={24} />}
       </button>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Change pickup date?"
+        description={
+          pendingAction &&
+          `Order #${pendingAction.orderId} (${pendingAction.customerName}) will move from ${toYmd(pendingAction.oldDate)} to ${toYmd(pendingAction.newDate)}.`
+        }
+        confirmLabel="Change Date"
+        cancelLabel="Cancel"
+        onConfirm={handleConfirmPickupDateChange}
+      />
     </div>
   );
 }

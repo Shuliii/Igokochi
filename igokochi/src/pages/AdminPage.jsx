@@ -154,6 +154,14 @@ export default function AdminPage() {
           o.id === event.order.id ? {...o, status: event.order.status} : o,
         ),
       );
+    } else if (event.type === "order:pickup_date") {
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === event.order.id
+            ? {...o, pickup_date: event.order.pickup_date}
+            : o,
+        ),
+      );
     }
   }, []);
 
