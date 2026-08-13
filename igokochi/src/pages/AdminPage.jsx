@@ -162,6 +162,14 @@ export default function AdminPage() {
             : o,
         ),
       );
+    } else if (event.type === "order:pickup_slot") {
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === event.order.id
+            ? {...o, pickup_slot: event.order.pickup_slot}
+            : o,
+        ),
+      );
     }
   }, []);
 

@@ -16,6 +16,7 @@ import {resolvePromo, applyPromoToItems} from "./utils/applyPromo.js";
 import {attachWebSocketServer} from "./realtime/wsServer.js";
 import {publishOrderEvent} from "./realtime/pubsub.js";
 import {isValidDate} from "./utils/isValidDate.js";
+import {isValidTime} from "./utils/isValidTime.js";
 
 // dotenv.config();
 
@@ -297,6 +298,35 @@ router.patch("/orders/:id/pickup-date", requireAuth, async (req, res) => {
     res.json({ok: true, updated: result.affectedRows === 1});
   } catch (err) {
     console.error("PATCH /orders/:id/pickup-date error:", err);
+    res.status(500).json({ok: false, message: "Server error"});
+  }
+});
+
+/* ---------------- PATCH order pickup slot (time) ---------------- */
+router.patch("/orders/:id/pickup-slot", requireAuth, async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const pickupSlot = req.body?.pickupSlot;
+
+    if (!isValidTime(pickupSlot)) {
+      return res.status(400).json({ok: false, message: "Invalid time"});
+    }
+
+    const [result] = await db.execute(
+      "UPDATE orders SET pickup_slot = ? WHERE id = ?",
+      [pickupSlot, id],
+    );
+
+    if (result.affectedRows === 1) {
+      await publishOrderEvent({
+        type: "order:pickup_slot",
+        order: {id, pickup_slot: pickupSlot},
+      });
+    }
+
+    res.json({ok: true, updated: result.affectedRows === 1});
+  } catch (err) {
+    console.error("PATCH /orders/:id/pickup-slot error:", err);
     res.status(500).json({ok: false, message: "Server error"});
   }
 });

@@ -5,6 +5,7 @@ import {db} from "../db.js";
 import {requireAuth} from "../middleware/requireAuth.js";
 import {createRateLimiter} from "../middleware/rateLimit.js";
 import {isValidDate} from "../utils/isValidDate.js";
+import {isValidTime} from "../utils/isValidTime.js";
 
 const router = express.Router();
 const client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
@@ -13,13 +14,22 @@ const MODEL = "claude-sonnet-5";
 
 const SYSTEM_PROMPT = `You are an assistant for Igokochi House admin staff, a small matcha/dessert shop's order system.
 You have read-only access to order and sales data via the tools provided. Only answer using tool results — never
-guess or fabricate numbers. If a question needs a date range and none is given, ask for one rather than assuming.
-Keep answers concise and business-focused.
+guess or fabricate numbers. get_order_summary and search_orders both work with or without a date range and can be
+filtered by status, and get_order_summary is for counts/revenue rollups while search_orders is for looking up
+individual orders by customer name or status. Keep answers concise and business-focused.
 
-You can also propose changing an order's pickup date via the propose_pickup_date_change tool, when the admin gives
-you an order ID and a new date. That tool only looks up the order and stages the change — it never applies it.
-The admin still has to confirm the change themselves in the UI before anything is written. After calling it, just
-briefly acknowledge what you're proposing; don't claim the change has already been made.`;
+The status values are 'new', 'paid', 'ready', 'done', 'cancelled'. Admins won't always use those exact words —
+map casual language to the right status yourself: "incoming"/"pending"/"just came in" -> new, "awaiting prep"
+-> paid, "ready for pickup"/"ready to collect" -> ready, "completed"/"picked up"/"finished" -> done,
+"cancelled"/"voided" -> cancelled. "Open"/"outstanding"/"not done yet" covers everything except done and
+cancelled — when an admin asks something like that, you may need to call the tool once per relevant status
+(or just per status that applies) since each call only filters to one status at a time.
+
+You can also propose changing an order's pickup date and/or time via the propose_pickup_change tool, when the
+admin gives you an order ID and a new date, a new time, or both. That tool only looks up the order and stages
+the change — it never applies it. The admin still has to confirm the change themselves in the UI before anything
+is written. After calling it, just briefly acknowledge what you're proposing; don't claim the change has already
+been made.`;
 
 const chatRateLimit = createRateLimiter({
   windowMs: 15 * 60 * 1000,
@@ -27,30 +37,46 @@ const chatRateLimit = createRateLimiter({
   message: "Too many chat requests. Please try again later.",
 });
 
+const ORDER_STATUSES = ["new", "paid", "ready", "done", "cancelled"];
+
 const getOrderSummary = betaTool({
   name: "get_order_summary",
   description:
-    "Get order counts and total revenue for a date range, broken down by status. " +
-    "Use this for questions like 'how many orders this week' or 'what was revenue in October'.",
+    "Get order counts and total revenue, broken down by status. " +
+    "Use this for questions like 'how many orders this week', 'what was revenue in October', " +
+    "or 'how many cancelled orders total'. from/to are optional — omit both for an all-time summary. " +
+    "Optionally filter to a single status.",
   inputSchema: {
     type: "object",
     properties: {
-      from: {type: "string", description: "Start date, YYYY-MM-DD, inclusive"},
-      to: {type: "string", description: "End date, YYYY-MM-DD, inclusive"},
+      from: {type: "string", description: "Start date, YYYY-MM-DD, inclusive. Omit for no lower bound."},
+      to: {type: "string", description: "End date, YYYY-MM-DD, inclusive. Omit for no upper bound."},
+      status: {
+        type: "string",
+        enum: ORDER_STATUSES,
+        description: "Optional: only include orders with this status.",
+      },
     },
-    required: ["from", "to"],
   },
-  run: async ({from, to}) => {
-    if (!isValidDate(from) || !isValidDate(to) || from > to) {
-      return "Invalid date range. Dates must be YYYY-MM-DD and from must not be after to.";
-    }
+  run: async ({from, to, status}) => {
+    if (from && !isValidDate(from)) return "Invalid 'from' date. Must be YYYY-MM-DD.";
+    if (to && !isValidDate(to)) return "Invalid 'to' date. Must be YYYY-MM-DD.";
+    if (from && to && from > to) return "'from' must not be after 'to'.";
+    if (status && !ORDER_STATUSES.includes(status)) return `Invalid status. Must be one of: ${ORDER_STATUSES.join(", ")}.`;
+
+    const conditions = [];
+    const params = [];
+    if (from) { conditions.push("pickup_date >= ?"); params.push(from); }
+    if (to) { conditions.push("pickup_date <= ?"); params.push(to); }
+    if (status) { conditions.push("status = ?"); params.push(status); }
+    const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
     const [rows] = await db.query(
       `SELECT status, COUNT(*) AS count, SUM(total) AS revenue
        FROM orders
-       WHERE pickup_date BETWEEN ? AND ?
+       ${where}
        GROUP BY status`,
-      [from, to],
+      params,
     );
 
     return JSON.stringify(
@@ -58,6 +84,64 @@ const getOrderSummary = betaTool({
         status: r.status,
         count: r.count,
         revenue: Number(r.revenue || 0).toFixed(2),
+      })),
+    );
+  },
+});
+
+const searchOrders = betaTool({
+  name: "search_orders",
+  description:
+    "Look up individual orders by customer name and/or status, optionally within a date range. " +
+    "Use this for questions like 'find orders for Sarah', 'what orders are still open', " +
+    "or 'show pending orders this week'. All filters are optional but at least one of " +
+    "customerName or status should be given to keep results useful. Returns up to 25 orders.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      customerName: {type: "string", description: "Partial or full customer name to search for"},
+      status: {
+        type: "string",
+        enum: ORDER_STATUSES,
+        description: "Filter to a single status, e.g. 'new' to find orders not yet completed.",
+      },
+      from: {type: "string", description: "Start date, YYYY-MM-DD, inclusive"},
+      to: {type: "string", description: "End date, YYYY-MM-DD, inclusive"},
+    },
+  },
+  run: async ({customerName, status, from, to}) => {
+    if (from && !isValidDate(from)) return "Invalid 'from' date. Must be YYYY-MM-DD.";
+    if (to && !isValidDate(to)) return "Invalid 'to' date. Must be YYYY-MM-DD.";
+    if (from && to && from > to) return "'from' must not be after 'to'.";
+    if (status && !ORDER_STATUSES.includes(status)) return `Invalid status. Must be one of: ${ORDER_STATUSES.join(", ")}.`;
+
+    const conditions = [];
+    const params = [];
+    if (customerName) { conditions.push("customer_name LIKE ?"); params.push(`%${customerName}%`); }
+    if (status) { conditions.push("status = ?"); params.push(status); }
+    if (from) { conditions.push("pickup_date >= ?"); params.push(from); }
+    if (to) { conditions.push("pickup_date <= ?"); params.push(to); }
+    const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+
+    const [rows] = await db.query(
+      `SELECT id, customer_name,
+              DATE_FORMAT(pickup_date, '%Y-%m-%d') AS pickup_date,
+              pickup_slot, status, total
+       FROM orders
+       ${where}
+       ORDER BY pickup_date DESC, pickup_slot DESC
+       LIMIT 25`,
+      params,
+    );
+
+    return JSON.stringify(
+      rows.map((r) => ({
+        id: r.id,
+        customerName: r.customer_name,
+        pickupDate: r.pickup_date,
+        pickupSlot: r.pickup_slot,
+        status: r.status,
+        total: Number(r.total || 0).toFixed(2),
       })),
     );
   },
@@ -121,31 +205,39 @@ router.post("/admin/chat", requireAuth, chatRateLimit, async (req, res) => {
       return res.status(400).json({ok: false, message: "messages array is required"});
     }
 
-    // Set by proposePickupDateChange below if Claude calls it this turn. The tool
-    // only looks up the order — the actual write happens via a separate, directly
-    // confirmed PATCH call, never inside this chat request.
+    // Set by proposePickupChange below if Claude calls it this turn. The tool
+    // only looks up the order — the actual write happens via separate, directly
+    // confirmed PATCH calls, never inside this chat request.
     let pendingAction = null;
 
-    const proposePickupDateChange = betaTool({
-      name: "propose_pickup_date_change",
+    const proposePickupChange = betaTool({
+      name: "propose_pickup_change",
       description:
-        "Stage a pickup date change for an order so the admin can review and confirm it. " +
-        "Does NOT apply the change — only looks up the order and returns the proposed change.",
+        "Stage a pickup date and/or time change for an order so the admin can review and confirm it. " +
+        "Does NOT apply the change — only looks up the order and returns the proposed change. " +
+        "Give newDate to change the date, newTime to change the time, or both to change either or both.",
       inputSchema: {
         type: "object",
         properties: {
           orderId: {type: "integer", description: "The order's numeric ID"},
-          newDate: {type: "string", description: "New pickup date, YYYY-MM-DD"},
+          newDate: {type: "string", description: "New pickup date, YYYY-MM-DD. Omit to leave the date unchanged."},
+          newTime: {type: "string", description: "New pickup time, 24h HH:MM. Omit to leave the time unchanged."},
         },
-        required: ["orderId", "newDate"],
+        required: ["orderId"],
       },
-      run: async ({orderId, newDate}) => {
-        if (!isValidDate(newDate)) {
+      run: async ({orderId, newDate, newTime}) => {
+        if (!newDate && !newTime) {
+          return "Provide at least one of newDate or newTime.";
+        }
+        if (newDate && !isValidDate(newDate)) {
           return "Invalid date. Must be YYYY-MM-DD.";
+        }
+        if (newTime && !isValidTime(newTime)) {
+          return "Invalid time. Must be 24h HH:MM.";
         }
 
         const [rows] = await db.query(
-          "SELECT id, customer_name, pickup_date FROM orders WHERE id = ?",
+          "SELECT id, customer_name, pickup_date, pickup_slot FROM orders WHERE id = ?",
           [orderId],
         );
         if (rows.length === 0) {
@@ -154,18 +246,22 @@ router.post("/admin/chat", requireAuth, chatRateLimit, async (req, res) => {
 
         const order = rows[0];
         pendingAction = {
-          type: "update_pickup_date",
+          type: "update_pickup",
           orderId: order.id,
           customerName: order.customer_name,
           oldDate: order.pickup_date,
-          newDate,
+          newDate: newDate || null,
+          oldTime: order.pickup_slot,
+          newTime: newTime || null,
         };
 
         return JSON.stringify({
           orderId: order.id,
           customerName: order.customer_name,
           oldDate: order.pickup_date,
-          newDate,
+          newDate: newDate || order.pickup_date,
+          oldTime: order.pickup_slot,
+          newTime: newTime || order.pickup_slot,
           status: "staged — awaiting admin confirmation in the UI, not yet applied",
         });
       },
@@ -175,7 +271,7 @@ router.post("/admin/chat", requireAuth, chatRateLimit, async (req, res) => {
       model: MODEL,
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
-      tools: [getOrderSummary, getTopSellingItems, proposePickupDateChange],
+      tools: [getOrderSummary, getTopSellingItems, searchOrders, proposePickupChange],
       messages,
     });
 

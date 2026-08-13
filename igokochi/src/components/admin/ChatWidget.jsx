@@ -12,6 +12,32 @@ function toYmd(raw) {
   return String(raw || "").slice(0, 10);
 }
 
+function formatSlot(hhmm) {
+  if (!hhmm) return "";
+  const [hhStr, mmStr] = String(hhmm).split(":");
+  const h = Number(hhStr);
+  const m = Number(mmStr);
+  const suffix = h >= 12 ? "pm" : "am";
+  const hour12 = ((h + 11) % 12) + 1;
+  return `${hour12}.${String(m).padStart(2, "0")}${suffix}`;
+}
+
+function pendingActionTitle(pendingAction) {
+  if (!pendingAction) return "";
+  const {newDate, newTime} = pendingAction;
+  if (newDate && newTime) return "Change pickup date & time?";
+  if (newTime) return "Change pickup time?";
+  return "Change pickup date?";
+}
+
+function describePendingAction(pendingAction) {
+  const {orderId, customerName, oldDate, newDate, oldTime, newTime} = pendingAction;
+  const changes = [];
+  if (newDate) changes.push(`date from ${toYmd(oldDate)} to ${toYmd(newDate)}`);
+  if (newTime) changes.push(`time from ${formatSlot(oldTime)} to ${formatSlot(newTime)}`);
+  return `Order #${orderId} (${customerName}) will move ${changes.join(" and ")}.`;
+}
+
 function getDisplayText(message) {
   if (typeof message.content === "string") return message.content;
   if (Array.isArray(message.content)) {
@@ -92,15 +118,21 @@ export default function ChatWidget() {
     }
   };
 
-  const handleConfirmPickupDateChange = async () => {
+  const handleConfirmPickupChange = async () => {
     if (!pendingAction) return;
-    const {orderId, newDate} = pendingAction;
+    const {orderId, newDate, newTime} = pendingAction;
 
     try {
-      await apiPatch(`/orders/${orderId}/pickup-date`, {pickupDate: newDate});
+      if (newDate) await apiPatch(`/orders/${orderId}/pickup-date`, {pickupDate: newDate});
+      if (newTime) await apiPatch(`/orders/${orderId}/pickup-slot`, {pickupSlot: newTime});
+
+      const parts = [];
+      if (newDate) parts.push(`date to ${toYmd(newDate)}`);
+      if (newTime) parts.push(`time to ${formatSlot(newTime)}`);
+
       setMessages((prev) => [
         ...prev,
-        {role: "assistant", content: `Order #${orderId} pickup date updated to ${toYmd(newDate)}.`},
+        {role: "assistant", content: `Order #${orderId} pickup ${parts.join(" and ")} updated.`},
       ]);
     } catch (err) {
       if (err?.code === "SESSION_EXPIRED") {
@@ -108,7 +140,7 @@ export default function ChatWidget() {
         return;
       }
 
-      let message = err.message || "Failed to update pickup date";
+      let message = err.message || "Failed to update pickup date/time";
       try {
         const parsed = JSON.parse(message);
         if (parsed?.message) message = parsed.message;
@@ -215,14 +247,11 @@ export default function ChatWidget() {
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        title="Change pickup date?"
-        description={
-          pendingAction &&
-          `Order #${pendingAction.orderId} (${pendingAction.customerName}) will move from ${toYmd(pendingAction.oldDate)} to ${toYmd(pendingAction.newDate)}.`
-        }
-        confirmLabel="Change Date"
+        title={pendingActionTitle(pendingAction)}
+        description={pendingAction && describePendingAction(pendingAction)}
+        confirmLabel="Confirm"
         cancelLabel="Cancel"
-        onConfirm={handleConfirmPickupDateChange}
+        onConfirm={handleConfirmPickupChange}
       />
     </div>
   );
