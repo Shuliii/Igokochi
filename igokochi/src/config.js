@@ -5,3 +5,8 @@ export const API_BASE_URL =
   runtime.API_BASE_URL ||
   import.meta.env.VITE_API_BASE_URL ||
   "http://localhost:4000";
+
+export const SLOT_CAPACITY =
+  Number(runtime.SLOT_CAPACITY) ||
+  Number(import.meta.env.VITE_SLOT_CAPACITY) ||
+  1;
