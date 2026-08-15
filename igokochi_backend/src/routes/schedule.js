@@ -65,7 +65,7 @@ router.get("/slots/booked", async (req, res) => {
     const [rows] = await db.query(
       `SELECT pickup_slot, COUNT(DISTINCT customer_phone) AS count
        FROM orders
-       WHERE pickup_date = ?
+       WHERE pickup_date = ? AND status != 'cancelled'
        GROUP BY pickup_slot`,
       [date],
     );
