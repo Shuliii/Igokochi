@@ -1,8 +1,7 @@
 // src/components/checkout/CustomerFormCard.jsx
 import {useState} from "react";
 import styles from "./CustomerFormCard.module.css";
-
-const PHONE_RE = /^[89]\d{7}$/;
+import {isValidPhone} from "../utils/phone";
 
 const CustomerFormCard = ({value = {}, onChange}) => {
   const [phoneTouched, setPhoneTouched] = useState(false);
@@ -14,7 +13,7 @@ const CustomerFormCard = ({value = {}, onChange}) => {
     });
   };
 
-  const phoneValid = PHONE_RE.test(value.phone || "");
+  const phoneValid = isValidPhone(value.phone);
   const showPhoneError = phoneTouched && !phoneValid;
 
   return (

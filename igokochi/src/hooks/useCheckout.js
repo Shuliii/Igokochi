@@ -1,6 +1,7 @@
 import {useEffect, useMemo, useState} from "react";
 import {useCart} from "../cart/CartContext";
 import {API_BASE_URL} from "../config";
+import {isValidPhone} from "../utils/phone";
 
 export function useCheckout({onOrderPlaced, onConfirm, onClose} = {}) {
   const {state, dispatch} = useCart();
@@ -42,7 +43,7 @@ export function useCheckout({onOrderPlaced, onConfirm, onClose} = {}) {
     pickup.date &&
     pickup.slot &&
     customer.name.trim() &&
-    customer.phone.trim();
+    isValidPhone(customer.phone);
 
   const dismissError = () => setCheckoutError("");
 
