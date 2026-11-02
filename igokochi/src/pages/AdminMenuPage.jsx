@@ -85,6 +85,39 @@ export default function AdminMenuPage() {
     }
   };
 
+  const handleBadgeChange = async (item, nextBadge) => {
+    const current = item.badge || null;
+
+    // optimistic UI
+    setMenu((prev) =>
+      prev.map((m) => (m.id === item.id ? { ...m, badge: nextBadge } : m)),
+    );
+
+    try {
+      await apiPatch(`/menu/${item.id}`, {
+        badge: nextBadge,
+      });
+
+      setNetError(false);
+    } catch (err) {
+      if (err?.code === "SESSION_EXPIRED") {
+        navigate("/admin/login", {
+          replace: true,
+          state: { reason: "expired" },
+        });
+        return;
+      }
+
+      console.error("Failed to update menu label", err);
+      setNetError(true);
+
+      // rollback if API fails
+      setMenu((prev) =>
+        prev.map((m) => (m.id === item.id ? { ...m, badge: current } : m)),
+      );
+    }
+  };
+
   return (
     <>
       <AdminHeader
@@ -98,7 +131,12 @@ export default function AdminMenuPage() {
       )}
 
       <AdminMain>
-        <MenuList menu={menu} onToggle={handleToggle} loading={loading} />
+        <MenuList
+          menu={menu}
+          onToggle={handleToggle}
+          onBadgeChange={handleBadgeChange}
+          loading={loading}
+        />
       </AdminMain>
     </>
   );

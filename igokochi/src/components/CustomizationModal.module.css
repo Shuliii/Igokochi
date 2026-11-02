@@ -5,7 +5,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(31, 29, 26, 0.45);
   backdrop-filter: blur(2px);
   z-index: 1000;
 }
@@ -33,7 +33,7 @@
   max-height: 92dvh;
 
   background: var(--color-white);
-  border-radius: 20px 20px 0 0;
+  border-radius: 24px 24px 0 0;
 
   display: flex;
   flex-direction: column;
@@ -65,22 +65,41 @@
 }
 
 /* ========================
-   DRAG HANDLE
+   PHOTO
 ======================== */
 
-.handle {
-  width: 36px;
-  height: 4px;
-  background: var(--color-border);
-  border-radius: 999px;
-  margin: 10px auto 0;
+.photo {
+  position: relative;
+  height: 240px;
   flex-shrink: 0;
+  background: var(--color-photo);
+  overflow: hidden;
 }
 
-@media (min-width: 640px) {
-  .handle {
-    display: none;
-  }
+/* whole square photo; its backdrop matches --color-photo so the sides blend in */
+.photoImg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.closeButton {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.9);
+  color: var(--color-text);
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ========================
@@ -88,70 +107,44 @@
 ======================== */
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 14px 18px 16px;
+  padding: 16px 18px 14px;
   border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
 }
 
-.headerMain {
+.headerBadge {
+  margin-bottom: 8px;
+}
+
+.titleRow {
   display: flex;
+  align-items: baseline;
+  justify-content: space-between;
   gap: 12px;
-  min-width: 0;
-  flex: 1;
-}
-
-.thumb {
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
-  object-fit: cover;
-  flex-shrink: 0;
-  background: var(--color-bg);
-}
-
-.headerText {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 .title {
   margin: 0;
-  font-size: 1.05rem;
-  font-weight: 700;
-  line-height: 1.25;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   color: var(--color-text);
+}
+
+.basePrice {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
 }
 
 .description {
-  margin-top: 5px;
-  font-size: 0.875rem;
-  line-height: 1.4;
-  color: #7a7a7a;
-}
-
-.closeButton {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 10px;
-  flex-shrink: 0;
-  color: var(--color-text);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@media (hover: hover) {
-  .closeButton:hover {
-    background: var(--color-bg);
-  }
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-muted);
 }
 
 /* ========================
@@ -182,15 +175,19 @@
 
 .sectionTitle {
   margin: 0;
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
   color: var(--color-text);
 }
 
 .required {
-  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-bg);
+  font-size: 11px;
   font-weight: 600;
-  color: #9a9a9a;
+  color: var(--color-muted);
 }
 
 /* ========================
@@ -208,9 +205,9 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
-  border: 1.5px solid var(--color-border);
-  border-radius: 12px;
+  padding: 13px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
   cursor: pointer;
   background: var(--color-white);
   transition:
@@ -220,12 +217,13 @@
 
 @media (hover: hover) {
   .optionCard:hover {
-    border-color: var(--color-matcha-soft);
-    background: #fafaf9;
+    border-color: var(--color-matcha);
+    background: var(--color-bg);
   }
 }
 
-.optionCardSelected {
+.optionCardSelected,
+.optionCardSelected:hover {
   border-color: var(--color-matcha-dark);
   background: var(--color-matcha-soft);
 }
@@ -267,8 +265,8 @@
 .notes {
   width: 100%;
   min-height: 88px;
-  border: 1.5px solid var(--color-border);
-  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
   padding: 12px 14px;
   font-size: 16px;
   font-family: inherit;
@@ -279,7 +277,7 @@
 }
 
 .notes::placeholder {
-  color: #9a9a9a;
+  color: var(--color-muted);
 }
 
 .notes:focus {
@@ -288,74 +286,65 @@
 }
 
 /* ========================
-   QUANTITY
-======================== */
-
-.qtyRow {
-  display: inline-flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.qtyButton {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1.5px solid var(--color-border);
-  background: var(--color-white);
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-  color: var(--color-text);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background 0.12s ease,
-    border-color 0.12s ease,
-    transform 0.08s ease;
-}
-
-.qtyButton:active {
-  transform: scale(0.94);
-}
-
-@media (hover: hover) {
-  .qtyButton:hover {
-    background: var(--color-bg);
-    border-color: var(--color-matcha-soft);
-  }
-}
-
-.qtyValue {
-  min-width: 24px;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-/* ========================
-   FOOTER
+   FOOTER (quantity + add)
 ======================== */
 
 .footer {
-  padding: 14px 18px;
-  padding-bottom: calc(14px + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--color-border);
   background: var(--color-white);
   flex-shrink: 0;
 }
 
+.qtyRow {
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--color-bg);
+  flex-shrink: 0;
+}
+
+.qtyButton {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-white);
+  color: var(--color-text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qtyButton:active {
+  transform: scale(0.92);
+}
+
+.qtyValue {
+  min-width: 22px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
 .addToCartButton {
-  width: 100%;
+  flex: 1;
   height: 52px;
   border: none;
-  border-radius: 14px;
+  border-radius: 999px;
   background: var(--color-matcha-dark);
   color: var(--color-white);
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
   transition:
     opacity 0.12s ease,
@@ -363,12 +352,12 @@
 }
 
 .addToCartButton:active {
-  transform: scale(0.99);
+  transform: scale(0.98);
 }
 
 @media (hover: hover) {
   .addToCartButton:hover {
-    opacity: 0.9;
+    opacity: 0.92;
   }
 }
 

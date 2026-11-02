@@ -1,6 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import styles from "./OrderPlacedModal.module.css";
-import {CheckCircle2} from "lucide-react";
 import OrderPlacedSummaryCard from "./OrderPlacedSummaryCard";
 
 const OrderPlacedModal = ({open, onOpenChange, summary}) => {
@@ -9,14 +8,16 @@ const OrderPlacedModal = ({open, onOpenChange, summary}) => {
       <Dialog.Portal>
         <Dialog.Overlay className={styles.overlay} />
         <Dialog.Content className={styles.content} aria-label="Order placed">
-          <div className={styles.icon}>
-            <CheckCircle2 size={28} />
-          </div>
+          <img
+            src="/assets/Igokochi House Logo Transparent.PNG"
+            alt=""
+            className={styles.logo}
+          />
 
-          <Dialog.Title className={styles.title}>Order placed!</Dialog.Title>
+          <Dialog.Title className={styles.title}>Thank you!</Dialog.Title>
 
           <p className={styles.text}>
-            Thanks! We will confirm your order through Whatsapp shortly.
+            Your order is in. We will confirm it with you on WhatsApp shortly.
           </p>
 
           {summary?.items?.length ? (
@@ -30,7 +31,7 @@ const OrderPlacedModal = ({open, onOpenChange, summary}) => {
 
           <Dialog.Close asChild>
             <button className={styles.button} type="button">
-              OK
+              Done
             </button>
           </Dialog.Close>
         </Dialog.Content>

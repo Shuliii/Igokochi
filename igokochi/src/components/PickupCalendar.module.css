@@ -49,7 +49,7 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   font-size: 11px;
-  color: #7a7a7a;
+  color: var(--color-muted);
   text-align: center;
 }
 
@@ -86,7 +86,7 @@
 
 .dayDisabled {
   background: transparent;
-  color: #c8c8c8;
+  color: #cdc6ba;
 }
 
 .active {

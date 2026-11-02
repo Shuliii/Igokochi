@@ -18,3 +18,30 @@
     padding-block: 24px;
   }
 }
+
+.hero {
+  padding: 12px 2px 8px;
+}
+
+.kicker {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
+.heading {
+  margin-top: 6px;
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.sub {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--color-muted);
+}

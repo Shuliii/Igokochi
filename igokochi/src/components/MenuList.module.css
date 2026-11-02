@@ -1,13 +1,37 @@
+.group {
+  margin-top: 24px;
+}
+
+.groupTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 2px 12px;
+
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+}
+
+.groupJp {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
 .list {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
 @media (min-width: 640px) {
   .list {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
   }
 }
 
@@ -22,26 +46,26 @@
 
 .skeletonCard {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
   background: var(--color-white);
-  border-radius: 14px;
-  padding: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  overflow: hidden;
 }
 
-.skeletonImage {
-  width: 80px;
-  height: 80px;
-  flex-shrink: 0;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #efefef 25%, #e2e2e2 50%, #efefef 75%);
+.skeletonImage,
+.skeletonLine {
+  background: linear-gradient(90deg, #ece6dc 25%, #e2dbcf 50%, #ece6dc 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease infinite;
 }
 
+.skeletonImage {
+  aspect-ratio: 1 / 1;
+}
+
 .skeletonContent {
-  flex: 1;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -49,23 +73,20 @@
 
 .skeletonLine {
   border-radius: 6px;
-  background: linear-gradient(90deg, #efefef 25%, #e2e2e2 50%, #efefef 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s ease infinite;
 }
 
 .skeletonLineTitle {
   height: 14px;
-  width: 55%;
+  width: 75%;
 }
 
 .skeletonLineDesc {
   height: 11px;
-  width: 90%;
+  width: 95%;
 }
 
 .skeletonLinePrice {
   height: 13px;
-  width: 30%;
-  margin-top: 2px;
+  width: 35%;
+  margin-top: 4px;
 }

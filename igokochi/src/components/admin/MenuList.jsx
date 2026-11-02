@@ -1,6 +1,8 @@
 // src/components/admin/MenuList.jsx
 
 import styles from "./MenuList.module.css";
+import { menuImageUrl } from "../../utils/menuImage";
+import { MENU_BADGES } from "../../utils/menuBadges";
 
 const MenuSkeleton = () => (
   <div className={styles.skeletonCard}>
@@ -14,7 +16,7 @@ const MenuSkeleton = () => (
   </div>
 );
 
-const MenuList = ({ menu, onToggle, loading }) => {
+const MenuList = ({ menu, onToggle, onBadgeChange, loading }) => {
   if (loading) {
     return (
       <section className={styles.list}>
@@ -27,7 +29,7 @@ const MenuList = ({ menu, onToggle, loading }) => {
     <section className={styles.list}>
       {menu.map((item) => {
         const available = item.available !== false;
-        const imageSrc = item.image_path ? `/assets/${item.image_path}` : null;
+        const imageSrc = menuImageUrl(item.image_path);
 
         return (
           <article key={item.id} className={styles.card}>
@@ -41,6 +43,23 @@ const MenuList = ({ menu, onToggle, loading }) => {
               <span className={`${styles.badge} ${available ? styles.available : styles.soldOut}`}>
                 {available ? "Available" : "Sold out"}
               </span>
+
+              <div className={styles.labelRow} role="group" aria-label="Menu label">
+                {[{ id: null, label: "No label" }, ...MENU_BADGES].map((b) => {
+                  const active = (item.badge || null) === b.id;
+                  return (
+                    <button
+                      key={b.id || "none"}
+                      type="button"
+                      className={`${styles.labelChip} ${active ? styles.labelChipActive : ""}`}
+                      aria-pressed={active}
+                      onClick={() => !active && onBadgeChange(item, b.id)}
+                    >
+                      {b.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <label className={styles.switch}>

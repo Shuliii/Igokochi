@@ -13,13 +13,12 @@
   margin: 0 auto;
   min-height: 72px;
   padding: 12px;
-  background: var(--color-white);
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
+  background: var(--color-text);
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(31, 29, 26, 0.25);
 }
 
 .left {
@@ -37,11 +36,11 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: var(--color-matcha-soft);
+  background: rgba(255, 253, 249, 0.12);
 }
 
 .cartIcon {
-  color: var(--color-matcha-dark);
+  color: var(--color-white);
 }
 
 .cartBadge {
@@ -55,7 +54,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: var(--color-matcha-dark);
+  background: var(--color-matcha);
   color: var(--color-white);
   font-size: 11px;
   font-weight: 600;
@@ -72,20 +71,20 @@
 .total {
   font-size: 16px;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--color-white);
 }
 
 .itemsText {
   font-size: 12px;
-  color: #7a7a7a;
+  color: rgba(255, 253, 249, 0.6);
 }
 
 .cta {
   height: 44px;
-  padding: 0 14px;
+  padding: 0 18px;
   border: none;
-  border-radius: 12px;
-  background: var(--color-matcha-dark);
+  border-radius: 999px;
+  background: var(--color-matcha);
   color: var(--color-white);
   font-size: 14px;
   font-weight: 600;

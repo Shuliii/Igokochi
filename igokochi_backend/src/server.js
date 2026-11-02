@@ -72,15 +72,17 @@ router.get("/menu", async (req, res) => {
   }
 });
 
-/* ---------------- PATCH menu item (availability / category) ---------------- */
+/* ---------------- PATCH menu item (availability / category / badge) ---------------- */
 const ALLOWED_CATEGORIES = new Set(["matcha", "dessert"]);
+// keep in sync with MENU_BADGES in igokochi/src/utils/menuBadges.js
+const ALLOWED_BADGES = new Set(["new", "must-try", "bestseller", "limited"]);
 
 router.patch("/menu/:id", requireAuth, async (req, res) => {
   try {
     const id = req.params.id;
-    const {available, category} = req.body || {};
+    const {available, category, badge} = req.body || {};
 
-    if (available === undefined && category === undefined) {
+    if (available === undefined && category === undefined && badge === undefined) {
       return res.status(400).json({
         ok: false,
         message: "Nothing to update",
@@ -101,6 +103,13 @@ router.patch("/menu/:id", requireAuth, async (req, res) => {
       });
     }
 
+    if (badge !== undefined && badge !== null && !ALLOWED_BADGES.has(badge)) {
+      return res.status(400).json({
+        ok: false,
+        message: "Invalid badge value",
+      });
+    }
+
     const sets = [];
     const params = [];
 
@@ -112,6 +121,11 @@ router.patch("/menu/:id", requireAuth, async (req, res) => {
     if (category !== undefined) {
       sets.push("category = ?");
       params.push(category);
+    }
+
+    if (badge !== undefined) {
+      sets.push("badge = ?");
+      params.push(badge);
     }
 
     params.push(id);

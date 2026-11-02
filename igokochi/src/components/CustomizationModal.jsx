@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
+import { X, Plus, Minus } from "lucide-react";
 import { useCart } from "../cart/CartContext";
 import styles from "./CustomizationModal.module.css";
+import { menuImageUrl } from "../utils/menuImage";
+import MenuBadge from "./MenuBadge";
 
 const CustomizationModal = ({ item, isOpen, onClose }) => {
   const { dispatch } = useCart();
@@ -98,27 +100,14 @@ const CustomizationModal = ({ item, isOpen, onClose }) => {
         <Dialog.Overlay className={styles.overlay} />
 
         <Dialog.Content className={styles.content}>
-          <div className={styles.handle} />
-
-          <div className={styles.header}>
-            <div className={styles.headerMain}>
-              {item?.image && (
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className={styles.thumb}
-                />
-              )}
-
-              <div className={styles.headerText}>
-                <Dialog.Title className={styles.title}>
-                  {item?.name}
-                </Dialog.Title>
-                <Dialog.Description className={styles.description}>
-                  {item?.description}
-                </Dialog.Description>
-              </div>
-            </div>
+          <div className={styles.photo}>
+            {item?.image_path && (
+              <img
+                src={menuImageUrl(item.image_path)}
+                alt={item.name}
+                className={styles.photoImg}
+              />
+            )}
 
             <Dialog.Close asChild>
               <button
@@ -129,6 +118,23 @@ const CustomizationModal = ({ item, isOpen, onClose }) => {
                 <X size={18} />
               </button>
             </Dialog.Close>
+          </div>
+
+          <div className={styles.header}>
+            {item?.badge && (
+              <div className={styles.headerBadge}>
+                <MenuBadge badge={item.badge} />
+              </div>
+            )}
+            <div className={styles.titleRow}>
+              <Dialog.Title className={styles.title}>{item?.name}</Dialog.Title>
+              <span className={styles.basePrice}>
+                ${Number(item?.price || 0).toFixed(2)}
+              </span>
+            </div>
+            <Dialog.Description className={styles.description}>
+              {item?.description}
+            </Dialog.Description>
           </div>
 
           <div className={styles.body}>
@@ -190,41 +196,37 @@ const CustomizationModal = ({ item, isOpen, onClose }) => {
                 rows={3}
               />
             </section>
-
-            <section className={styles.section}>
-              <h3 className={styles.sectionTitle}>Quantity</h3>
-
-              <div className={styles.qtyRow}>
-                <button
-                  type="button"
-                  className={styles.qtyButton}
-                  onClick={() => setQty((prev) => Math.max(1, prev - 1))}
-                  aria-label="Decrease quantity"
-                >
-                  −
-                </button>
-
-                <span className={styles.qtyValue}>{qty}</span>
-
-                <button
-                  type="button"
-                  className={styles.qtyButton}
-                  onClick={() => setQty((prev) => prev + 1)}
-                  aria-label="Increase quantity"
-                >
-                  +
-                </button>
-              </div>
-            </section>
           </div>
 
           <div className={styles.footer}>
+            <div className={styles.qtyRow}>
+              <button
+                type="button"
+                className={styles.qtyButton}
+                onClick={() => setQty((prev) => Math.max(1, prev - 1))}
+                aria-label="Decrease quantity"
+              >
+                <Minus size={16} />
+              </button>
+
+              <span className={styles.qtyValue}>{qty}</span>
+
+              <button
+                type="button"
+                className={styles.qtyButton}
+                onClick={() => setQty((prev) => prev + 1)}
+                aria-label="Increase quantity"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+
             <button
               type="button"
               className={styles.addToCartButton}
               onClick={handleAddToCart}
             >
-              Add to cart · ${totalPrice.toFixed(2)}
+              Add · ${totalPrice.toFixed(2)}
             </button>
           </div>
         </Dialog.Content>

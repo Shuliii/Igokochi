@@ -31,7 +31,7 @@ const Header = ({ onCheckout }) => {
       <div className={styles.container}>
         <div className={styles.brand}>
           <img
-            src="/assets/Igokochi House Logo_White transparent.PNG"
+            src="/assets/Igokochi House Logo Transparent.PNG"
             alt="Igokochi House"
             className={styles.logo}
           />
@@ -39,7 +39,7 @@ const Header = ({ onCheckout }) => {
         </div>
 
         <button className={styles.cartBtn} type="button" onClick={onCheckout}>
-          <ShoppingCart />
+          <ShoppingCart size={19} strokeWidth={1.75} />
 
           {itemCount > 0 && (
             <span className={`${styles.badge} ${pop ? styles.badgePop : ""}`}>

@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "./MenuCard.module.css";
 import { Plus, Minus } from "lucide-react";
+import { menuImageUrl } from "../utils/menuImage";
+import MenuBadge from "./MenuBadge";
 
 const MenuCard = ({ item, onAdd, onDecrement, totalQty = 0 }) => {
   const isAvailable = item.available !== false;
-  const imageSrc = item.image_path
-    ? `/assets/${item.image_path}`
-    : "https://picsum.photos/80";
+  const imageSrc = menuImageUrl(item.image_path) || "https://picsum.photos/80";
 
   const prevQtyRef = useRef(totalQty);
   const [bounce, setBounce] = useState(false);
@@ -22,8 +22,25 @@ const MenuCard = ({ item, onAdd, onDecrement, totalQty = 0 }) => {
   }, [totalQty]);
 
   return (
-    <div className={styles.card}>
-      <img src={imageSrc} alt={item.name} className={styles.image} />
+    <div className={`${styles.card} ${!isAvailable ? styles.unavailable : ""}`}>
+      <div className={styles.photo}>
+        <img
+          src={imageSrc}
+          alt={item.name}
+          className={styles.image}
+          loading="lazy"
+          decoding="async"
+        />
+        {isAvailable ? (
+          item.badge && (
+            <div className={styles.photoBadge}>
+              <MenuBadge badge={item.badge} />
+            </div>
+          )
+        ) : (
+          <span className={styles.soldOut}>Sold out</span>
+        )}
+      </div>
 
       <div className={styles.content}>
         <h3 className={styles.title}>{item.name}</h3>
@@ -32,44 +49,39 @@ const MenuCard = ({ item, onAdd, onDecrement, totalQty = 0 }) => {
         <div className={styles.bottomRow}>
           <span className={styles.price}>${Number(item.price).toFixed(2)}</span>
 
-          {!isAvailable ? (
-            <span className={styles.soldOut}>Sold Out</span>
-          ) : (
-            <div className={styles.controlsWrap}>
-              {totalQty > 0 ? (
-                <div className={`${styles.stepper} ${styles.stepperIn}`}>
-                  <button
-                    type="button"
-                    className={styles.stepBtn}
-                    onClick={onDecrement}
-                    aria-label="Remove one"
-                  >
-                    <Minus size={12} />
-                  </button>
-                  <span className={`${styles.qty} ${bounce ? styles.qtyBounce : ""}`}>
-                    {totalQty}
-                  </span>
-                  <button
-                    type="button"
-                    className={styles.stepBtn}
-                    onClick={onAdd}
-                    aria-label="Add one more"
-                  >
-                    <Plus size={12} />
-                  </button>
-                </div>
-              ) : (
+          {isAvailable &&
+            (totalQty > 0 ? (
+              <div className={`${styles.stepper} ${styles.stepperIn}`}>
                 <button
-                  className={styles.addButton}
-                  onClick={onAdd}
-                  aria-label={`Add ${item.name} to cart`}
                   type="button"
+                  className={styles.stepBtn}
+                  onClick={onDecrement}
+                  aria-label="Remove one"
                 >
-                  <Plus size={18} />
+                  <Minus size={13} />
                 </button>
-              )}
-            </div>
-          )}
+                <span className={`${styles.qty} ${bounce ? styles.qtyBounce : ""}`}>
+                  {totalQty}
+                </span>
+                <button
+                  type="button"
+                  className={styles.stepBtn}
+                  onClick={onAdd}
+                  aria-label="Add one more"
+                >
+                  <Plus size={13} />
+                </button>
+              </div>
+            ) : (
+              <button
+                className={styles.addButton}
+                onClick={onAdd}
+                aria-label={`Add ${item.name} to cart`}
+                type="button"
+              >
+                <Plus size={18} />
+              </button>
+            ))}
         </div>
       </div>
     </div>

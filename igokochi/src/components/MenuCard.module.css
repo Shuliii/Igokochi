@@ -1,43 +1,77 @@
 .card {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  min-width: 0;
 
   background: var(--color-white);
-  border-radius: 14px;
-  padding: 12px;
-
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  overflow: hidden;
 }
 
-.image {
-  width: 80px;
-  height: 80px;
-  flex-shrink: 0;
+.photo {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: var(--color-photo);
+  overflow: hidden;
+}
 
+/* photos are pre-cropped square with the cup centred on a --color-photo backdrop */
+.image {
+  width: 100%;
+  height: 100%;
+  display: block;
   object-fit: cover;
-  border-radius: 10px;
+}
+
+.unavailable .image {
+  filter: grayscale(0.9);
+  opacity: 0.55;
+}
+
+.photoBadge {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+
+.soldOut {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 4px 10px;
+
+  border-radius: 999px;
+  background: rgba(31, 29, 26, 0.78);
+  color: var(--color-white);
+
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  padding: 10px 12px 12px;
 }
 
 .title {
   margin: 0;
-  font-size: 15px;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   color: var(--color-text);
 }
 
 .description {
   margin: 4px 0 0;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.4;
-  color: #7a7a7a;
+  color: var(--color-muted);
 
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -51,64 +85,23 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 6px;
 }
 
 .price {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--color-matcha-dark);
+  color: var(--color-text);
 }
 
-.soldOut {
-  color: #999;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-/* prevents text reflow / card height shift */
-.controlsWrap {
-  width: 112px;
-  display: flex;
-  justify-content: flex-end;
-  flex-shrink: 0;
-}
-
-/* wrapper for + button so badge can be positioned relative to it */
-.addBtnWrap {
-  position: relative;
-  display: inline-flex;
-}
-
-/* cart count badge for modifier items */
-.badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-
-  min-width: 17px;
-  height: 17px;
-  padding: 0 3px;
-
-  background: var(--color-matcha-dark);
-  color: var(--color-white);
-  border: 1.5px solid var(--color-bg);
-  border-radius: 999px;
-
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  pointer-events: none;
+.unavailable .price {
+  color: var(--color-muted);
 }
 
 /* single + button */
 .addButton {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
 
   display: flex;
   align-items: center;
@@ -121,63 +114,45 @@
   color: var(--color-white);
 
   cursor: pointer;
+  transition: transform 120ms ease;
 }
 
 .addButton:active {
-  transform: scale(0.96);
+  transform: scale(0.92);
 }
 
 /* stepper */
 .stepper {
-  height: 32px;
+  height: 34px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 
-  padding: 0 1px;
+  padding: 0 3px;
   border-radius: 999px;
-
-  /* 👇 light matcha background */
   background: var(--color-matcha-soft);
-  border: 1px solid var(--color-border);
-
   color: var(--color-matcha-dark);
 }
 
-/* enter + exit animations */
+/* enter animation */
 .stepperIn {
   animation: stepperIn 220ms ease-out;
 }
 
-.stepperOut {
-  animation: stepperOut 220ms ease-in;
-}
-
 @keyframes stepperIn {
   from {
-    transform: translateX(12px);
+    transform: translateX(8px);
     opacity: 0;
   }
   to {
     transform: translateX(0);
     opacity: 1;
-  }
-}
-
-@keyframes stepperOut {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(12px);
-    opacity: 0;
   }
 }
 
 .stepBtn {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
 
   display: inline-flex;
   align-items: center;
@@ -185,8 +160,6 @@
 
   border: none;
   border-radius: 999px;
-
-  /* 👇 dark matcha button */
   background: var(--color-matcha-dark);
   color: var(--color-white);
 
@@ -195,11 +168,11 @@
 }
 
 .stepBtn:active {
-  transform: scale(0.96);
+  transform: scale(0.92);
 }
 
 .qty {
-  width: 18px;
+  min-width: 16px;
   text-align: center;
 
   font-weight: 700;

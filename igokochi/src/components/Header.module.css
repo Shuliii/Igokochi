@@ -1,21 +1,21 @@
 /* src/components/Header.module.css */
 
-/* src/components/Header.module.css */
-
 .header {
   position: sticky;
   top: 0;
   z-index: 1000;
 
-  background: var(--color-matcha-dark);
-  height: calc(56px + env(safe-area-inset-top));
-  padding-top: env(safe-area-inset-top);
+  background: rgba(244, 239, 230, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-border);
 
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  height: calc(60px + env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
 }
 
 .container {
-  height: 56px;
+  height: 60px;
   padding-inline: 16px;
 
   display: flex;
@@ -39,41 +39,39 @@
 }
 
 .logo {
-  height: 50px;
+  height: 44px;
   width: auto;
   object-fit: contain;
 }
 
 .title {
-  font-weight: 700;
-  font-size: 17px;
-  color: var(--color-white);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
 }
 
 .cartBtn {
   position: relative;
-  border: none;
-  background: transparent;
-  color: var(--color-white);
-  padding: 6px;
-  cursor: pointer;
-}
+  width: 42px;
+  height: 42px;
 
-.cartIconWrap {
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
 
-.cartIcon {
-  color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-white);
+  color: var(--color-text);
+  cursor: pointer;
 }
 
 .badge {
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: -4px;
+  right: -4px;
 
   min-width: 18px;
   height: 18px;
@@ -84,11 +82,11 @@
   justify-content: center;
 
   border-radius: 999px;
-  background: var(--color-white);
-  color: var(--color-matcha-dark);
+  background: var(--color-matcha-dark);
+  color: var(--color-white);
 
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 700;
   line-height: 1;
 }
 

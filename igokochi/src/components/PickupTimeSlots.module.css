@@ -9,12 +9,12 @@
 .subtitle {
   font-size: 12px;
   font-weight: 600;
-  color: #7a7a7a;
+  color: var(--color-muted);
 }
 
 .helperText {
   font-size: 13px;
-  color: #7a7a7a;
+  color: var(--color-muted);
   padding: 8px 0;
 }
 
@@ -50,8 +50,8 @@
 }
 
 .slotBtn:disabled {
-  background: #f0f0f0;
-  color: #9a9a9a;
+  background: var(--color-bg);
+  color: var(--color-muted);
   cursor: default;
 }
 
@@ -64,7 +64,7 @@
 
 /* Full slot */
 .slotBtnFull {
-  color: #b0b0b0;
+  color: #bdb5a8;
   text-decoration: line-through;
   font-weight: 500;
 }
