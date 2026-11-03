@@ -68,32 +68,41 @@
    PHOTO
 ======================== */
 
+/* photo, header and options scroll together; only the footer stays fixed */
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* full-width; 4:3 trims only empty backdrop off the square photo, never the cup */
 .photo {
-  position: relative;
-  height: 240px;
-  flex-shrink: 0;
+  aspect-ratio: 4 / 3;
   background: var(--color-photo);
   overflow: hidden;
 }
 
-/* whole square photo; its backdrop matches --color-photo so the sides blend in */
 .photoImg {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .closeButton {
   position: absolute;
   top: 12px;
   right: 12px;
+  z-index: 2;
 
   width: 36px;
   height: 36px;
   border: none;
   border-radius: 999px;
-  background: rgba(255, 253, 249, 0.9);
+  background: rgba(255, 253, 249, 0.92);
+  box-shadow: 0 2px 8px rgba(31, 29, 26, 0.18);
   color: var(--color-text);
   cursor: pointer;
 
@@ -152,10 +161,7 @@
 ======================== */
 
 .body {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 16px 18px;
+  padding: 16px 18px 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -353,6 +359,13 @@
 
 .addToCartButton:active {
   transform: scale(0.98);
+}
+
+.addToCartButton:disabled {
+  background: var(--color-border);
+  color: var(--color-muted);
+  cursor: default;
+  transform: none;
 }
 
 @media (hover: hover) {

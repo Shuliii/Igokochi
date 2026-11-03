@@ -4,7 +4,7 @@ import { Plus, Minus } from "lucide-react";
 import { menuImageUrl } from "../utils/menuImage";
 import MenuBadge from "./MenuBadge";
 
-const MenuCard = ({ item, onAdd, onDecrement, totalQty = 0 }) => {
+const MenuCard = ({ item, onOpen, onAdd, onDecrement, totalQty = 0 }) => {
   const isAvailable = item.available !== false;
   const imageSrc = menuImageUrl(item.image_path) || "https://picsum.photos/80";
 
@@ -23,6 +23,14 @@ const MenuCard = ({ item, onAdd, onDecrement, totalQty = 0 }) => {
 
   return (
     <div className={`${styles.card} ${!isAvailable ? styles.unavailable : ""}`}>
+      {/* covers the whole card so a tap anywhere opens details; the +/- controls sit above it */}
+      <button
+        type="button"
+        className={styles.openArea}
+        onClick={onOpen}
+        aria-label={`View ${item.name}`}
+      />
+
       <div className={styles.photo}>
         <img
           src={imageSrc}

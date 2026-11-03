@@ -1,4 +1,5 @@
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -7,6 +8,30 @@
   border: 1px solid var(--color-border);
   border-radius: 18px;
   overflow: hidden;
+  transition: transform 120ms ease;
+}
+
+/* press feedback when tapping the card (not the +/- controls) */
+.card:has(.openArea:active) {
+  transform: scale(0.98);
+}
+
+.openArea {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+  padding: 0;
+  border: none;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.openArea:focus-visible {
+  outline: 2px solid var(--color-matcha-dark);
+  outline-offset: -2px;
 }
 
 .photo {
@@ -100,6 +125,8 @@
 
 /* single + button */
 .addButton {
+  position: relative;
+  z-index: 2; /* above .openArea */
   width: 34px;
   height: 34px;
 
@@ -123,6 +150,8 @@
 
 /* stepper */
 .stepper {
+  position: relative;
+  z-index: 2; /* above .openArea */
   height: 34px;
   display: inline-flex;
   align-items: center;

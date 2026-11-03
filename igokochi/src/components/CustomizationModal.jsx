@@ -60,8 +60,10 @@ const CustomizationModal = ({ item, isOpen, onClose }) => {
     }));
   };
 
+  const isAvailable = item?.available !== false;
+
   const handleAddToCart = () => {
-    if (!item) return;
+    if (!item || !isAvailable) return;
 
     const resolvedOptions = (item.modifiers || []).map((modifier) => {
       const selectedOptionId = selectedOptions[modifier.id];
@@ -100,134 +102,150 @@ const CustomizationModal = ({ item, isOpen, onClose }) => {
         <Dialog.Overlay className={styles.overlay} />
 
         <Dialog.Content className={styles.content}>
-          <div className={styles.photo}>
-            {item?.image_path && (
-              <img
-                src={menuImageUrl(item.image_path)}
-                alt={item.name}
-                className={styles.photoImg}
-              />
-            )}
+          {/* pinned above the scroll area so it stays reachable */}
+          <Dialog.Close asChild>
+            <button
+              type="button"
+              className={styles.closeButton}
+              aria-label="Close"
+            >
+              <X size={18} />
+            </button>
+          </Dialog.Close>
 
-            <Dialog.Close asChild>
-              <button
-                type="button"
-                className={styles.closeButton}
-                aria-label="Close"
-              >
-                <X size={18} />
-              </button>
-            </Dialog.Close>
-          </div>
-
-          <div className={styles.header}>
-            {item?.badge && (
-              <div className={styles.headerBadge}>
-                <MenuBadge badge={item.badge} />
-              </div>
-            )}
-            <div className={styles.titleRow}>
-              <Dialog.Title className={styles.title}>{item?.name}</Dialog.Title>
-              <span className={styles.basePrice}>
-                ${Number(item?.price || 0).toFixed(2)}
-              </span>
+          {/* photo + header scroll with the options — small phones need the room */}
+          <div className={styles.scroll}>
+            <div className={styles.photo}>
+              {item?.image_path && (
+                <img
+                  src={menuImageUrl(item.image_path)}
+                  alt={item.name}
+                  className={styles.photoImg}
+                />
+              )}
             </div>
-            <Dialog.Description className={styles.description}>
-              {item?.description}
-            </Dialog.Description>
-          </div>
 
-          <div className={styles.body}>
-            {(item?.modifiers || []).map((modifier) => (
-              <section key={modifier.id} className={styles.section}>
-                <div className={styles.sectionHeader}>
-                  <h3 className={styles.sectionTitle}>{modifier.name}</h3>
-                  {modifier.required && (
-                    <span className={styles.required}>Required</span>
-                  )}
+            <div className={styles.header}>
+              {item?.badge && (
+                <div className={styles.headerBadge}>
+                  <MenuBadge badge={item.badge} />
                 </div>
+              )}
+              <div className={styles.titleRow}>
+                <Dialog.Title className={styles.title}>{item?.name}</Dialog.Title>
+                <span className={styles.basePrice}>
+                  ${Number(item?.price || 0).toFixed(2)}
+                </span>
+              </div>
+              <Dialog.Description className={styles.description}>
+                {item?.description}
+              </Dialog.Description>
+            </div>
 
-                <div className={styles.options}>
-                  {(modifier.options || []).map((option) => {
-                    const checked = selectedOptions[modifier.id] === option.id;
+            <div className={styles.body}>
+              {(item?.modifiers || []).map((modifier) => (
+                <section key={modifier.id} className={styles.section}>
+                  <div className={styles.sectionHeader}>
+                    <h3 className={styles.sectionTitle}>{modifier.name}</h3>
+                    {modifier.required && (
+                      <span className={styles.required}>Required</span>
+                    )}
+                  </div>
 
-                    return (
-                      <label
-                        key={option.id}
-                        className={`${styles.optionCard} ${
-                          checked ? styles.optionCardSelected : ""
-                        }`}
-                      >
-                        <div className={styles.optionLeft}>
-                          <input
-                            type="radio"
-                            name={modifier.id}
-                            value={option.id}
-                            checked={checked}
-                            onChange={() =>
-                              handleOptionChange(modifier.id, option.id)
-                            }
-                            className={styles.radio}
-                          />
-                          <span className={styles.optionName}>
-                            {option.name}
-                          </span>
-                        </div>
+                  <div className={styles.options}>
+                    {(modifier.options || []).map((option) => {
+                      const checked = selectedOptions[modifier.id] === option.id;
 
-                        {option.priceDelta > 0 && (
-                          <span className={styles.optionPrice}>
-                            +${option.priceDelta.toFixed(2)}
-                          </span>
-                        )}
-                      </label>
-                    );
-                  })}
-                </div>
+                      return (
+                        <label
+                          key={option.id}
+                          className={`${styles.optionCard} ${
+                            checked ? styles.optionCardSelected : ""
+                          }`}
+                        >
+                          <div className={styles.optionLeft}>
+                            <input
+                              type="radio"
+                              name={modifier.id}
+                              value={option.id}
+                              checked={checked}
+                              onChange={() =>
+                                handleOptionChange(modifier.id, option.id)
+                              }
+                              className={styles.radio}
+                            />
+                            <span className={styles.optionName}>
+                              {option.name}
+                            </span>
+                          </div>
+
+                          {option.priceDelta > 0 && (
+                            <span className={styles.optionPrice}>
+                              +${option.priceDelta.toFixed(2)}
+                            </span>
+                          )}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </section>
+              ))}
+
+              <section className={styles.section}>
+                <h3 className={styles.sectionTitle}>Notes</h3>
+                <textarea
+                  className={styles.notes}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder={
+                    item?.modifiers?.length
+                      ? "Less ice, no sugar, etc."
+                      : "Anything we should know?"
+                  }
+                  rows={3}
+                />
               </section>
-            ))}
-
-            <section className={styles.section}>
-              <h3 className={styles.sectionTitle}>Notes</h3>
-              <textarea
-                className={styles.notes}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Less ice, no sugar, etc."
-                rows={3}
-              />
-            </section>
+            </div>
           </div>
 
           <div className={styles.footer}>
-            <div className={styles.qtyRow}>
-              <button
-                type="button"
-                className={styles.qtyButton}
-                onClick={() => setQty((prev) => Math.max(1, prev - 1))}
-                aria-label="Decrease quantity"
-              >
-                <Minus size={16} />
+            {isAvailable ? (
+              <>
+                <div className={styles.qtyRow}>
+                  <button
+                    type="button"
+                    className={styles.qtyButton}
+                    onClick={() => setQty((prev) => Math.max(1, prev - 1))}
+                    aria-label="Decrease quantity"
+                  >
+                    <Minus size={16} />
+                  </button>
+
+                  <span className={styles.qtyValue}>{qty}</span>
+
+                  <button
+                    type="button"
+                    className={styles.qtyButton}
+                    onClick={() => setQty((prev) => prev + 1)}
+                    aria-label="Increase quantity"
+                  >
+                    <Plus size={16} />
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  className={styles.addToCartButton}
+                  onClick={handleAddToCart}
+                >
+                  Add · ${totalPrice.toFixed(2)}
+                </button>
+              </>
+            ) : (
+              <button type="button" className={styles.addToCartButton} disabled>
+                Sold out
               </button>
-
-              <span className={styles.qtyValue}>{qty}</span>
-
-              <button
-                type="button"
-                className={styles.qtyButton}
-                onClick={() => setQty((prev) => prev + 1)}
-                aria-label="Increase quantity"
-              >
-                <Plus size={16} />
-              </button>
-            </div>
-
-            <button
-              type="button"
-              className={styles.addToCartButton}
-              onClick={handleAddToCart}
-            >
-              Add · ${totalPrice.toFixed(2)}
-            </button>
+            )}
           </div>
         </Dialog.Content>
       </Dialog.Portal>

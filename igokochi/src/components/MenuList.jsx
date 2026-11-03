@@ -101,35 +101,20 @@ const MenuList = () => {
   };
 
   const renderCard = (item) => {
-    const hasModifiers = Boolean(item.modifiers?.length);
-
-    if (hasModifiers) {
-      const cartEntries = state.items.filter((i) => i.id === item.id);
-      const totalQty = cartEntries.reduce((sum, i) => sum + i.qty, 0);
-      // decrement the most recently added variant
-      const lastEntry = cartEntries[cartEntries.length - 1];
-
-      return (
-        <MenuCard
-          key={item.id}
-          item={item}
-          onAdd={() => handleAddClick(item)}
-          onDecrement={lastEntry ? () => handleDecrement(lastEntry.cartKey) : undefined}
-          totalQty={totalQty}
-        />
-      );
-    }
-
-    const cartKey = buildCartKey({ id: item.id, selectedOptions: [], notes: "" });
-    const cartItem = state.items.find((i) => i.cartKey === cartKey);
-    const totalQty = cartItem?.qty || 0;
+    // count every cart entry for this item — the detail sheet can add
+    // variants (options / notes) even for items without modifiers
+    const cartEntries = state.items.filter((i) => i.id === item.id);
+    const totalQty = cartEntries.reduce((sum, i) => sum + i.qty, 0);
+    // decrement the most recently added variant
+    const lastEntry = cartEntries[cartEntries.length - 1];
 
     return (
       <MenuCard
         key={item.id}
         item={item}
+        onOpen={() => setSelectedItem(item)}
         onAdd={() => handleAddClick(item)}
-        onDecrement={totalQty > 0 ? () => handleDecrement(cartKey) : undefined}
+        onDecrement={lastEntry ? () => handleDecrement(lastEntry.cartKey) : undefined}
         totalQty={totalQty}
       />
     );
