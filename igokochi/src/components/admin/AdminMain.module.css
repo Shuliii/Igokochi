@@ -1,8 +1,8 @@
 /* src/components/admin/AdminMain.module.css */
 .main {
-  padding: 16px;
+  padding: 16px 16px 96px; /* bottom room so the chat button never hides the last card */
   background: var(--color-bg);
-  min-height: calc(100vh - 56px);
+  min-height: calc(100dvh - 96px);
 
   max-width: 1200px;
   margin-inline: auto;
@@ -10,6 +10,6 @@
 
 @media (min-width: 768px) {
   .main {
-    padding: 24px 32px;
+    padding: 24px 32px 96px;
   }
 }

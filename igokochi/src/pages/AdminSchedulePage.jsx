@@ -158,6 +158,10 @@ export default function AdminSchedulePage() {
       )}
 
       <AdminMain>
+        <div className={pageStyles.pageHead}>
+          <h1 className={pageStyles.pageTitle}>Schedule</h1>
+        </div>
+
         {/* BASE SCHEDULE */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Base Schedule</h2>

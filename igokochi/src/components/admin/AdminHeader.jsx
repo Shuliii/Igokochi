@@ -17,66 +17,39 @@ const AdminHeader = ({ onRefresh, refreshing, onLogout }) => {
   const isSchedule = location.pathname === "/admin/schedule";
   const isReports = location.pathname === "/admin/reports";
 
+  const tabs = [
+    { path: "/admin", label: "Orders", active: isOrders },
+    { path: "/admin/menu", label: "Menu", active: isMenu },
+    { path: "/admin/schedule", label: "Schedule", active: isSchedule },
+    { path: "/admin/reports", label: "Reports", active: isReports },
+  ];
+
   return (
     <header className={styles.header}>
       <div className={styles.container}>
-        {/* LEFT */}
-        <div className={styles.left}>
+        <div className={styles.topRow}>
           <div className={styles.brand}>
             <img
-              src="/assets/Igokochi House Logo_White transparent.PNG"
+              src="/assets/Igokochi House Logo Transparent.PNG"
               alt="Igokochi"
               className={styles.logo}
             />
-            <span className={styles.title}>Admin</span>
+            <span className={styles.title}>Igokochi House</span>
           </div>
 
-          {/* NAV */}
-          <div className={styles.nav}>
-            <button
-              className={`${styles.tab} ${isOrders ? styles.active : ""}`}
-              onClick={() => navigate("/admin")}
-            >
-              Orders
-            </button>
+          <div className={styles.right}>
+            <span className={styles.date}>{today}</span>
 
-            <button
-              className={`${styles.tab} ${isMenu ? styles.active : ""}`}
-              onClick={() => navigate("/admin/menu")}
-            >
-              Menu
-            </button>
-
-            <button
-              className={`${styles.tab} ${isSchedule ? styles.active : ""}`}
-              onClick={() => navigate("/admin/schedule")}
-            >
-              Schedule
-            </button>
-
-            <button
-              className={`${styles.tab} ${isReports ? styles.active : ""}`}
-              onClick={() => navigate("/admin/reports")}
-            >
-              Reports
-            </button>
-          </div>
-        </div>
-
-        {/* RIGHT */}
-        <div className={styles.right}>
-          <span className={styles.date}>{today}</span>
-
-          <div className={styles.actions}>
             {onRefresh && (
               <button
                 type="button"
-                className={styles.refreshBtn}
+                className={styles.iconBtn}
                 onClick={onRefresh}
                 disabled={refreshing}
+                aria-label="Refresh"
               >
                 <RefreshCw
-                  size={18}
+                  size={17}
                   className={refreshing ? styles.spin : ""}
                 />
               </button>
@@ -84,13 +57,28 @@ const AdminHeader = ({ onRefresh, refreshing, onLogout }) => {
 
             <button
               type="button"
-              className={styles.logoutBtn}
+              className={styles.iconBtn}
               onClick={onLogout}
+              aria-label="Log out"
             >
-              <LogOut size={18} />
+              <LogOut size={17} />
             </button>
           </div>
         </div>
+
+        <nav className={styles.nav}>
+          {tabs.map((t) => (
+            <button
+              key={t.path}
+              type="button"
+              className={`${styles.tab} ${t.active ? styles.active : ""}`}
+              aria-current={t.active ? "page" : undefined}
+              onClick={() => navigate(t.path)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </nav>
       </div>
     </header>
   );

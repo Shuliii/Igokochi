@@ -64,8 +64,13 @@ export default function AdminLogin() {
   return (
     <div className={styles.page}>
       <form className={styles.card} onSubmit={submit}>
-        <h1 className={styles.title}>Igokochi Admin</h1>
-        <p className={styles.sub}>Staff login</p>
+        <img
+          src="/assets/Igokochi House Logo Transparent.PNG"
+          alt=""
+          className={styles.logo}
+        />
+        <h1 className={styles.title}>Welcome back</h1>
+        <p className={styles.sub}>Igokochi House · Staff login</p>
 
         {reason === "expired" && !error && (
           <div className={styles.notice}>

@@ -126,6 +126,10 @@ export default function AdminReportsPage() {
       )}
 
       <AdminMain>
+        <div className={pageStyles.pageHead}>
+          <h1 className={pageStyles.pageTitle}>Reports</h1>
+        </div>
+
         {/* DATE RANGE */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Order Report</h2>

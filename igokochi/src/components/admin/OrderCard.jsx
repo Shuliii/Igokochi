@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {Trash2} from "lucide-react";
+import {Trash2, MessageCircle} from "lucide-react";
 import ConfirmDialog from "../ConfirmDialog";
 import styles from "./OrderCard.module.css";
 
@@ -218,6 +218,7 @@ export default function OrderCard({ order, onSetStatus, tab }) {
           onClick={handleOpenWhatsApp}
           title="Open WhatsApp"
         >
+          <MessageCircle size={14} strokeWidth={2.25} aria-hidden="true" />
           {order.customer_phone}
         </button>
       </div>

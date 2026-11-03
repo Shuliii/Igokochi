@@ -131,6 +131,9 @@ export default function AdminMenuPage() {
       )}
 
       <AdminMain>
+        <div className={styles.pageHead}>
+          <h1 className={styles.pageTitle}>Menu</h1>
+        </div>
         <MenuList
           menu={menu}
           onToggle={handleToggle}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
 import AdminHeader from "../components/admin/AdminHeader";
 import AdminMain from "../components/admin/AdminMain";
 import OrderList from "../components/admin/OrderList";
@@ -254,17 +255,19 @@ export default function AdminPage() {
       )}
 
       <AdminMain>
-        <div className={styles.tabsRow}>
-          <OrderTabs value={tab} counts={counts} onChange={setTab} />
+        <div className={styles.pageHead}>
+          <h1 className={styles.pageTitle}>Orders</h1>
           <button
             type="button"
             className={styles.walkInBtn}
             onClick={() => setShowWalkIn(true)}
-            aria-label="Add walk-in order"
           >
-            <span className={styles.walkInFull}>+ Walk-in</span>
-            <span className={styles.walkInShort}>+</span>
+            <Plus size={16} strokeWidth={2.5} aria-hidden="true" />
+            Walk-in
           </button>
+        </div>
+        <div className={styles.tabsRow}>
+          <OrderTabs value={tab} counts={counts} onChange={setTab} />
         </div>
         <OrderList
           orders={filteredOrders}

@@ -1,9 +1,8 @@
 .card {
   background: var(--color-white);
   border: 1px solid var(--color-border);
-  border-radius: 14px;
-  padding: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border-radius: 18px;
+  padding: 14px 14px 14px 18px;
   position: relative;
   overflow: hidden;
 }
@@ -13,14 +12,14 @@
   position: absolute;
   left: 0;
   top: 0;
-  width: 5px;
+  width: 4px;
   height: 100%;
   background: transparent;
 }
 
 /* Status colors */
 .card_new::before {
-  background: #e5e7eb;
+  background: #e7c98f;
 }
 
 .card_paid::before {
@@ -32,7 +31,7 @@
 }
 
 .card_done::before {
-  background: #c7cbd1;
+  background: #cfc8bb;
   opacity: 0.6;
 }
 
@@ -61,15 +60,17 @@
 }
 
 .orderTitle {
-  font-weight: 800;
-  font-size: 14px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 19px;
+  letter-spacing: -0.01em;
   color: var(--color-text);
 }
 
 .pickup {
-  margin-top: 4px;
+  margin-top: 2px;
   font-size: 13px;
-  color: #555;
+  color: var(--color-muted);
   font-weight: 600;
 }
 
@@ -83,13 +84,13 @@
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   flex-shrink: 0;
 }
 
 .status_new {
-  background: #eee;
-  color: #555;
+  background: #f8ead0;
+  color: #7a5310;
 }
 
 .status_paid {
@@ -103,8 +104,8 @@
 }
 
 .status_done {
-  background: #e9ecef;
-  color: #6b7280;
+  background: #ece6dc;
+  color: var(--color-muted);
 }
 
 .status_cancelled {
@@ -115,15 +116,15 @@
 /* ================= DELETE ================= */
 
 .deleteBtn {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 7px;
+  border-radius: 999px;
   background: transparent;
-  color: #b8b2a0;
+  color: #b3aa9a;
   cursor: pointer;
   flex-shrink: 0;
   transition:
@@ -151,23 +152,31 @@
 }
 
 .customerName {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--color-text);
 }
 
 .phoneBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   border: 1px solid var(--color-border);
-  background: var(--color-bg);
+  background: var(--color-white);
   color: var(--color-text);
-  border-radius: 10px;
-  padding: 6px 10px;
+  border-radius: 999px;
+  padding: 6px 12px 6px 10px;
   font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
 }
 
+.phoneBtn svg {
+  color: var(--color-matcha-dark);
+}
+
 .phoneBtn:hover {
-  background: #f7f7f7;
+  background: var(--color-bg);
 }
 
 .phoneBtn:active {
@@ -178,10 +187,9 @@
 
 .itemsBox {
   margin-top: 12px;
-  border-radius: 12px;
-  border: 1px solid var(--color-border);
+  border-radius: 14px;
   background: var(--color-bg);
-  padding: 10px;
+  padding: 10px 12px;
 }
 
 .itemBlock {
@@ -189,7 +197,7 @@
 }
 
 .itemBlock + .itemBlock {
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px dashed var(--color-border);
   margin-top: 6px;
   padding-top: 10px;
 }
@@ -210,8 +218,8 @@
 }
 
 .itemName {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
@@ -219,16 +227,16 @@
 }
 
 .itemQty {
-  font-size: 12px;
-  font-weight: 800;
-  color: #666;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-matcha-dark);
   flex-shrink: 0;
 }
 
 .itemPrice {
   font-size: 13px;
-  font-weight: 800;
-  color: #444;
+  font-weight: 600;
+  color: var(--color-text);
   flex-shrink: 0;
 }
 
@@ -236,7 +244,7 @@
   margin-top: 3px;
   font-size: 12px;
   line-height: 1.35;
-  color: rgba(27, 27, 27, 0.58);
+  color: var(--color-muted);
 }
 
 .itemNote {
@@ -244,12 +252,12 @@
   font-size: 12px;
   line-height: 1.35;
   font-style: italic;
-  color: rgba(27, 27, 27, 0.5);
+  color: #8a5a1c;
 }
 
 .emptyItems {
   font-size: 13px;
-  color: #777;
+  color: var(--color-muted);
   padding: 4px 0;
 }
 
@@ -262,13 +270,16 @@
 .totalRow {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   font-size: 13px;
-  font-weight: 800;
-  color: var(--color-text);
+  font-weight: 600;
+  color: var(--color-muted);
 }
 
 .totalValue {
-  color: var(--color-matcha-dark);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
 /* ================= ACTIONS ================= */
@@ -281,12 +292,13 @@
 
 .actionBtn {
   flex: 1;
-  height: 40px;
-  border-radius: 12px;
+  height: 46px;
+  border-radius: 999px;
   border: 1px solid var(--color-border);
   background: var(--color-white);
-  font-weight: 800;
-  font-size: 14px;
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 15px;
   cursor: pointer;
   transition:
     background 0.15s ease,
@@ -294,7 +306,7 @@
 }
 
 .actionBtn:hover:not(:disabled) {
-  background: #f8f8f8;
+  background: var(--color-bg);
 }
 
 .actionBtn:active:not(:disabled) {
@@ -302,7 +314,7 @@
 }
 
 .actionBtn:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
@@ -313,5 +325,5 @@
 }
 
 .primaryBtn:hover:not(:disabled) {
-  background: #2f6b57;
+  background: #345a3d;
 }

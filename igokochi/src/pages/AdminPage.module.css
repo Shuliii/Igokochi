@@ -1,6 +1,6 @@
 .netError {
-  background: rgba(255, 244, 229, 0.9);
-  border-bottom: 1px solid #ffd8a8;
+  background: #fbefd9;
+  border-bottom: 1px solid #efd3a0;
   color: #7a4a00;
   font-size: 13px;
   font-weight: 700;
@@ -8,57 +8,51 @@
   text-align: center;
 }
 
-.tabsRow {
+/* shared by admin pages: serif page heading + optional action */
+.pageHead {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.pageTitle {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.tabsRow {
+  margin-bottom: 14px;
 }
 
 .walkInBtn {
   flex-shrink: 0;
-  height: 28px;
-  width: 28px;
-  border-radius: 50%;
-  border: 1.5px dashed var(--color-matcha-dark);
-  background: transparent;
-  color: var(--color-matcha-dark);
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s;
-  display: flex;
+  height: 38px;
+  padding: 0 16px 0 12px;
+
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+
+  border: none;
+  border-radius: 999px;
+  background: var(--color-matcha-dark);
+  color: var(--color-white);
+
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.08s ease, opacity 0.15s ease;
 }
 
 .walkInBtn:hover {
-  background: var(--color-matcha-soft);
+  opacity: 0.92;
 }
 
-.walkInFull {
-  display: none;
-}
-
-.walkInShort {
-  display: inline;
-  line-height: 1;
-}
-
-@media (min-width: 480px) {
-  .walkInBtn {
-    width: auto;
-    height: 34px;
-    border-radius: 999px;
-    font-size: 13px;
-    padding: 0 14px;
-  }
-
-  .walkInFull {
-    display: inline;
-  }
-
-  .walkInShort {
-    display: none;
-  }
+.walkInBtn:active {
+  transform: scale(0.97);
 }

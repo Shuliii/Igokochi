@@ -3,37 +3,32 @@
   display: grid;
   place-items: center;
   padding: 28px 16px;
-  background:
-    radial-gradient(
-      900px 500px at 25% 20%,
-      rgba(123, 174, 127, 0.18),
-      transparent 60%
-    ),
-    radial-gradient(
-      900px 500px at 85% 70%,
-      rgba(139, 107, 79, 0.1),
-      transparent 55%
-    ),
-    var(--color-bg);
+  background: var(--color-bg);
 }
 
 .card {
   width: min(420px, 100%);
-  padding: 26px 26px 22px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(229, 226, 221, 0.9);
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.08),
-    0 6px 18px rgba(0, 0, 0, 0.05);
-  backdrop-filter: blur(10px);
+  padding: 22px 26px 24px;
+  border-radius: 24px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 20px 50px rgba(31, 29, 26, 0.06);
+}
+
+.logo {
+  display: block;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 2px;
+  object-fit: contain;
 }
 
 .title {
   margin: 2px 0 4px;
+  font-family: var(--font-display);
   font-size: 30px;
-  font-weight: 900;
-  letter-spacing: -0.4px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
   text-align: center;
   color: var(--color-text);
 }
@@ -53,8 +48,8 @@
   margin: 0 0 18px;
   text-align: center;
   font-size: 13px;
-  font-weight: 700;
-  color: rgba(31, 31, 31, 0.55);
+  font-weight: 500;
+  color: var(--color-muted);
 }
 
 .error {
@@ -72,17 +67,17 @@
   gap: 8px;
   margin-bottom: 12px;
   font-size: 13px;
-  font-weight: 800;
-  color: rgba(31, 31, 31, 0.78);
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .input {
   height: 46px;
   width: 100%;
   padding: 0 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(229, 226, 221, 1);
-  background: rgba(255, 255, 255, 0.95);
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
   color: var(--color-text);
   font-size: 16px;
   outline: none;
@@ -93,32 +88,26 @@
 }
 
 .input::placeholder {
-  color: rgba(31, 31, 31, 0.45);
-  font-weight: 600;
+  color: #b0a898;
+  font-weight: 400;
 }
 
 .input:focus {
-  border-color: rgba(123, 174, 127, 0.9);
-  box-shadow: 0 0 0 6px rgba(123, 174, 127, 0.18);
+  border-color: var(--color-matcha-dark);
+  box-shadow: 0 0 0 4px rgba(62, 99, 71, 0.14);
 }
 
 .button {
   margin-top: 6px;
-  height: 46px;
+  height: 50px;
   width: 100%;
   border: 0;
-  border-radius: 14px;
-  font-weight: 900;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
-  color: white;
-  background: linear-gradient(
-    180deg,
-    var(--color-matcha-dark),
-    rgba(79, 127, 90, 0.92)
-  );
-  box-shadow:
-    0 14px 30px rgba(79, 127, 90, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  color: var(--color-white);
+  background: var(--color-matcha-dark);
   transition:
     transform 0.06s ease,
     filter 0.15s ease,
@@ -126,10 +115,7 @@
 }
 
 .button:hover {
-  filter: brightness(1.03);
-  box-shadow:
-    0 16px 34px rgba(79, 127, 90, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  filter: brightness(1.06);
 }
 
 .button:active {

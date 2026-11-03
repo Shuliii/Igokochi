@@ -43,23 +43,6 @@ const MenuList = ({ menu, onToggle, onBadgeChange, loading }) => {
               <span className={`${styles.badge} ${available ? styles.available : styles.soldOut}`}>
                 {available ? "Available" : "Sold out"}
               </span>
-
-              <div className={styles.labelRow} role="group" aria-label="Menu label">
-                {[{ id: null, label: "No label" }, ...MENU_BADGES].map((b) => {
-                  const active = (item.badge || null) === b.id;
-                  return (
-                    <button
-                      key={b.id || "none"}
-                      type="button"
-                      className={`${styles.labelChip} ${active ? styles.labelChipActive : ""}`}
-                      aria-pressed={active}
-                      onClick={() => !active && onBadgeChange(item, b.id)}
-                    >
-                      {b.label}
-                    </button>
-                  );
-                })}
-              </div>
             </div>
 
             <label className={styles.switch}>
@@ -70,6 +53,23 @@ const MenuList = ({ menu, onToggle, onBadgeChange, loading }) => {
               />
               <span className={styles.slider} />
             </label>
+
+            <div className={styles.labelRow} role="group" aria-label="Menu label">
+              {[{ id: null, label: "No label" }, ...MENU_BADGES].map((b) => {
+                const active = (item.badge || null) === b.id;
+                return (
+                  <button
+                    key={b.id || "none"}
+                    type="button"
+                    className={`${styles.labelChip} ${active ? styles.labelChipActive : ""}`}
+                    aria-pressed={active}
+                    onClick={() => !active && onBadgeChange(item, b.id)}
+                  >
+                    {b.label}
+                  </button>
+                );
+              })}
+            </div>
           </article>
         );
       })}

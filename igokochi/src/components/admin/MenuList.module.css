@@ -15,18 +15,18 @@
 .card {
   background: var(--color-white);
   border: 1px solid var(--color-border);
-  border-radius: 14px;
-  padding: 12px;
-  display: flex;
+  border-radius: 18px;
+  padding: 12px 14px 14px 12px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  column-gap: 12px;
 }
 
 .thumb {
-  width: 56px;
-  height: 56px;
-  border-radius: 10px;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
   object-fit: cover;
   flex-shrink: 0;
   background: var(--color-bg);
@@ -42,27 +42,29 @@
 
 .name {
   margin: 0;
-  font-size: 14px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
   color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.25;
 }
 
 .price {
   margin: 0;
   font-size: 13px;
-  font-weight: 700;
-  color: var(--color-matcha-dark);
+  font-weight: 600;
+  color: var(--color-muted);
 }
 
 /* promo label picker */
 .labelRow {
+  grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--color-border);
 }
 
 .labelChip {
@@ -77,8 +79,8 @@
 }
 
 .labelChipActive {
-  border-color: var(--color-matcha-dark);
-  background: var(--color-matcha-dark);
+  border-color: var(--color-text);
+  background: var(--color-text);
   color: var(--color-white);
   cursor: default;
 }
@@ -100,8 +102,8 @@
 }
 
 .soldOut {
-  background: #f5e8e8;
-  color: #9b3a3a;
+  background: #f3dfd9;
+  color: #9b3f2e;
 }
 
 /* ========================
@@ -123,7 +125,7 @@
 .slider {
   position: absolute;
   inset: 0;
-  background: #d1d5db;
+  background: #d9d2c6;
   border-radius: 999px;
   transition: background 0.2s ease;
 }
