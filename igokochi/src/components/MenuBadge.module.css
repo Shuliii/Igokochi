@@ -50,7 +50,7 @@
 }
 
 .limited {
-  background: #b5523b;
+  background: var(--color-accent);
   color: var(--color-white);
 }
 

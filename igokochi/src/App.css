@@ -1,29 +1,33 @@
 /* ===============================
-   Igokochi House – Color Variables
+   Igokochi House – Uji tea house palette
    =============================== */
 
 :root {
-  /* 🌿 Brand / Primary */
-  --color-matcha: #7a9e6e; /* Primary brand green */
-  --color-matcha-dark: #3e6347; /* Primary buttons, active states */
+  /* 🍵 Brand / Primary – Uji matcha */
+  --color-matcha: #8aa05a; /* Light matcha: accents, counts */
+  --color-matcha-dark: #4b6a2c; /* Primary buttons, active states */
 
-  /* 🤎 Accent / Secondary */
-  --color-brown: #8b6b4f; /* Cards, accents */
-  --color-brown-dark: #5a3e2b; /* Footer, icons */
+  /* 🤎 Hojicha / Secondary */
+  --color-brown: #946a43; /* Paid orders, accents */
+  --color-brown-dark: #5c3f26; /* Icons, deep accents */
 
-  /* ⚪⚫ Neutrals */
-  --color-bg: #f4efe6; /* App background (warm paper) */
-  --color-white: #fffdf9; /* Card background */
-  --color-text: #1f1d1a; /* Primary text (ink) */
-  --color-muted: #7d766c; /* Secondary text */
-  --color-border: #e6dfd3; /* Dividers, subtle borders */
-  --color-photo: #e9e4dc; /* Behind menu photos */
+  /* 🧧 Shu (vermilion) accent – used sparingly */
+  --color-accent: #c25b3c;
 
-  /* 🟢 Soft accent (optional) */
-  --color-matcha-soft: #dfe8d6; /* Selected states, tags */
+  /* 📜 Washi & sumi neutrals */
+  --color-bg: #f6f1e7; /* App background (washi paper) */
+  --color-white: #fffcf6; /* Card background */
+  --color-text: #24211c; /* Primary text (sumi ink) */
+  --color-muted: #6f6759; /* Secondary text */
+  --color-border: #e7dfd1; /* Dividers, subtle borders */
+  --color-photo: #ebe4d8; /* Behind menu photos */
+
+  /* 🌱 Soft accent */
+  --color-matcha-soft: #e6ebd5; /* Selected states, tags */
 
   /* ✒️ Type */
-  --font-display: "Fraunces", Georgia, serif;
+  --font-display: "Shippori Mincho B1", "Hiragino Mincho ProN", Georgia, serif;
+  --font-body: "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
 }
 
 body {

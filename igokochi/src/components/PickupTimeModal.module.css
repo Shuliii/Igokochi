@@ -70,7 +70,7 @@
   margin: 0;
   font-family: var(--font-display);
   font-size: 22px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 
@@ -183,7 +183,7 @@
 .amountBox strong {
   font-family: var(--font-display);
   font-size: 32px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-text);
 }
 

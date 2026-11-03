@@ -61,7 +61,7 @@
 
 .orderTitle {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 19px;
   letter-spacing: -0.01em;
   color: var(--color-text);
@@ -104,7 +104,7 @@
 }
 
 .status_done {
-  background: #ece6dc;
+  background: #ede6da;
   color: var(--color-muted);
 }
 

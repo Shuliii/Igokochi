@@ -10,7 +10,7 @@
 
   font-family: var(--font-display);
   font-size: 21px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--color-text);
 }
@@ -55,7 +55,7 @@
 
 .skeletonImage,
 .skeletonLine {
-  background: linear-gradient(90deg, #ece6dc 25%, #e2dbcf 50%, #ece6dc 75%);
+  background: linear-gradient(90deg, #ede6da 25%, #e3dbcd 50%, #ede6da 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease infinite;
 }
