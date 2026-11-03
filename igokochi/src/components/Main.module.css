@@ -23,20 +23,12 @@
   padding: 12px 2px 8px;
 }
 
-.kicker {
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  color: var(--color-muted);
-}
-
-.heading {
-  margin-top: 6px;
+.meaning {
   font-family: var(--font-display);
-  font-size: 30px;
+  font-size: 17px;
   font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  color: var(--color-text);
+  line-height: 1.4;
+  color: var(--color-muted);
 }
 
 .sub {
